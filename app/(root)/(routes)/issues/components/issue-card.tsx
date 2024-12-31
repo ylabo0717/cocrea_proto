@@ -78,22 +78,12 @@ export function IssueCard({ issue }: IssueCardProps) {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="prose prose-sm max-w-none">
-            {issue.body.split('\n').slice(0, 3).map((line, i) => (
-              <p key={i} className="text-muted-foreground line-clamp-1">
-                {line}
-              </p>
-            ))}
+        <div className="flex justify-between items-center text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <span>作成者: {issue.author.name}</span>
           </div>
-
-          <div className="flex justify-between items-center text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <span>作成者: {issue.author.name}</span>
-            </div>
-            <div>
-              {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}
-            </div>
+          <div>
+            {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}
           </div>
         </div>
       </Card>
