@@ -17,6 +17,9 @@ export function AttachmentUpload({ contentId, onUpload }: AttachmentUploadProps)
   const { toast } = useToast();
 
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -42,6 +45,12 @@ export function AttachmentUpload({ contentId, onUpload }: AttachmentUploadProps)
     }
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    fileInputRef.current?.click();
+  };
+
   return (
     <div>
       <input
@@ -52,8 +61,9 @@ export function AttachmentUpload({ contentId, onUpload }: AttachmentUploadProps)
         accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
       />
       <Button
+        type="button"
         variant="outline"
-        onClick={() => fileInputRef.current?.click()}
+        onClick={handleClick}
         disabled={isUploading}
         className="gap-2"
       >
