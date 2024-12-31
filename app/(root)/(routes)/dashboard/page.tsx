@@ -22,10 +22,10 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="h-full p-4 space-y-4">
+    <div className="h-full p-4 space-y-4 bg-background">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold">ダッシュボード</h2>
+          <h2 className="text-3xl font-bold text-foreground">ダッシュボード</h2>
           <p className="text-muted-foreground">社内アプリケーションの開発状況を一覧で確認できます</p>
         </div>
         <button className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg">
