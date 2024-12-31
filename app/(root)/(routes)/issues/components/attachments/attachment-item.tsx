@@ -4,6 +4,7 @@ import { Attachment, getAttachmentUrl } from "@/lib/api/attachments";
 import { Button } from "@/components/ui/button";
 import { FileIcon, Trash2, Download } from "lucide-react";
 import { formatFileSize } from "@/lib/utils";
+import { CopyMarkdownButton } from "./copy-markdown-button";
 
 interface AttachmentItemProps {
   attachment: Attachment;
@@ -12,6 +13,7 @@ interface AttachmentItemProps {
 
 export function AttachmentItem({ attachment, onDelete }: AttachmentItemProps) {
   const publicUrl = getAttachmentUrl(attachment.file_path);
+  const isImage = attachment.mime_type.startsWith('image/');
 
   return (
     <div className="flex items-center justify-between p-3 border rounded-lg">
@@ -25,6 +27,12 @@ export function AttachmentItem({ attachment, onDelete }: AttachmentItemProps) {
         </div>
       </div>
       <div className="flex items-center gap-2">
+        {isImage && (
+          <CopyMarkdownButton
+            fileName={attachment.file_name}
+            filePath={attachment.file_path}
+          />
+        )}
         <Button
           variant="ghost"
           size="icon"
