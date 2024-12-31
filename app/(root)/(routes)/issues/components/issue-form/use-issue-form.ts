@@ -10,7 +10,7 @@ export function useIssueForm(initialData?: Partial<IssueFormData>) {
     status: initialData?.status || "open",
     priority: initialData?.priority || "medium",
     application_id: initialData?.application_id || "",
-    assignee_id: initialData?.assignee_id || undefined,
+    assignee_id: initialData?.assignee_id,
   });
 
   const handleChange = (

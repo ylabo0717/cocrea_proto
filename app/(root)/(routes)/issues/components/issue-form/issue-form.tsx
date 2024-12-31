@@ -48,14 +48,8 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
         <Textarea
           value={formData.body}
           onChange={(e) => handleChange("body", e.target.value)}
-          placeholder="# 課題の内容を入力
-
-## 現状の問題点
-
-## 改善案
-
-## 期待される効果"
-          className="min-h-[300px] font-mono"
+          placeholder="課題の詳細を入力"
+          className="min-h-[200px]"
           disabled={isLoading}
           required
         />
@@ -66,9 +60,7 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
           <label className="text-sm font-medium">ステータス</label>
           <Select
             value={formData.status}
-            onValueChange={(value: 'open' | 'in_progress' | 'resolved') => 
-              handleChange("status", value)
-            }
+            onValueChange={(value) => handleChange("status", value)}
             disabled={isLoading}
           >
             <SelectTrigger>
@@ -86,9 +78,7 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
           <label className="text-sm font-medium">優先度</label>
           <Select
             value={formData.priority}
-            onValueChange={(value: 'low' | 'medium' | 'high') => 
-              handleChange("priority", value)
-            }
+            onValueChange={(value) => handleChange("priority", value)}
             disabled={isLoading}
           >
             <SelectTrigger>
@@ -104,12 +94,11 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">関連アプリケーション</label>
+        <label className="text-sm font-medium">アプリケーション</label>
         <Select
           value={formData.application_id}
           onValueChange={(value) => handleChange("application_id", value)}
           disabled={isLoading}
-          required
         >
           <SelectTrigger>
             <SelectValue placeholder="アプリケーションを選択" />
@@ -155,7 +144,7 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
           キャンセル
         </Button>
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "作成中..." : initialData ? "更新" : "作成"}
+          {isLoading ? "保存中..." : "保存"}
         </Button>
       </div>
     </form>

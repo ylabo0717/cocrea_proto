@@ -106,7 +106,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
             status: issue.status as any,
             priority: issue.priority as any,
             application_id: (issue as any).application.id,
-            assignee_id: (issue as any).assignee?.id
+            assignee_id: issue.assignee_id || undefined
           }}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
