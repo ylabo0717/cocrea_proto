@@ -6,9 +6,12 @@ import { Session } from "@/lib/auth/session";
 
 export function useSession() {
   const [session, setSession] = useState<Session | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setSession(getSession());
+    const currentSession = getSession();
+    setSession(currentSession);
+    setIsLoading(false);
   }, []);
   
   return {
@@ -17,6 +20,6 @@ export function useSession() {
     userId: session?.userId,
     email: session?.email,
     role: session?.role,
-    isLoading: session === null,
+    isLoading,
   };
 }
