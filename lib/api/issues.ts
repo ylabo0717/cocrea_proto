@@ -1,3 +1,5 @@
+"use client";
+
 import { supabase } from "@/lib/supabase";
 import { Content } from "@/lib/types";
 import { getSession } from "@/lib/auth/session";
@@ -15,6 +17,7 @@ interface UpdateIssueData {
   body: string;
   status: 'open' | 'in_progress' | 'resolved';
   priority: 'low' | 'medium' | 'high';
+  application_id: string;
 }
 
 export async function createIssue(data: CreateIssueData): Promise<Content> {
@@ -41,7 +44,7 @@ export async function createIssue(data: CreateIssueData): Promise<Content> {
     .select(`
       *,
       author:author_id(name),
-      application:application_id(name)
+      application:application_id(id, name)
     `)
     .single();
 
@@ -59,7 +62,7 @@ export async function fetchIssues(): Promise<Content[]> {
     .select(`
       *,
       author:author_id(name),
-      application:application_id(name)
+      application:application_id(id, name)
     `)
     .eq('type', 'issue')
     .order('created_at', { ascending: false });
@@ -78,7 +81,7 @@ export async function fetchIssueById(id: string): Promise<Content> {
     .select(`
       *,
       author:author_id(name),
-      application:application_id(name)
+      application:application_id(id, name)
     `)
     .eq('id', id)
     .single();
@@ -97,6 +100,10 @@ export async function updateIssue(id: string, data: UpdateIssueData): Promise<Co
     throw new Error("認証情報が見つかりません");
   }
 
+  if (!data.application_id) {
+    throw new Error("アプリケーションを選択してください");
+  }
+
   const { data: issue, error } = await supabase
     .from("contents")
     .update({
@@ -104,13 +111,14 @@ export async function updateIssue(id: string, data: UpdateIssueData): Promise<Co
       body: data.body,
       status: data.status,
       priority: data.priority,
+      application_id: data.application_id,
       updated_at: new Date().toISOString()
     })
     .eq('id', id)
     .select(`
       *,
       author:author_id(name),
-      application:application_id(name)
+      application:application_id(id, name)
     `)
     .single();
 

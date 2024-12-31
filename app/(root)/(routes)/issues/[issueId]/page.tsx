@@ -1,20 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useIssue } from "./hooks/use-issue";
-import { IssueStatusBadge } from "./components/issue-status-badge";
-import { IssuePriorityBadge } from "./components/issue-priority-badge";
-import { IssueForm } from "./components/issue-form";
+import { IssueForm } from "../components/issue-form/issue-form";
+import { IssueFormData } from "../components/issue-form/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { format } from "date-fns";
-import { ja } from "date-fns/locale";
 import { ArrowLeft, Pencil } from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { useSession } from "@/hooks/use-session";
-import { Content } from "@/lib/types";
 import { updateIssue } from "@/lib/api/issues";
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,6 +19,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
   const { isDeveloper, isLoading: isLoadingSession } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     refreshIssue();
@@ -36,13 +33,14 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
     setIsEditing(false);
   };
 
-  const handleSubmit = async (data: Partial<Content>) => {
+  const handleSubmit = async (data: IssueFormData) => {
     try {
       await updateIssue(params.issueId, {
-        title: data.title!,
-        body: data.body!,
-        status: data.status!,
-        priority: data.priority!
+        title: data.title,
+        body: data.body,
+        status: data.status,
+        priority: data.priority,
+        application_id: data.application_id
       });
       
       toast({
@@ -65,12 +63,12 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
   if (isLoadingIssue || isLoadingSession) {
     return (
       <div className="h-full p-4 space-y-4">
-        <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-4 w-32" />
+        <div className="h-8 w-64 bg-muted animate-pulse rounded" />
+        <div className="h-4 w-32 bg-muted animate-pulse rounded" />
         <div className="space-y-2">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-3/4" />
+          <div className="h-4 w-full bg-muted animate-pulse rounded" />
+          <div className="h-4 w-full bg-muted animate-pulse rounded" />
+          <div className="h-4 w-3/4 bg-muted animate-pulse rounded" />
         </div>
       </div>
     );
@@ -97,9 +95,16 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
 
       {isEditing ? (
         <IssueForm
-          issue={issue as any}
-          onCancel={handleCancel}
+          initialData={{
+            title: issue.title,
+            body: issue.body,
+            status: issue.status as any,
+            priority: issue.priority as any,
+            application_id: (issue as any).application.id
+          }}
           onSubmit={handleSubmit}
+          onCancel={handleCancel}
+          isLoading={false}
         />
       ) : (
         <div className="space-y-4">
@@ -107,8 +112,6 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
             <div className="space-y-2">
               <h1 className="text-3xl font-bold">{issue.title}</h1>
               <div className="flex items-center gap-2">
-                <IssueStatusBadge status={issue.status} size="lg" />
-                <IssuePriorityBadge priority={issue.priority} size="lg" />
                 <Badge variant="outline">{(issue as any).application.name}</Badge>
               </div>
             </div>
@@ -122,9 +125,9 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
 
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div>作成者: {(issue as any).author.name}</div>
-            <div>作成日時: {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</div>
+            <div>作成日時: {new Date(issue.created_at).toLocaleString("ja-JP")}</div>
             {issue.updated_at !== issue.created_at && (
-              <div>更新日時: {format(new Date(issue.updated_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</div>
+              <div>更新日時: {new Date(issue.updated_at).toLocaleString("ja-JP")}</div>
             )}
           </div>
 
