@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
 import { createApplication } from "@/lib/api/applications";
 
-export function CreateApplicationDialog() {
+interface CreateApplicationDialogProps {
+  onSuccess: () => void;
+}
+
+export function CreateApplicationDialog({ onSuccess }: CreateApplicationDialogProps) {
   const { toast } = useToast();
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,7 +34,8 @@ export function CreateApplicationDialog() {
       });
 
       setOpen(false);
-      router.refresh();
+      setFormData({ name: "", description: "" }); // フォームをリセット
+      onSuccess(); // ダッシュボードを更新
     } catch (error) {
       toast({
         title: "エラー",
