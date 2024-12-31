@@ -3,10 +3,11 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { LayoutDashboard, MessageSquare, BookOpen, Users } from "lucide-react";
+import { LayoutDashboard, MessageSquare, BookOpen, Users, User } from "lucide-react";
 import { UserNav } from "./user-nav";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "@/hooks/use-session";
 
 const routes = [
   {
@@ -37,6 +38,7 @@ const routes = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { email, role } = useSession();
 
   return (
     <div className="space-y-4 py-4 flex flex-col h-full bg-gray-900 text-white">
@@ -65,6 +67,17 @@ export function Sidebar() {
           </div>
         </ScrollArea>
       </div>
+      {email && (
+        <div className="px-6 py-3 border-t border-gray-800">
+          <div className="flex items-center gap-2 text-sm text-gray-400">
+            <User className="h-4 w-4" />
+            <div className="flex flex-col">
+              <span>{email}</span>
+              <span className="text-xs capitalize">({role})</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
