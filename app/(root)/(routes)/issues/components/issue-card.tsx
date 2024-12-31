@@ -6,6 +6,7 @@ import { Content } from "@/lib/types";
 import { AlertCircle, CheckCircle2, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
+import Link from "next/link";
 
 interface IssueCardProps {
   issue: Content & {
@@ -55,45 +56,47 @@ export function IssueCard({ issue }: IssueCardProps) {
   };
 
   return (
-    <Card className="p-6 hover:shadow-lg transition-shadow">
-      <div className="flex justify-between items-start mb-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className={getPriorityColor(issue.priority)}>
-              {issue.priority === 'high' ? '高' : issue.priority === 'medium' ? '中' : '低'}
-            </Badge>
-            <Badge variant="secondary" className="font-normal">
-              {issue.application.name}
-            </Badge>
+    <Link href={`/issues/${issue.id}`}>
+      <Card className="p-6 hover:shadow-lg transition-shadow">
+        <div className="flex justify-between items-start mb-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className={getPriorityColor(issue.priority)}>
+                {issue.priority === 'high' ? '高' : issue.priority === 'medium' ? '中' : '低'}
+              </Badge>
+              <Badge variant="secondary" className="font-normal">
+                {issue.application.name}
+              </Badge>
+            </div>
+            <h3 className="text-xl font-bold">{issue.title}</h3>
           </div>
-          <h3 className="text-xl font-bold">{issue.title}</h3>
-        </div>
-        <div className="flex items-center gap-2">
-          {getStatusIcon(issue.status)}
-          <span className="text-sm text-muted-foreground">
-            {getStatusText(issue.status)}
-          </span>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <div className="prose prose-sm max-w-none">
-          {issue.body.split('\n').slice(0, 3).map((line, i) => (
-            <p key={i} className="text-muted-foreground line-clamp-1">
-              {line}
-            </p>
-          ))}
+          <div className="flex items-center gap-2">
+            {getStatusIcon(issue.status)}
+            <span className="text-sm text-muted-foreground">
+              {getStatusText(issue.status)}
+            </span>
+          </div>
         </div>
 
-        <div className="flex justify-between items-center text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <span>作成者: {issue.author.name}</span>
+        <div className="space-y-4">
+          <div className="prose prose-sm max-w-none">
+            {issue.body.split('\n').slice(0, 3).map((line, i) => (
+              <p key={i} className="text-muted-foreground line-clamp-1">
+                {line}
+              </p>
+            ))}
           </div>
-          <div>
-            {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}
+
+          <div className="flex justify-between items-center text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <span>作成者: {issue.author.name}</span>
+            </div>
+            <div>
+              {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}
+            </div>
           </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </Link>
   );
 }
