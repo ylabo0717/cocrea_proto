@@ -4,6 +4,7 @@ export interface IssueFormData {
   status: 'open' | 'in_progress' | 'resolved';
   priority: 'low' | 'medium' | 'high';
   application_id: string;
+  assignee_id?: string;
 }
 
 export interface IssueFormProps {

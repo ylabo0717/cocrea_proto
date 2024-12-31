@@ -1,8 +1,8 @@
 "use client";
 
 import { supabase } from "@/lib/supabase";
-import { Content } from "@/lib/types";
 import { getSession } from "@/lib/auth/session";
+import { Content } from "@/lib/types";
 
 interface CreateIssueData {
   title: string;
@@ -10,6 +10,7 @@ interface CreateIssueData {
   status: 'open' | 'in_progress' | 'resolved';
   priority: 'low' | 'medium' | 'high';
   application_id: string;
+  assignee_id?: string;
 }
 
 interface UpdateIssueData {
@@ -18,6 +19,7 @@ interface UpdateIssueData {
   status: 'open' | 'in_progress' | 'resolved';
   priority: 'low' | 'medium' | 'high';
   application_id: string;
+  assignee_id?: string;
 }
 
 export async function createIssue(data: CreateIssueData): Promise<Content> {
@@ -39,11 +41,13 @@ export async function createIssue(data: CreateIssueData): Promise<Content> {
       status: data.status,
       priority: data.priority,
       application_id: data.application_id,
+      assignee_id: data.assignee_id,
       author_id: session.userId
     })
     .select(`
       *,
       author:author_id(name),
+      assignee:assignee_id(name),
       application:application_id(id, name)
     `)
     .single();
@@ -62,6 +66,7 @@ export async function fetchIssues(): Promise<Content[]> {
     .select(`
       *,
       author:author_id(name),
+      assignee:assignee_id(name),
       application:application_id(id, name)
     `)
     .eq('type', 'issue')
@@ -81,6 +86,7 @@ export async function fetchIssueById(id: string): Promise<Content> {
     .select(`
       *,
       author:author_id(name),
+      assignee:assignee_id(name),
       application:application_id(id, name)
     `)
     .eq('id', id)
@@ -112,12 +118,14 @@ export async function updateIssue(id: string, data: UpdateIssueData): Promise<Co
       status: data.status,
       priority: data.priority,
       application_id: data.application_id,
+      assignee_id: data.assignee_id,
       updated_at: new Date().toISOString()
     })
     .eq('id', id)
     .select(`
       *,
       author:author_id(name),
+      assignee:assignee_id(name),
       application:application_id(id, name)
     `)
     .single();

@@ -7,20 +7,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useIssueForm } from "./use-issue-form";
 import { IssueFormProps } from "./types";
 import { useApplications } from "@/app/(root)/(routes)/dashboard/hooks/use-applications";
+import { useUsers } from "@/app/(root)/(routes)/users/hooks/use-users";
 import { useEffect } from "react";
 
 export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueFormProps) {
   const { formData, handleChange } = useIssueForm(initialData);
   const { applications, refreshApplications } = useApplications();
+  const { users, refreshUsers } = useUsers();
 
   useEffect(() => {
     refreshApplications();
-  }, [refreshApplications]);
+    refreshUsers();
+  }, [refreshApplications, refreshUsers]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await onSubmit(formData);
   };
+
+  // 開発者のみをフィルタリング
+  const developers = users.filter(user => 
+    user.role === 'developer' || user.role === 'admin'
+  );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -116,6 +124,27 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
         </Select>
       </div>
 
+      <div className="space-y-2">
+        <label className="text-sm font-medium">担当者</label>
+        <Select
+          value={formData.assignee_id || "unassigned"}
+          onValueChange={(value) => handleChange("assignee_id", value === "unassigned" ? undefined : value)}
+          disabled={isLoading}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="担当者を選択" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="unassigned">未割り当て</SelectItem>
+            {developers.map((user) => (
+              <SelectItem key={user.id} value={user.id}>
+                {user.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="flex justify-end space-x-2">
         <Button
           type="button"
@@ -126,7 +155,7 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
           キャンセル
         </Button>
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "作成中..." : "作成"}
+          {isLoading ? "作成中..." : initialData ? "更新" : "作成"}
         </Button>
       </div>
     </form>

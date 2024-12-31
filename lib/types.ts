@@ -32,6 +32,7 @@ export type Content = {
   category: string | null;
   tags: string[] | null;
   author_id: string | null;
+  assignee_id: string | null;
   application_id: string | null;
   created_at: string;
   updated_at: string;

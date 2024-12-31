@@ -3,7 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Content } from "@/lib/types";
-import { AlertCircle, CheckCircle2, Clock } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, User } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import Link from "next/link";
@@ -11,6 +11,7 @@ import Link from "next/link";
 interface IssueCardProps {
   issue: Content & {
     author: { name: string };
+    assignee?: { name: string };
     application: { name: string };
   };
 }
@@ -61,7 +62,7 @@ export function IssueCard({ issue }: IssueCardProps) {
         <div className="flex justify-between items-start mb-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className={getPriorityColor(issue.priority)}>
+              <Badge variant="outline" className={getPriorityColor(issue.priority!)}>
                 {issue.priority === 'high' ? '高' : issue.priority === 'medium' ? '中' : '低'}
               </Badge>
               <Badge variant="secondary" className="font-normal">
@@ -71,16 +72,25 @@ export function IssueCard({ issue }: IssueCardProps) {
             <h3 className="text-xl font-bold">{issue.title}</h3>
           </div>
           <div className="flex items-center gap-2">
-            {getStatusIcon(issue.status)}
+            {getStatusIcon(issue.status!)}
             <span className="text-sm text-muted-foreground">
-              {getStatusText(issue.status)}
+              {getStatusText(issue.status!)}
             </span>
           </div>
         </div>
 
         <div className="flex justify-between items-center text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <span>作成者: {issue.author.name}</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <User className="h-4 w-4" />
+              <span>作成者: {issue.author.name}</span>
+            </div>
+            {issue.assignee && (
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                <span>担当者: {issue.assignee.name}</span>
+              </div>
+            )}
           </div>
           <div>
             {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}

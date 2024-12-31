@@ -10,11 +10,12 @@ export function useIssueForm(initialData?: Partial<IssueFormData>) {
     status: initialData?.status || "open",
     priority: initialData?.priority || "medium",
     application_id: initialData?.application_id || "",
+    assignee_id: initialData?.assignee_id || undefined,
   });
 
   const handleChange = (
     field: keyof IssueFormData,
-    value: string
+    value: string | undefined
   ) => {
     setFormData((prev) => ({
       ...prev,
