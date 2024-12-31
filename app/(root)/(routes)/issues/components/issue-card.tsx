@@ -3,7 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Content } from "@/lib/types";
-import { AlertCircle, CheckCircle2, Clock, User, Calendar } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, User, Calendar, RefreshCw } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import Link from "next/link";
@@ -95,10 +95,18 @@ export function IssueCard({ issue }: IssueCardProps) {
             )}
           </div>
 
-          {/* 作成日時 */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Calendar className="h-4 w-4" />
-            <span>作成日時: {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</span>
+          {/* 日時情報 */}
+          <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              <span>作成: {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</span>
+            </div>
+            {issue.updated_at !== issue.created_at && (
+              <div className="flex items-center gap-2">
+                <RefreshCw className="h-4 w-4" />
+                <span>更新: {format(new Date(issue.updated_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</span>
+              </div>
+            )}
           </div>
         </div>
       </Card>
