@@ -5,11 +5,13 @@ import { Content } from "@/lib/types";
 
 interface IssuesFilter {
   statuses: string[];
+  applicationId: string | null; // nullを許可
 }
 
 export function useIssuesFilter(issues: Content[]) {
   const [filters, setFilters] = useState<IssuesFilter>({
-    statuses: ["open", "in_progress"], // 初期値として未対応と対応中を選択
+    statuses: ["open", "in_progress"],
+    applicationId: null, // 初期値はnull（フィルタなし）
   });
 
   const handleStatusFilterChange = useCallback((status: string, checked: boolean) => {
@@ -21,10 +23,18 @@ export function useIssuesFilter(issues: Content[]) {
     }));
   }, []);
 
+  const handleApplicationFilterChange = useCallback((applicationId: string | null) => {
+    setFilters((prev) => ({
+      ...prev,
+      applicationId,
+    }));
+  }, []);
+
   const filteredIssues = useMemo(() => {
     return issues.filter((issue) => {
       const statusMatch = filters.statuses.includes(issue.status || "");
-      return statusMatch;
+      const applicationMatch = !filters.applicationId || (issue as any).application.id === filters.applicationId;
+      return statusMatch && applicationMatch;
     });
   }, [issues, filters]);
 
@@ -32,5 +42,6 @@ export function useIssuesFilter(issues: Content[]) {
     filters,
     filteredIssues,
     handleStatusFilterChange,
+    handleApplicationFilterChange,
   };
 }

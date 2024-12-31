@@ -16,7 +16,12 @@ interface IssuesListProps {
 
 export function IssuesList({ issues, isLoading }: IssuesListProps) {
   const [view, setView] = useState<"grid" | "table">("grid");
-  const { filters, filteredIssues, handleStatusFilterChange } = useIssuesFilter(issues);
+  const { 
+    filters, 
+    filteredIssues, 
+    handleStatusFilterChange,
+    handleApplicationFilterChange,
+  } = useIssuesFilter(issues);
 
   if (isLoading) {
     return (
@@ -38,7 +43,9 @@ export function IssuesList({ issues, isLoading }: IssuesListProps) {
       <div className="flex justify-between items-center">
         <IssuesFilter
           statuses={filters.statuses}
+          applicationId={filters.applicationId}
           onStatusChange={handleStatusFilterChange}
+          onApplicationChange={handleApplicationFilterChange}
         />
         <ViewToggle view={view} onViewChange={setView} />
       </div>
