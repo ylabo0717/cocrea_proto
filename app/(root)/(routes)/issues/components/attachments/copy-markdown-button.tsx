@@ -14,7 +14,6 @@ export function CopyMarkdownButton({ fileName, filePath }: CopyMarkdownButtonPro
   const { toast } = useToast();
 
   const handleCopy = async (e: React.MouseEvent) => {
-    // イベントの伝播を停止
     e.preventDefault();
     e.stopPropagation();
 
@@ -43,6 +42,7 @@ export function CopyMarkdownButton({ fileName, filePath }: CopyMarkdownButtonPro
       onClick={handleCopy}
       title="Markdownリンクをコピー"
       type="button"
+      className="hover:bg-accent hover:text-accent-foreground"
     >
       <FileText className="h-4 w-4" />
     </Button>

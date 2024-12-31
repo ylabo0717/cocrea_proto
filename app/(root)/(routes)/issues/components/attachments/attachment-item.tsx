@@ -15,6 +15,18 @@ export function AttachmentItem({ attachment, onDelete }: AttachmentItemProps) {
   const publicUrl = getAttachmentUrl(attachment.file_path);
   const isImage = attachment.mime_type.startsWith('image/');
 
+  const handleDownload = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    window.open(publicUrl, '_blank');
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onDelete?.();
+  };
+
   return (
     <div className="flex items-center justify-between p-3 border rounded-lg">
       <div className="flex items-center gap-3">
@@ -36,17 +48,17 @@ export function AttachmentItem({ attachment, onDelete }: AttachmentItemProps) {
         <Button
           variant="ghost"
           size="icon"
-          asChild
+          onClick={handleDownload}
+          className="hover:bg-accent hover:text-accent-foreground"
         >
-          <a href={publicUrl} download={attachment.file_name} target="_blank" rel="noopener noreferrer">
-            <Download className="h-4 w-4" />
-          </a>
+          <Download className="h-4 w-4" />
         </Button>
         {onDelete && (
           <Button
             variant="ghost"
             size="icon"
-            onClick={onDelete}
+            onClick={handleDelete}
+            className="hover:bg-accent hover:text-accent-foreground"
           >
             <Trash2 className="h-4 w-4" />
           </Button>

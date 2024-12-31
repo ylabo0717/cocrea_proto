@@ -8,10 +8,10 @@ import { useToast } from "@/hooks/use-toast";
 interface AttachmentListProps {
   contentId: string;
   canDelete?: boolean;
-  onDelete?: () => void;
+  refreshKey?: number;
 }
 
-export function AttachmentList({ contentId, canDelete = false, onDelete }: AttachmentListProps) {
+export function AttachmentList({ contentId, canDelete = false, refreshKey = 0 }: AttachmentListProps) {
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -33,7 +33,7 @@ export function AttachmentList({ contentId, canDelete = false, onDelete }: Attac
 
   useEffect(() => {
     loadAttachments();
-  }, [contentId]);
+  }, [contentId, refreshKey]);
 
   const handleDelete = async (attachment: Attachment) => {
     try {
@@ -43,7 +43,6 @@ export function AttachmentList({ contentId, canDelete = false, onDelete }: Attac
         description: "添付ファイルを削除しました",
       });
       await loadAttachments();
-      onDelete?.();
     } catch (error) {
       toast({
         title: "エラー",
