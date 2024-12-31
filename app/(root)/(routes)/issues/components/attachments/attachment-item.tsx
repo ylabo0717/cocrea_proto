@@ -15,10 +15,24 @@ export function AttachmentItem({ attachment, onDelete }: AttachmentItemProps) {
   const publicUrl = getAttachmentUrl(attachment.file_path);
   const isImage = attachment.mime_type.startsWith('image/');
 
-  const handleDownload = (e: React.MouseEvent) => {
+  const handleDownload = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    window.open(publicUrl, '_blank');
+
+    try {
+      const response = await fetch(publicUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = attachment.file_name; // ファイル名を指定
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Download error:', error);
+    }
   };
 
   const handleDelete = (e: React.MouseEvent) => {
