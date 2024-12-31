@@ -9,6 +9,14 @@ interface CreateApplicationData {
   description: string;
 }
 
+interface UpdateApplicationData {
+  name: string;
+  description: string;
+  status: 'development' | 'released' | 'discontinued';
+  next_release_date?: string | null;
+  progress: number;
+}
+
 export async function createApplication(data: CreateApplicationData): Promise<Application> {
   const session = getSession();
   if (!session) {
@@ -37,6 +45,37 @@ export async function createApplication(data: CreateApplicationData): Promise<Ap
   }
 
   return newApp;
+}
+
+export async function updateApplication(id: string, data: UpdateApplicationData): Promise<Application> {
+  const session = getSession();
+  if (!session) {
+    throw new Error("認証情報が見つかりません");
+  }
+
+  if (session.role !== 'developer') {
+    throw new Error("開発者のみがアプリケーションを更新できます");
+  }
+
+  const { data: updatedApp, error } = await supabase
+    .from("applications")
+    .update({
+      name: data.name,
+      description: data.description,
+      status: data.status,
+      next_release_date: data.next_release_date,
+      progress: data.progress
+    })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Application update error:", error);
+    throw new Error("アプリケーションの更新に失敗しました");
+  }
+
+  return updatedApp;
 }
 
 export async function fetchApplications(): Promise<Application[]> {

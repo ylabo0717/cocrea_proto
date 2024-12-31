@@ -1,14 +1,15 @@
 "use client";
 
 import { Application } from "@/lib/types";
-import { ProjectCard } from "./project-card";
+import { ProjectCard } from "@/components/applications/project-card";
 
 interface ApplicationsListProps {
   applications: Application[];
   isLoading: boolean;
+  onUpdate: () => void;
 }
 
-export function ApplicationsList({ applications, isLoading }: ApplicationsListProps) {
+export function ApplicationsList({ applications, isLoading, onUpdate }: ApplicationsListProps) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -22,7 +23,11 @@ export function ApplicationsList({ applications, isLoading }: ApplicationsListPr
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {applications.map((app) => (
-        <ProjectCard key={app.id} project={app} />
+        <ProjectCard 
+          key={app.id} 
+          project={app}
+          onUpdate={onUpdate}
+        />
       ))}
     </div>
   );
