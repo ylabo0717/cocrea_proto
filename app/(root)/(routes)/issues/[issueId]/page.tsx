@@ -7,7 +7,7 @@ import { IssueForm } from "../components/issue-form/issue-form";
 import { IssueFormData } from "../components/issue-form/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Pencil, User, Calendar, RefreshCw } from "lucide-react";
+import { ArrowLeft, Pencil, User, Calendar, RefreshCw, Paperclip } from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { useSession } from "@/hooks/use-session";
@@ -17,6 +17,8 @@ import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { IssueStatusBadge } from "../components/issue-status-badge";
 import { IssuePriorityBadge } from "../components/issue-priority-badge";
+import { AttachmentList } from "../components/attachments/attachment-list";
+import { AttachmentUpload } from "../components/attachments/attachment-upload";
 
 export default function IssueDetailPage({ params }: { params: { issueId: string } }) {
   const { issue, isLoading: isLoadingIssue, refreshIssue } = useIssue(params.issueId);
@@ -87,6 +89,8 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
     );
   }
 
+  const canEditIssue = isDeveloper || issue.author_id === issue.id;
+
   return (
     <div className="h-full p-4 space-y-4">
       <div className="flex items-center gap-2 text-muted-foreground">
@@ -123,7 +127,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
                 <Badge variant="outline">{(issue as any).application.name}</Badge>
               </div>
             </div>
-            {!isLoadingSession && isDeveloper && (
+            {canEditIssue && (
               <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
                 <Pencil className="h-4 w-4" />
                 編集
@@ -160,6 +164,26 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
 
           <div className="prose prose-neutral dark:prose-invert max-w-none">
             <ReactMarkdown>{issue.body}</ReactMarkdown>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <Paperclip className="h-5 w-5" />
+                添付ファイル
+              </h2>
+              {canEditIssue && (
+                <AttachmentUpload
+                  contentId={issue.id}
+                  onUpload={refreshIssue}
+                />
+              )}
+            </div>
+            <AttachmentList
+              contentId={issue.id}
+              canDelete={canEditIssue}
+              onDelete={refreshIssue}
+            />
           </div>
         </div>
       )}
