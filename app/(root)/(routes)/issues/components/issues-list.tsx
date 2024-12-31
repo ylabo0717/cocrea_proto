@@ -20,6 +20,7 @@ export function IssuesList({ issues, isLoading }: IssuesListProps) {
     filters, 
     filteredIssues, 
     handleStatusFilterChange,
+    handlePriorityFilterChange,
     handleApplicationFilterChange,
   } = useIssuesFilter(issues);
 
@@ -43,8 +44,10 @@ export function IssuesList({ issues, isLoading }: IssuesListProps) {
       <div className="flex justify-between items-center">
         <IssuesFilter
           statuses={filters.statuses}
+          priorities={filters.priorities}
           applicationId={filters.applicationId}
           onStatusChange={handleStatusFilterChange}
+          onPriorityChange={handlePriorityFilterChange}
           onApplicationChange={handleApplicationFilterChange}
         />
         <ViewToggle view={view} onViewChange={setView} />

@@ -5,13 +5,15 @@ import { Content } from "@/lib/types";
 
 interface IssuesFilter {
   statuses: string[];
-  applicationId: string | null; // nullを許可
+  priorities: string[];
+  applicationId: string | null;
 }
 
 export function useIssuesFilter(issues: Content[]) {
   const [filters, setFilters] = useState<IssuesFilter>({
     statuses: ["open", "in_progress"],
-    applicationId: null, // 初期値はnull（フィルタなし）
+    priorities: ["low", "medium", "high"], // デフォルトで全て選択
+    applicationId: null,
   });
 
   const handleStatusFilterChange = useCallback((status: string, checked: boolean) => {
@@ -20,6 +22,15 @@ export function useIssuesFilter(issues: Content[]) {
       statuses: checked
         ? [...prev.statuses, status]
         : prev.statuses.filter((s) => s !== status),
+    }));
+  }, []);
+
+  const handlePriorityFilterChange = useCallback((priority: string, checked: boolean) => {
+    setFilters((prev) => ({
+      ...prev,
+      priorities: checked
+        ? [...prev.priorities, priority]
+        : prev.priorities.filter((p) => p !== priority),
     }));
   }, []);
 
@@ -33,8 +44,9 @@ export function useIssuesFilter(issues: Content[]) {
   const filteredIssues = useMemo(() => {
     return issues.filter((issue) => {
       const statusMatch = filters.statuses.includes(issue.status || "");
+      const priorityMatch = filters.priorities.includes(issue.priority || "");
       const applicationMatch = !filters.applicationId || (issue as any).application.id === filters.applicationId;
-      return statusMatch && applicationMatch;
+      return statusMatch && priorityMatch && applicationMatch;
     });
   }, [issues, filters]);
 
@@ -42,6 +54,7 @@ export function useIssuesFilter(issues: Content[]) {
     filters,
     filteredIssues,
     handleStatusFilterChange,
+    handlePriorityFilterChange,
     handleApplicationFilterChange,
   };
 }
