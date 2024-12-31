@@ -1,5 +1,3 @@
-"use client";
-
 import { supabase } from "@/lib/supabase";
 import { Content } from "@/lib/types";
 import { getSession } from "@/lib/auth/session";
@@ -23,6 +21,10 @@ export async function createIssue(data: CreateIssueData): Promise<Content> {
   const session = getSession();
   if (!session) {
     throw new Error("認証情報が見つかりません");
+  }
+
+  if (!data.application_id) {
+    throw new Error("アプリケーションを選択してください");
   }
 
   const { data: newIssue, error } = await supabase
