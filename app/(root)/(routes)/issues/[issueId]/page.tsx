@@ -15,11 +15,14 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { useSession } from "@/hooks/use-session";
 import { Content } from "@/lib/types";
+import { updateIssue } from "@/lib/api/issues";
+import { useToast } from "@/hooks/use-toast";
 
 export default function IssueDetailPage({ params }: { params: { issueId: string } }) {
   const { issue, isLoading: isLoadingIssue, refreshIssue } = useIssue(params.issueId);
   const { isDeveloper, isLoading: isLoadingSession } = useSession();
   const [isEditing, setIsEditing] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     refreshIssue();
@@ -35,12 +38,27 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
 
   const handleSubmit = async (data: Partial<Content>) => {
     try {
-      // TODO: API呼び出しを実装
-      console.log('Updating issue with data:', data);
+      await updateIssue(params.issueId, {
+        title: data.title!,
+        body: data.body!,
+        status: data.status!,
+        priority: data.priority!
+      });
+      
+      toast({
+        title: "成功",
+        description: "課題を更新しました",
+      });
+
       setIsEditing(false);
       await refreshIssue();
     } catch (error) {
       console.error('Failed to update issue:', error);
+      toast({
+        title: "エラー",
+        description: error instanceof Error ? error.message : "課題の更新に失敗しました",
+        variant: "destructive",
+      });
     }
   };
 
