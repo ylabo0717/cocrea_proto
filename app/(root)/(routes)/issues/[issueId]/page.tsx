@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useIssue } from "./hooks/use-issue";
 import { IssueForm } from "../components/issue-form/issue-form";
 import { IssueFormData } from "../components/issue-form/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Pencil, User, Calendar, RefreshCw, Paperclip } from "lucide-react";
+import { ArrowLeft, Pencil, User, Calendar, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { useSession } from "@/hooks/use-session";
@@ -17,15 +17,13 @@ import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { IssueStatusBadge } from "../components/issue-status-badge";
 import { IssuePriorityBadge } from "../components/issue-priority-badge";
-import { AttachmentList } from "../components/attachments/attachment-list";
-import { AttachmentUpload } from "../components/attachments/attachment-upload";
 
 export default function IssueDetailPage({ params }: { params: { issueId: string } }) {
+  const router = useRouter();
+  const { toast } = useToast();
   const { issue, isLoading: isLoadingIssue, refreshIssue } = useIssue(params.issueId);
   const { isDeveloper, isLoading: isLoadingSession } = useSession();
   const [isEditing, setIsEditing] = useState(false);
-  const { toast } = useToast();
-  const router = useRouter();
 
   useEffect(() => {
     refreshIssue();
@@ -105,6 +103,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
       {isEditing ? (
         <IssueForm
           initialData={{
+            id: issue.id,
             title: issue.title,
             body: issue.body,
             status: issue.status as any,
@@ -164,26 +163,6 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
 
           <div className="prose prose-neutral dark:prose-invert max-w-none">
             <ReactMarkdown>{issue.body}</ReactMarkdown>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <Paperclip className="h-5 w-5" />
-                添付ファイル
-              </h2>
-              {canEditIssue && (
-                <AttachmentUpload
-                  contentId={issue.id}
-                  onUpload={refreshIssue}
-                />
-              )}
-            </div>
-            <AttachmentList
-              contentId={issue.id}
-              canDelete={canEditIssue}
-              onDelete={refreshIssue}
-            />
           </div>
         </div>
       )}

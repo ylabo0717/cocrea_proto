@@ -9,6 +9,9 @@ import { IssueFormProps } from "./types";
 import { useApplications } from "@/app/(root)/(routes)/dashboard/hooks/use-applications";
 import { useUsers } from "@/app/(root)/(routes)/users/hooks/use-users";
 import { useEffect } from "react";
+import { AttachmentUpload } from "../attachments/attachment-upload";
+import { AttachmentList } from "../attachments/attachment-list";
+import { Paperclip } from "lucide-react";
 
 export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueFormProps) {
   const { formData, handleChange } = useIssueForm(initialData);
@@ -133,6 +136,25 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
           </SelectContent>
         </Select>
       </div>
+
+      {initialData?.id && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <Paperclip className="h-5 w-5" />
+              添付ファイル
+            </h2>
+            <AttachmentUpload
+              contentId={initialData.id}
+              onUpload={() => {}} // 編集中は更新不要
+            />
+          </div>
+          <AttachmentList
+            contentId={initialData.id}
+            canDelete={true}
+          />
+        </div>
+      )}
 
       <div className="flex justify-end space-x-2">
         <Button

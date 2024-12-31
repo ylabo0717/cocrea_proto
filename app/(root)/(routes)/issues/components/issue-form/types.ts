@@ -1,4 +1,5 @@
 export interface IssueFormData {
+  id?: string;
   title: string;
   body: string;
   status: 'open' | 'in_progress' | 'resolved';
