@@ -3,7 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Content } from "@/lib/types";
-import { AlertCircle, CheckCircle2, Clock, User } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, User, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import Link from "next/link";
@@ -59,28 +59,30 @@ export function IssueCard({ issue }: IssueCardProps) {
   return (
     <Link href={`/issues/${issue.id}`}>
       <Card className="p-6 hover:shadow-lg transition-shadow">
-        <div className="flex justify-between items-start mb-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className={getPriorityColor(issue.priority!)}>
-                {issue.priority === 'high' ? '高' : issue.priority === 'medium' ? '中' : '低'}
-              </Badge>
-              <Badge variant="secondary" className="font-normal">
-                {issue.application.name}
-              </Badge>
+        <div className="space-y-4">
+          {/* ヘッダー部分 */}
+          <div className="flex justify-between items-start">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className={getPriorityColor(issue.priority!)}>
+                  {issue.priority === 'high' ? '高' : issue.priority === 'medium' ? '中' : '低'}
+                </Badge>
+                <Badge variant="secondary" className="font-normal">
+                  {issue.application.name}
+                </Badge>
+              </div>
+              <h3 className="text-xl font-bold">{issue.title}</h3>
             </div>
-            <h3 className="text-xl font-bold">{issue.title}</h3>
+            <div className="flex items-center gap-2">
+              {getStatusIcon(issue.status!)}
+              <span className="text-sm text-muted-foreground">
+                {getStatusText(issue.status!)}
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            {getStatusIcon(issue.status!)}
-            <span className="text-sm text-muted-foreground">
-              {getStatusText(issue.status!)}
-            </span>
-          </div>
-        </div>
 
-        <div className="flex justify-between items-center text-sm text-muted-foreground">
-          <div className="flex items-center gap-4">
+          {/* ユーザー情報 */}
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <User className="h-4 w-4" />
               <span>作成者: {issue.author.name}</span>
@@ -92,8 +94,11 @@ export function IssueCard({ issue }: IssueCardProps) {
               </div>
             )}
           </div>
-          <div>
-            {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}
+
+          {/* 作成日時 */}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Calendar className="h-4 w-4" />
+            <span>作成日時: {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</span>
           </div>
         </div>
       </Card>

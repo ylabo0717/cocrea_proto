@@ -30,8 +30,8 @@ export function IssuesList({ issues, isLoading }: IssuesListProps) {
         <div className="flex justify-end">
           <Skeleton className="h-10 w-20" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[...Array(4)].map((_, i) => (
             <Skeleton key={i} className="h-[200px]" />
           ))}
         </div>
@@ -54,7 +54,7 @@ export function IssuesList({ issues, isLoading }: IssuesListProps) {
       </div>
       
       {view === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredIssues.map((issue) => (
             <IssueCard key={issue.id} issue={issue as any} />
           ))}
