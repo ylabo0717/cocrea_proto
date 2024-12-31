@@ -4,11 +4,51 @@ import { supabase } from "@/lib/supabase";
 import { Content } from "@/lib/types";
 import { getSession } from "@/lib/auth/session";
 
+interface CreateIssueData {
+  title: string;
+  body: string;
+  status: 'open' | 'in_progress' | 'resolved';
+  priority: 'low' | 'medium' | 'high';
+  application_id: string;
+}
+
 interface UpdateIssueData {
   title: string;
   body: string;
   status: 'open' | 'in_progress' | 'resolved';
   priority: 'low' | 'medium' | 'high';
+}
+
+export async function createIssue(data: CreateIssueData): Promise<Content> {
+  const session = getSession();
+  if (!session) {
+    throw new Error("認証情報が見つかりません");
+  }
+
+  const { data: newIssue, error } = await supabase
+    .from("contents")
+    .insert({
+      type: "issue",
+      title: data.title,
+      body: data.body,
+      status: data.status,
+      priority: data.priority,
+      application_id: data.application_id,
+      author_id: session.userId
+    })
+    .select(`
+      *,
+      author:author_id(name),
+      application:application_id(name)
+    `)
+    .single();
+
+  if (error) {
+    console.error("Issue creation error:", error);
+    throw new Error("課題の作成に失敗しました");
+  }
+
+  return newIssue;
 }
 
 export async function fetchIssues(): Promise<Content[]> {
