@@ -9,8 +9,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Content } from "@/lib/types";
-import { IssueStatusBadge } from "../[issueId]/components/issue-status-badge";
-import { IssuePriorityBadge } from "../[issueId]/components/issue-priority-badge";
+import { IssueStatusBadge } from "./issue-status-badge";
+import { IssuePriorityBadge } from "./issue-priority-badge";
+import { User, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import Link from "next/link";
@@ -30,6 +31,7 @@ export function IssuesTable({ issues }: IssuesTableProps) {
             <TableHead>優先度</TableHead>
             <TableHead>アプリケーション</TableHead>
             <TableHead>作成者</TableHead>
+            <TableHead>担当者</TableHead>
             <TableHead>作成日時</TableHead>
           </TableRow>
         </TableHeader>
@@ -45,15 +47,31 @@ export function IssuesTable({ issues }: IssuesTableProps) {
                 </Link>
               </TableCell>
               <TableCell>
-                <IssueStatusBadge status={issue.status} />
+                <IssueStatusBadge status={issue.status!} />
               </TableCell>
               <TableCell>
-                <IssuePriorityBadge priority={issue.priority} />
+                <IssuePriorityBadge priority={issue.priority!} />
               </TableCell>
               <TableCell>{(issue as any).application.name}</TableCell>
-              <TableCell>{(issue as any).author.name}</TableCell>
               <TableCell>
-                {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  {(issue as any).author.name}
+                </div>
+              </TableCell>
+              <TableCell>
+                {(issue as any).assignee && (
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    {(issue as any).assignee.name}
+                  </div>
+                )}
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}
+                </div>
               </TableCell>
             </TableRow>
           ))}

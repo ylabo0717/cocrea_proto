@@ -15,25 +15,33 @@ export function IssuePriorityBadge({ priority, size = "sm" }: IssuePriorityBadge
         return {
           icon: ArrowUp,
           text: '高',
-          variant: 'destructive' as const,
+          textColor: 'text-red-500',
+          iconColor: 'text-red-500',
+          variant: 'outline' as const,
         };
       case 'medium':
         return {
           icon: ArrowRight,
           text: '中',
-          variant: 'warning' as const,
+          textColor: 'text-yellow-500',
+          iconColor: 'text-yellow-500',
+          variant: 'outline' as const,
         };
       case 'low':
         return {
           icon: ArrowDown,
           text: '低',
-          variant: 'success' as const,
+          textColor: 'text-green-500',
+          iconColor: 'text-green-500',
+          variant: 'outline' as const,
         };
       default:
         return {
           icon: ArrowRight,
           text: priority,
-          variant: 'default' as const,
+          textColor: 'text-gray-500',
+          iconColor: 'text-gray-500',
+          variant: 'outline' as const,
         };
     }
   };
@@ -43,8 +51,8 @@ export function IssuePriorityBadge({ priority, size = "sm" }: IssuePriorityBadge
   const iconSize = size === "lg" ? "h-5 w-5" : "h-4 w-4";
 
   return (
-    <Badge variant={config.variant} className="gap-1">
-      <Icon className={iconSize} />
+    <Badge variant={config.variant} className={`gap-1 ${config.textColor}`}>
+      <Icon className={`${iconSize} ${config.iconColor}`} />
       <span>{config.text}</span>
     </Badge>
   );
