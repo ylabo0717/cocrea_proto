@@ -4,7 +4,7 @@ export type Application = {
   description: string | null;
   status: 'development' | 'released' | 'discontinued';
   next_release_date: string | null;
-  user_count: number;
+  progress: number;
   developer_id: string | null;
   created_at: string;
   updated_at: string;

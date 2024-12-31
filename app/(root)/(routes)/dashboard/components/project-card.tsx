@@ -62,9 +62,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span>進捗</span>
-            <span>{project.user_count}%</span>
+            <span>{project.progress}%</span>
           </div>
-          <Progress value={project.user_count} className="h-2" />
+          <Progress value={project.progress} className="h-2" />
         </div>
       </div>
     </Card>
