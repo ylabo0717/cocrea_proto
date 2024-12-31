@@ -54,6 +54,7 @@ export function UsersFilter({ filters, onFilterChange }: UsersFilterProps) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">全て</SelectItem>
+            <SelectItem value="admin">管理者</SelectItem>
             <SelectItem value="developer">開発者</SelectItem>
             <SelectItem value="user">一般ユーザー</SelectItem>
           </SelectContent>

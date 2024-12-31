@@ -23,8 +23,8 @@ export async function createApplication(data: CreateApplicationData): Promise<Ap
     throw new Error("認証情報が見つかりません");
   }
 
-  if (session.role !== 'developer') {
-    throw new Error("開発者のみがアプリケーションを作成できます");
+  if (session.role !== 'developer' && session.role !== 'admin') {
+    throw new Error("開発者または管理者のみがアプリケーションを作成できます");
   }
 
   const { data: newApp, error } = await supabase
@@ -53,8 +53,8 @@ export async function updateApplication(id: string, data: UpdateApplicationData)
     throw new Error("認証情報が見つかりません");
   }
 
-  if (session.role !== 'developer') {
-    throw new Error("開発者のみがアプリケーションを更新できます");
+  if (session.role !== 'developer' && session.role !== 'admin') {
+    throw new Error("開発者または管理者のみがアプリケーションを更新できます");
   }
 
   const { data: updatedApp, error } = await supabase

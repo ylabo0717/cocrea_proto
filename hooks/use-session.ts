@@ -12,7 +12,8 @@ export function useSession() {
   }, []);
   
   return {
-    isDeveloper: session?.role === 'developer',
+    isAdmin: session?.role === 'admin',
+    isDeveloper: session?.role === 'developer' || session?.role === 'admin',
     userId: session?.userId,
     email: session?.email,
     role: session?.role,

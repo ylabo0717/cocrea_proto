@@ -4,7 +4,7 @@ export type User = {
   email: string;
   department: string | null;
   contact: string | null;
-  role: 'developer' | 'user';
+  role: 'admin' | 'developer' | 'user';
   created_at: string;
   updated_at: string;
   last_login: string | null;
