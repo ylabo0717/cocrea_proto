@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useIssue } from "./hooks/use-issue";
 import { IssueStatusBadge } from "./components/issue-status-badge";
 import { IssuePriorityBadge } from "./components/issue-priority-badge";
+import { IssueForm } from "./components/issue-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,17 +14,34 @@ import { ArrowLeft, Pencil } from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { useSession } from "@/hooks/use-session";
+import { Content } from "@/lib/types";
 
 export default function IssueDetailPage({ params }: { params: { issueId: string } }) {
   const { issue, isLoading: isLoadingIssue, refreshIssue } = useIssue(params.issueId);
   const { isDeveloper, isLoading: isLoadingSession } = useSession();
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     refreshIssue();
   }, [refreshIssue]);
 
   const handleEdit = () => {
-    console.log('Edit button clicked for issue:', issue?.id);
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
+  const handleSubmit = async (data: Partial<Content>) => {
+    try {
+      // TODO: API呼び出しを実装
+      console.log('Updating issue with data:', data);
+      setIsEditing(false);
+      await refreshIssue();
+    } catch (error) {
+      console.error('Failed to update issue:', error);
+    }
   };
 
   if (isLoadingIssue || isLoadingSession) {
@@ -59,36 +77,44 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
         <span>{issue.title}</span>
       </div>
 
-      <div className="space-y-4">
-        <div className="flex justify-between items-start">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold">{issue.title}</h1>
-            <div className="flex items-center gap-2">
-              <IssueStatusBadge status={issue.status} size="lg" />
-              <IssuePriorityBadge priority={issue.priority} size="lg" />
-              <Badge variant="outline">{(issue as any).application.name}</Badge>
+      {isEditing ? (
+        <IssueForm
+          issue={issue as any}
+          onCancel={handleCancel}
+          onSubmit={handleSubmit}
+        />
+      ) : (
+        <div className="space-y-4">
+          <div className="flex justify-between items-start">
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold">{issue.title}</h1>
+              <div className="flex items-center gap-2">
+                <IssueStatusBadge status={issue.status} size="lg" />
+                <IssuePriorityBadge priority={issue.priority} size="lg" />
+                <Badge variant="outline">{(issue as any).application.name}</Badge>
+              </div>
             </div>
+            {!isLoadingSession && isDeveloper && (
+              <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
+                <Pencil className="h-4 w-4" />
+                編集
+              </Button>
+            )}
           </div>
-          {!isLoadingSession && isDeveloper && (
-            <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
-              <Pencil className="h-4 w-4" />
-              編集
-            </Button>
-          )}
-        </div>
 
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <div>作成者: {(issue as any).author.name}</div>
-          <div>作成日時: {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</div>
-          {issue.updated_at !== issue.created_at && (
-            <div>更新日時: {format(new Date(issue.updated_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</div>
-          )}
-        </div>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <div>作成者: {(issue as any).author.name}</div>
+            <div>作成日時: {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</div>
+            {issue.updated_at !== issue.created_at && (
+              <div>更新日時: {format(new Date(issue.updated_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</div>
+            )}
+          </div>
 
-        <div className="prose prose-neutral dark:prose-invert max-w-none">
-          <ReactMarkdown>{issue.body}</ReactMarkdown>
+          <div className="prose prose-neutral dark:prose-invert max-w-none">
+            <ReactMarkdown>{issue.body}</ReactMarkdown>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

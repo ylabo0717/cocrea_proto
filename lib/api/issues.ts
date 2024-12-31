@@ -2,6 +2,14 @@
 
 import { supabase } from "@/lib/supabase";
 import { Content } from "@/lib/types";
+import { getSession } from "@/lib/auth/session";
+
+interface UpdateIssueData {
+  title: string;
+  body: string;
+  status: 'open' | 'in_progress' | 'resolved';
+  priority: 'low' | 'medium' | 'high';
+}
 
 export async function fetchIssues(): Promise<Content[]> {
   const { data, error } = await supabase
@@ -39,4 +47,35 @@ export async function fetchIssueById(id: string): Promise<Content> {
   }
 
   return data;
+}
+
+export async function updateIssue(id: string, data: UpdateIssueData): Promise<Content> {
+  const session = getSession();
+  if (!session) {
+    throw new Error("認証情報が見つかりません");
+  }
+
+  const { data: issue, error } = await supabase
+    .from("contents")
+    .update({
+      title: data.title,
+      body: data.body,
+      status: data.status,
+      priority: data.priority,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', id)
+    .select(`
+      *,
+      author:author_id(name),
+      application:application_id(name)
+    `)
+    .single();
+
+  if (error) {
+    console.error("Issue update error:", error);
+    throw new Error("課題の更新に失敗しました");
+  }
+
+  return issue;
 }
