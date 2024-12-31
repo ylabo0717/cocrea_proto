@@ -7,12 +7,16 @@ import { IssueForm } from "../components/issue-form/issue-form";
 import { IssueFormData } from "../components/issue-form/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Pencil } from "lucide-react";
+import { ArrowLeft, Pencil, User, Calendar, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { useSession } from "@/hooks/use-session";
 import { updateIssue } from "@/lib/api/issues";
 import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
+import { ja } from "date-fns/locale";
+import { IssueStatusBadge } from "../components/issue-status-badge";
+import { IssuePriorityBadge } from "../components/issue-priority-badge";
 
 export default function IssueDetailPage({ params }: { params: { issueId: string } }) {
   const { issue, isLoading: isLoadingIssue, refreshIssue } = useIssue(params.issueId);
@@ -40,7 +44,8 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
         body: data.body,
         status: data.status,
         priority: data.priority,
-        application_id: data.application_id
+        application_id: data.application_id,
+        assignee_id: data.assignee_id
       });
       
       toast({
@@ -100,18 +105,21 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
             body: issue.body,
             status: issue.status as any,
             priority: issue.priority as any,
-            application_id: (issue as any).application.id
+            application_id: (issue as any).application.id,
+            assignee_id: (issue as any).assignee?.id
           }}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           isLoading={false}
         />
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div className="flex justify-between items-start">
             <div className="space-y-2">
               <h1 className="text-3xl font-bold">{issue.title}</h1>
               <div className="flex items-center gap-2">
+                <IssueStatusBadge status={issue.status!} size="lg" />
+                <IssuePriorityBadge priority={issue.priority!} size="lg" />
                 <Badge variant="outline">{(issue as any).application.name}</Badge>
               </div>
             </div>
@@ -123,12 +131,31 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
             )}
           </div>
 
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <div>作成者: {(issue as any).author.name}</div>
-            <div>作成日時: {new Date(issue.created_at).toLocaleString("ja-JP")}</div>
-            {issue.updated_at !== issue.created_at && (
-              <div>更新日時: {new Date(issue.updated_at).toLocaleString("ja-JP")}</div>
-            )}
+          <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                <span>作成者: {(issue as any).author.name}</span>
+              </div>
+              {(issue as any).assignee && (
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  <span>担当者: {(issue as any).assignee.name}</span>
+                </div>
+              )}
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                <span>作成: {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</span>
+              </div>
+              {issue.updated_at !== issue.created_at && (
+                <div className="flex items-center gap-2">
+                  <RefreshCw className="h-4 w-4" />
+                  <span>更新: {format(new Date(issue.updated_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</span>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="prose prose-neutral dark:prose-invert max-w-none">
