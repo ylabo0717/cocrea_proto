@@ -4,9 +4,11 @@ import { useEffect } from "react";
 import { ApplicationsList } from "./components/applications-list";
 import { CreateApplicationDialog } from "@/components/applications/create-application-dialog";
 import { useApplications } from "./hooks/use-applications";
+import { useSession } from "@/hooks/use-session";
 
 export default function DashboardPage() {
   const { applications, isLoading, refreshApplications } = useApplications();
+  const { isDeveloper } = useSession();
 
   useEffect(() => {
     refreshApplications();
@@ -19,7 +21,9 @@ export default function DashboardPage() {
           <h2 className="text-3xl font-bold text-foreground">ダッシュボード</h2>
           <p className="text-muted-foreground">社内アプリケーションの開発状況を一覧で確認できます</p>
         </div>
-        <CreateApplicationDialog onSuccess={refreshApplications} />
+        {isDeveloper && (
+          <CreateApplicationDialog onSuccess={refreshApplications} />
+        )}
       </div>
 
       <ApplicationsList 
