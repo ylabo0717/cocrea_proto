@@ -2,6 +2,8 @@
 
 import { User } from "@/lib/types";
 import { UsersTable } from "./users-table";
+import { UsersFilter } from "./users-filter";
+import { useUsersFilter } from "../hooks/use-users-filter";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface UsersListProps {
@@ -10,6 +12,8 @@ interface UsersListProps {
 }
 
 export function UsersList({ users, isLoading }: UsersListProps) {
+  const { filters, filteredUsers, handleFilterChange } = useUsersFilter(users);
+
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -21,5 +25,13 @@ export function UsersList({ users, isLoading }: UsersListProps) {
     );
   }
 
-  return <UsersTable users={users} />;
+  return (
+    <div className="space-y-4">
+      <UsersFilter 
+        filters={filters}
+        onFilterChange={handleFilterChange}
+      />
+      <UsersTable users={filteredUsers} />
+    </div>
+  );
 }
