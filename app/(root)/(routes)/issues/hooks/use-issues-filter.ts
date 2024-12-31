@@ -3,17 +3,11 @@
 import { useState, useCallback, useMemo } from "react";
 import { Content } from "@/lib/types";
 
-interface IssuesFilter {
-  statuses: string[];
-  priorities: string[];
-  applicationId: string | null;
-}
-
 export function useIssuesFilter(issues: Content[]) {
-  const [filters, setFilters] = useState<IssuesFilter>({
+  const [filters, setFilters] = useState({
     statuses: ["open", "in_progress"],
-    priorities: ["low", "medium", "high"], // デフォルトで全て選択
-    applicationId: null,
+    priorities: ["low", "medium", "high"],
+    applicationId: null as string | null,
   });
 
   const handleStatusFilterChange = useCallback((status: string, checked: boolean) => {
