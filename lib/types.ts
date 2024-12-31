@@ -1,3 +1,15 @@
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  department: string | null;
+  contact: string | null;
+  role: 'developer' | 'user';
+  created_at: string;
+  updated_at: string;
+  last_login: string | null;
+};
+
 export type Application = {
   id: string;
   name: string;
