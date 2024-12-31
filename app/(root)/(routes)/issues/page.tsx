@@ -16,7 +16,7 @@ export default function IssuesPage() {
     <div className="h-full p-4 space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold text-foreground">課題一覧</h2>
+          <h2 className="text-3xl font-bold text-foreground">Issues</h2>
           <p className="text-muted-foreground">アプリケーションの課題を一覧で確認できます</p>
         </div>
         <CreateIssueButton />
