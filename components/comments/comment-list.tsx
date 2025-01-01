@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { User } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 interface CommentListProps {
   contentId: string;
@@ -68,7 +69,9 @@ export function CommentList({ contentId, refreshKey = 0 }: CommentListProps) {
             <span>•</span>
             <span>{format(new Date(comment.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</span>
           </div>
-          <p className="text-foreground whitespace-pre-wrap">{comment.body}</p>
+          <div className="prose prose-neutral dark:prose-invert max-w-none">
+            <ReactMarkdown>{comment.body}</ReactMarkdown>
+          </div>
         </div>
       ))}
     </div>
