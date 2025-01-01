@@ -1,7 +1,52 @@
 "use client";
 
 import { supabase } from "@/lib/supabase";
+import { getSession } from "@/lib/auth/session";
 import { Content } from "@/lib/types";
+
+interface CreateKnowledgeData {
+  title: string;
+  body: string;
+  category?: string;
+  tags?: string[];
+  application_id: string;
+}
+
+export async function createKnowledge(data: CreateKnowledgeData): Promise<Content> {
+  const session = getSession();
+  if (!session) {
+    throw new Error("認証情報が見つかりません");
+  }
+
+  if (!data.application_id) {
+    throw new Error("アプリケーションを選択してください");
+  }
+
+  const { data: knowledge, error } = await supabase
+    .from("contents")
+    .insert({
+      type: "knowledge",
+      title: data.title,
+      body: data.body,
+      category: data.category,
+      tags: data.tags,
+      application_id: data.application_id,
+      author_id: session.userId
+    })
+    .select(`
+      *,
+      author:author_id(name),
+      application:application_id(id, name)
+    `)
+    .single();
+
+  if (error) {
+    console.error("Knowledge creation error:", error);
+    throw new Error("ナレッジの作成に失敗しました");
+  }
+
+  return knowledge;
+}
 
 export async function fetchKnowledge(): Promise<Content[]> {
   const { data, error } = await supabase
