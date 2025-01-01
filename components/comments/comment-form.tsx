@@ -55,10 +55,16 @@ export function CommentForm({ contentId, onSuccess }: CommentFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Tabs value={tab} onValueChange={(value) => setTab(value as "write" | "preview")}>
-        <TabsList className="mb-2">
-          <TabsTrigger value="write">書く</TabsTrigger>
-          <TabsTrigger value="preview">プレビュー</TabsTrigger>
-        </TabsList>
+        <div className="flex items-center justify-between mb-2">
+          <TabsList>
+            <TabsTrigger value="write">書く</TabsTrigger>
+            <TabsTrigger value="preview">プレビュー</TabsTrigger>
+          </TabsList>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "投稿中..." : "投稿"}
+          </Button>
+        </div>
+
         <TabsContent value="write">
           <Textarea
             value={body}
@@ -96,12 +102,6 @@ export function CommentForm({ contentId, onSuccess }: CommentFormProps) {
           canDelete={true}
           refreshKey={attachmentRefreshKey}
         />
-      </div>
-
-      <div className="flex justify-end">
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? "投稿中..." : "投稿"}
-        </Button>
       </div>
     </form>
   );
