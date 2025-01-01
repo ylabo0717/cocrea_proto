@@ -9,6 +9,7 @@ import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/hooks/use-session";
 import { CommentEditForm } from "./comment-edit-form";
+import { AttachmentList } from "../attachments/attachment-list";
 
 interface CommentItemProps {
   comment: Comment & { user: { name: string } };
@@ -40,7 +41,7 @@ export function CommentItem({ comment, onUpdate }: CommentItemProps) {
   }
 
   return (
-    <div className="border rounded-lg p-4 space-y-2">
+    <div className="border rounded-lg p-4 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <User className="h-4 w-4" />
@@ -62,6 +63,7 @@ export function CommentItem({ comment, onUpdate }: CommentItemProps) {
       <div className="prose prose-neutral dark:prose-invert max-w-none">
         <ReactMarkdown>{comment.body}</ReactMarkdown>
       </div>
+      <AttachmentList contentId={comment.id} />
     </div>
   );
 }
