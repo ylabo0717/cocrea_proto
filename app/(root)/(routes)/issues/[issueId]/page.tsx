@@ -17,6 +17,8 @@ import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { IssueStatusBadge } from "../components/issue-status-badge";
 import { IssuePriorityBadge } from "../components/issue-priority-badge";
+import { CommentForm } from "@/components/comments/comment-form";
+import { CommentList } from "@/components/comments/comment-list";
 
 export default function IssueDetailPage({ params }: { params: { issueId: string } }) {
   const router = useRouter();
@@ -24,6 +26,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
   const { issue, isLoading: isLoadingIssue, refreshIssue } = useIssue(params.issueId);
   const { isDeveloper, isLoading: isLoadingSession } = useSession();
   const [isEditing, setIsEditing] = useState(false);
+  const [commentRefreshKey, setCommentRefreshKey] = useState(0);
 
   useEffect(() => {
     refreshIssue();
@@ -65,6 +68,10 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
     }
   };
 
+  const handleCommentSuccess = () => {
+    setCommentRefreshKey(prev => prev + 1);
+  };
+
   if (isLoadingIssue || isLoadingSession) {
     return (
       <div className="h-full p-4 space-y-4">
@@ -90,7 +97,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
   const canEditIssue = isDeveloper || issue.author_id === issue.id;
 
   return (
-    <div className="h-full p-4 space-y-4">
+    <div className="h-full p-4 space-y-8">
       <div className="flex items-center gap-2 text-muted-foreground">
         <Link href="/issues" className="hover:text-foreground transition-colors">
           <ArrowLeft className="h-4 w-4" />
@@ -163,6 +170,18 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
 
           <div className="prose prose-neutral dark:prose-invert max-w-none">
             <ReactMarkdown>{issue.body}</ReactMarkdown>
+          </div>
+
+          <div className="border-t pt-8 space-y-6">
+            <h2 className="text-xl font-bold">コメント</h2>
+            <CommentForm 
+              contentId={issue.id}
+              onSuccess={handleCommentSuccess}
+            />
+            <CommentList 
+              contentId={issue.id}
+              refreshKey={commentRefreshKey}
+            />
           </div>
         </div>
       )}
