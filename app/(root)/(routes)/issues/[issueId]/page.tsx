@@ -123,65 +123,69 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
           isLoading={false}
         />
       ) : (
-        <div className="space-y-6">
-          <div className="flex justify-between items-start">
-            <div className="space-y-2">
-              <h1 className="text-3xl font-bold">{issue.title}</h1>
-              <div className="flex items-center gap-2">
-                <IssueStatusBadge status={issue.status!} size="lg" />
-                <IssuePriorityBadge priority={issue.priority!} size="lg" />
-                <Badge variant="outline">{(issue as any).application.name}</Badge>
+        <div className="space-y-8">
+          <div className="space-y-6">
+            <div className="flex justify-between items-start">
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold">{issue.title}</h1>
+                <div className="flex items-center gap-2">
+                  <IssueStatusBadge status={issue.status!} size="lg" />
+                  <IssuePriorityBadge priority={issue.priority!} size="lg" />
+                  <Badge variant="outline">{(issue as any).application.name}</Badge>
+                </div>
               </div>
+              {canEditIssue && (
+                <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
+                  <Pencil className="h-4 w-4" />
+                  編集
+                </Button>
+              )}
             </div>
-            {canEditIssue && (
-              <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
-                <Pencil className="h-4 w-4" />
-                編集
-              </Button>
-            )}
-          </div>
 
-          <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                <span>作成者: {(issue as any).author.name}</span>
-              </div>
-              {(issue as any).assignee && (
+            <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4" />
-                  <span>担当者: {(issue as any).assignee.name}</span>
+                  <span>作成者: {(issue as any).author.name}</span>
                 </div>
-              )}
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                <span>作成: {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</span>
+                {(issue as any).assignee && (
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    <span>担当者: {(issue as any).assignee.name}</span>
+                  </div>
+                )}
               </div>
-              {issue.updated_at !== issue.created_at && (
+              <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <RefreshCw className="h-4 w-4" />
-                  <span>更新: {format(new Date(issue.updated_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</span>
+                  <Calendar className="h-4 w-4" />
+                  <span>作成: {format(new Date(issue.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</span>
                 </div>
-              )}
+                {issue.updated_at !== issue.created_at && (
+                  <div className="flex items-center gap-2">
+                    <RefreshCw className="h-4 w-4" />
+                    <span>更新: {format(new Date(issue.updated_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</span>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
 
-          <div className="prose prose-neutral dark:prose-invert max-w-none">
-            <ReactMarkdown>{issue.body}</ReactMarkdown>
+            <div className="prose prose-neutral dark:prose-invert max-w-none">
+              <ReactMarkdown>{issue.body}</ReactMarkdown>
+            </div>
           </div>
 
           <div className="border-t pt-8 space-y-6">
             <h2 className="text-xl font-bold">コメント</h2>
-            <CommentForm 
-              contentId={issue.id}
-              onSuccess={handleCommentSuccess}
-            />
             <CommentList 
               contentId={issue.id}
               refreshKey={commentRefreshKey}
             />
+            <div className="border-t pt-6">
+              <CommentForm 
+                contentId={issue.id}
+                onSuccess={handleCommentSuccess}
+              />
+            </div>
           </div>
         </div>
       )}
