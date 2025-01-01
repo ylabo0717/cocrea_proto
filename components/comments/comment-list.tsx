@@ -4,10 +4,7 @@ import { useEffect, useState } from "react";
 import { Comment } from "@/lib/types";
 import { fetchComments } from "@/lib/api/comments";
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
-import { ja } from "date-fns/locale";
-import { User } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import { CommentItem } from "./comment-item";
 
 interface CommentListProps {
   contentId: string;
@@ -62,17 +59,11 @@ export function CommentList({ contentId, refreshKey = 0 }: CommentListProps) {
   return (
     <div className="space-y-4">
       {comments.map((comment) => (
-        <div key={comment.id} className="border rounded-lg p-4 space-y-2">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <User className="h-4 w-4" />
-            <span>{(comment as any).user.name}</span>
-            <span>•</span>
-            <span>{format(new Date(comment.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}</span>
-          </div>
-          <div className="prose prose-neutral dark:prose-invert max-w-none">
-            <ReactMarkdown>{comment.body}</ReactMarkdown>
-          </div>
-        </div>
+        <CommentItem
+          key={comment.id}
+          comment={comment as any}
+          onUpdate={loadComments}
+        />
       ))}
     </div>
   );
