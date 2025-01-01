@@ -4,20 +4,34 @@ import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth/session";
 import { Comment } from "@/lib/types";
 
+// Helper function to validate comment
+function validateComment(body: string) {
+  if (!body || body.trim().length === 0) {
+    throw new Error("コメント内容を入力してください");
+  }
+}
+
 export async function createComment(contentId: string, body: string): Promise<Comment> {
   const session = getSession();
   if (!session) {
     throw new Error("認証情報が見つかりません");
   }
 
+  validateComment(body);
+
   const { data: comment, error } = await supabase
     .from("comments")
     .insert({
       content_id: contentId,
       user_id: session.userId,
-      body: body
+      body: body.trim()
     })
-    .select("*, user:user_id(name)")
+    .select(`
+      *,
+      user:user_id (
+        name
+      )
+    `)
     .single();
 
   if (error) {
@@ -34,24 +48,20 @@ export async function updateComment(commentId: string, body: string): Promise<Co
     throw new Error("認証情報が見つかりません");
   }
 
-  // First, verify the comment exists and get its current data
-  const { data: existingComment, error: fetchError } = await supabase
-    .from("comments")
-    .select("id, user_id")
-    .eq("id", commentId)
-    .single();
-
-  if (fetchError || !existingComment) {
-    console.error("Comment fetch error:", fetchError);
-    throw new Error("コメントが見つかりません");
-  }
+  validateComment(body);
 
   // Update the comment
   const { data: updatedComment, error: updateError } = await supabase
     .from("comments")
-    .update({ body })
+    .update({ body: body.trim() })
     .eq("id", commentId)
-    .select("*, user:user_id(name)")
+    .eq("user_id", session.userId) // Ensure user owns the comment
+    .select(`
+      *,
+      user:user_id (
+        name
+      )
+    `)
     .single();
 
   if (updateError || !updatedComment) {
@@ -65,7 +75,12 @@ export async function updateComment(commentId: string, body: string): Promise<Co
 export async function fetchComments(contentId: string): Promise<Comment[]> {
   const { data, error } = await supabase
     .from("comments")
-    .select("*, user:user_id(name)")
+    .select(`
+      *,
+      user:user_id (
+        name
+      )
+    `)
     .eq("content_id", contentId)
     .order("created_at", { ascending: true });
 
