@@ -8,22 +8,50 @@ import { useState } from "react";
 import { IssueFormData } from "../components/issue-form/types";
 import { useToast } from "@/hooks/use-toast";
 import { createIssue } from "@/lib/api/issues";
+import { updateAttachments } from "@/lib/api/attachments";
 
 export default function NewIssuePage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [tempId] = useState(() => crypto.randomUUID());
 
   const handleSubmit = async (data: IssueFormData) => {
+    console.log('Form submission started:', data); // デバッグログ
+
+    if (!data.title || !data.body || !data.application_id) {
+      console.log('Validation failed:', { data }); // デバッグログ
+      toast({
+        title: "エラー",
+        description: "必須項目を入力してください",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      await createIssue(data);
+      console.log('Creating issue...'); // デバッグログ
+      const issue = await createIssue({
+        ...data,
+        status: data.status || 'open',
+        priority: data.priority || 'medium'
+      });
+      
+      console.log('Issue created:', issue); // デバッグログ
+
+      if (issue.id) {
+        console.log('Updating attachments...'); // デバッグログ
+        await updateAttachments(issue.id);
+      }
+
       toast({
         title: "成功",
         description: "課題を作成しました",
       });
       router.push("/issues");
     } catch (error) {
+      console.error('Failed to create issue:', error);
       toast({
         title: "エラー",
         description: error instanceof Error ? error.message : "課題の作成に失敗しました",
@@ -59,6 +87,7 @@ export default function NewIssuePage() {
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           isLoading={isLoading}
+          tempId={tempId}
         />
       </div>
     </div>
