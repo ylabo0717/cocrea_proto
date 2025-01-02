@@ -24,7 +24,7 @@ export function EditApplicationDialog({ application, onSuccess }: EditApplicatio
     name: application.name,
     description: application.description || "",
     status: application.status,
-    next_release_date: application.next_release_date || "",
+    next_release_date: application.next_release_date ? application.next_release_date.split('T')[0] : "",
     progress: application.progress
   });
 
@@ -33,7 +33,10 @@ export function EditApplicationDialog({ application, onSuccess }: EditApplicatio
     setIsLoading(true);
 
     try {
-      await updateApplication(application.id, formData);
+      await updateApplication(application.id, {
+        ...formData,
+        next_release_date: formData.next_release_date ? `${formData.next_release_date}T00:00:00Z` : null
+      });
       
       toast({
         title: "成功",
@@ -111,10 +114,10 @@ export function EditApplicationDialog({ application, onSuccess }: EditApplicatio
             <label className="text-sm font-medium">次回リリース予定日</label>
             <Input
               type="date"
-              value={formData.next_release_date?.split('T')[0] || ''}
+              value={formData.next_release_date}
               onChange={(e) => setFormData((prev) => ({ 
                 ...prev, 
-                next_release_date: e.target.value ? `${e.target.value}T00:00:00Z` : null 
+                next_release_date: e.target.value
               }))}
               disabled={isLoading}
             />

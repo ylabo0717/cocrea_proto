@@ -5,10 +5,13 @@ import { KnowledgeList } from "./components/knowledge-list";
 import { CreateKnowledgeButton } from "./components/create-knowledge-button";
 import { useKnowledge } from "./hooks/use-knowledge";
 import { ViewToggle } from "@/components/view-toggle";
+import { KnowledgeFilter } from "./components/knowledge-filter";
+import { useKnowledgeFilter } from "./hooks/use-knowledge-filter";
 
 export default function KnowledgePage() {
   const { knowledgeList, isLoading, refreshKnowledge } = useKnowledge();
   const [view, setView] = useState<"grid" | "table">("grid");
+  const { applicationId, filteredKnowledge, handleApplicationFilterChange } = useKnowledgeFilter(knowledgeList);
 
   useEffect(() => {
     refreshKnowledge();
@@ -27,8 +30,13 @@ export default function KnowledgePage() {
         </div>
       </div>
 
+      <KnowledgeFilter
+        applicationId={applicationId}
+        onApplicationChange={handleApplicationFilterChange}
+      />
+
       <KnowledgeList 
-        knowledgeList={knowledgeList}
+        knowledgeList={filteredKnowledge}
         isLoading={isLoading}
         view={view}
       />
