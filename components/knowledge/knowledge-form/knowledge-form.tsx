@@ -26,10 +26,12 @@ export function KnowledgeForm({ initialData, onSubmit, onCancel, isLoading, temp
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted with data:', formData); // デバッグログ
     await onSubmit(formData);
   };
 
   const handleAttachmentUpload = () => {
+    console.log('Attachment uploaded, refreshing list...'); // デバッグログ
     setAttachmentRefreshKey(prev => prev + 1);
   };
 

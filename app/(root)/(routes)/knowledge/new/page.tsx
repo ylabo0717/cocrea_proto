@@ -8,22 +8,34 @@ import { useState } from "react";
 import { KnowledgeFormData } from "../components/knowledge-form/types";
 import { useToast } from "@/hooks/use-toast";
 import { createKnowledge } from "@/lib/api/knowledge";
+import { updateAttachments } from "@/lib/api/attachments";
 
 export default function NewKnowledgePage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [tempId] = useState(() => crypto.randomUUID());
 
   const handleSubmit = async (data: KnowledgeFormData) => {
+    console.log('Creating knowledge with data:', data); // デバッグログ
     setIsLoading(true);
+
     try {
-      await createKnowledge(data);
+      const knowledge = await createKnowledge(data);
+      console.log('Knowledge created:', knowledge); // デバッグログ
+
+      if (knowledge.id) {
+        console.log('Updating attachments...'); // デバッグログ
+        await updateAttachments(knowledge.id);
+      }
+
       toast({
         title: "成功",
         description: "ナレッジを作成しました",
       });
       router.push("/knowledge");
     } catch (error) {
+      console.error('Failed to create knowledge:', error);
       toast({
         title: "エラー",
         description: error instanceof Error ? error.message : "ナレッジの作成に失敗しました",
@@ -59,6 +71,7 @@ export default function NewKnowledgePage() {
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           isLoading={isLoading}
+          tempId={tempId}
         />
       </div>
     </div>

@@ -16,6 +16,7 @@ export function useKnowledgeForm(initialData?: Partial<KnowledgeFormData>) {
     field: keyof KnowledgeFormData,
     value: string | string[] | undefined
   ) => {
+    console.log('Form field changed:', field, value); // デバッグログ
     setFormData((prev) => ({
       ...prev,
       [field]: value,
