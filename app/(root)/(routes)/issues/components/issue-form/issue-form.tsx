@@ -9,15 +9,19 @@ import { IssueFormProps } from "./types";
 import { useApplications } from "@/app/(root)/(routes)/dashboard/hooks/use-applications";
 import { useUsers } from "@/app/(root)/(routes)/users/hooks/use-users";
 import { useEffect, useState } from "react";
-import { AttachmentUpload } from "../attachments/attachment-upload";
-import { AttachmentList } from "../attachments/attachment-list";
+import { AttachmentUpload } from "@/components/attachments/attachment-upload";
+import { AttachmentList } from "@/components/attachments/attachment-list";
 import { Paperclip } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ReactMarkdown from "react-markdown";
 
 export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueFormProps) {
   const { formData, handleChange } = useIssueForm(initialData);
   const { applications, refreshApplications } = useApplications();
   const { users, refreshUsers } = useUsers();
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState(0);
+  const [tab, setTab] = useState<"write" | "preview">("write");
+  const [tempId] = useState(() => crypto.randomUUID());
 
   useEffect(() => {
     refreshApplications();
@@ -54,14 +58,31 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
 
         <div className="space-y-2">
           <label className="text-sm font-medium">内容</label>
-          <Textarea
-            value={formData.body}
-            onChange={(e) => handleChange("body", e.target.value)}
-            placeholder="課題の詳細を入力（Markdown形式で記述可能）"
-            className="min-h-[200px] font-mono"
-            disabled={isLoading}
-            required
-          />
+          <Tabs value={tab} onValueChange={(value) => setTab(value as "write" | "preview")}>
+            <TabsList>
+              <TabsTrigger value="write">書く</TabsTrigger>
+              <TabsTrigger value="preview">プレビュー</TabsTrigger>
+            </TabsList>
+            <TabsContent value="write">
+              <Textarea
+                value={formData.body}
+                onChange={(e) => handleChange("body", e.target.value)}
+                placeholder="課題の詳細を入力（Markdown形式で記述可能）"
+                className="min-h-[200px] font-mono"
+                disabled={isLoading}
+                required
+              />
+            </TabsContent>
+            <TabsContent value="preview">
+              <div className="min-h-[200px] p-4 border rounded-md prose prose-neutral dark:prose-invert max-w-none">
+                {formData.body ? (
+                  <ReactMarkdown>{formData.body}</ReactMarkdown>
+                ) : (
+                  <p className="text-muted-foreground">プレビューする内容がありません</p>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -147,25 +168,23 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
         </div>
       </div>
 
-      {initialData?.id && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-              <Paperclip className="h-5 w-5" />
-              添付ファイル
-            </h2>
-            <AttachmentUpload
-              contentId={initialData.id}
-              onUpload={handleAttachmentUpload}
-            />
-          </div>
-          <AttachmentList
-            contentId={initialData.id}
-            canDelete={true}
-            refreshKey={attachmentRefreshKey}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Paperclip className="h-5 w-5" />
+            添付ファイル
+          </h2>
+          <AttachmentUpload
+            contentId={initialData?.id || tempId}
+            onUpload={handleAttachmentUpload}
           />
         </div>
-      )}
+        <AttachmentList
+          contentId={initialData?.id || tempId}
+          canDelete={true}
+          refreshKey={attachmentRefreshKey}
+        />
+      </div>
 
       <div className="flex justify-end space-x-2">
         <Button

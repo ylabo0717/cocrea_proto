@@ -2,23 +2,7 @@
 
 import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/auth/session";
-
-export interface Attachment {
-  id: string;
-  content_id: string;
-  file_name: string;
-  file_path: string;
-  file_size: number;
-  mime_type: string;
-  created_at: string;
-}
-
-function sanitizeFileName(fileName: string): string {
-  return fileName
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-zA-Z0-9._-]/g, '_');
-}
+import { Attachment } from "@/lib/types";
 
 export async function uploadAttachment(file: File, contentId: string): Promise<Attachment> {
   const session = getSession();
@@ -27,7 +11,7 @@ export async function uploadAttachment(file: File, contentId: string): Promise<A
   }
 
   // Validate file size (50MB limit)
-  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB in bytes
+  const MAX_FILE_SIZE = 50 * 1024 * 1024;
   if (file.size > MAX_FILE_SIZE) {
     throw new Error("ファイルサイズは50MB以下にしてください");
   }
@@ -50,20 +34,16 @@ export async function uploadAttachment(file: File, contentId: string): Promise<A
     throw new Error("このファイル形式はサポートされていません");
   }
 
-  // Create safe file path
-  const timestamp = new Date().getTime();
-  const sanitizedName = sanitizeFileName(file.name);
-  const fileName = `${timestamp}_${sanitizedName}`;
-  const filePath = `${contentId}/${fileName}`;
-
   try {
+    // Create safe file path
+    const timestamp = new Date().getTime();
+    const fileName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+    const filePath = `${contentId}/${fileName}`;
+
     // Upload to storage
     const { error: uploadError } = await supabase.storage
       .from('issue-attachments')
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
+      .upload(filePath, file);
 
     if (uploadError) {
       console.error('Storage upload error:', uploadError);
