@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { LayoutDashboard, MessageSquare, BookOpen, Users, User } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Lightbulb, BookOpen, Users, User } from "lucide-react";
 import { UserNav } from "./user-nav";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -15,6 +15,12 @@ const routes = [
     icon: LayoutDashboard,
     href: "/dashboard",
     color: "text-sky-500",
+  },
+  {
+    label: "Requests",
+    icon: Lightbulb,
+    href: "/requests",
+    color: "text-yellow-500",
   },
   {
     label: "Issues",
