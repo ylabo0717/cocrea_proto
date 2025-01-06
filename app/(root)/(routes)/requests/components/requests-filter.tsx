@@ -6,13 +6,10 @@ import { useEffect } from "react";
 
 interface RequestsFilterProps {
   applicationId: string | null;
-  onApplicationChange: (applicationId: string | null) => void;
+  onApplicationChange: (value: string | null) => void;
 }
 
-export function RequestsFilter({ 
-  applicationId,
-  onApplicationChange,
-}: RequestsFilterProps) {
+export function RequestsFilter({ applicationId, onApplicationChange }: RequestsFilterProps) {
   const { applications, refreshApplications } = useApplications();
 
   useEffect(() => {

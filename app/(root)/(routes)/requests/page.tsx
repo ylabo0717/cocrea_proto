@@ -5,21 +5,33 @@ import { RequestsList } from "./components/requests-list";
 import { CreateRequestButton } from "./components/create-request-button";
 import { RequestsFilter } from "./components/requests-filter";
 import { ViewToggle } from "@/components/view-toggle";
-import { useRequests } from "./hooks/use-requests";
-import { useRequestsFilter } from "./hooks/use-requests-filter";
+import { fetchRequests } from "./actions";
+import { Content } from "@/lib/types";
 
 export default function RequestsPage() {
-  const { requests, isLoading, refreshRequests } = useRequests();
-  const {
-    applicationId,
-    filteredRequests,
-    handleApplicationFilterChange,
-  } = useRequestsFilter(requests);
+  const [requests, setRequests] = useState<Content[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [view, setView] = useState<"grid" | "table">("grid");
+  const [applicationId, setApplicationId] = useState<string | null>(null);
 
   useEffect(() => {
-    refreshRequests();
-  }, [refreshRequests]);
+    const loadRequests = async () => {
+      try {
+        const data = await fetchRequests();
+        setRequests(data);
+      } catch (error) {
+        console.error('Failed to load requests:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadRequests();
+  }, []);
+
+  const filteredRequests = applicationId
+    ? requests.filter((request) => (request as any).application.id === applicationId)
+    : requests;
 
   return (
     <div className="h-full">
@@ -38,7 +50,7 @@ export default function RequestsPage() {
           <div className="py-2">
             <RequestsFilter
               applicationId={applicationId}
-              onApplicationChange={handleApplicationFilterChange}
+              onApplicationChange={setApplicationId}
             />
           </div>
         </div>
