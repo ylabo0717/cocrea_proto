@@ -3,19 +3,22 @@
 import { useEffect, useState } from "react";
 import { KnowledgeList } from "./components/knowledge-list";
 import { CreateKnowledgeButton } from "./components/create-knowledge-button";
-import { useKnowledge } from "./hooks/use-knowledge";
 import { ViewToggle } from "@/components/view-toggle";
 import { KnowledgeFilter } from "./components/knowledge-filter";
-import { useKnowledgeFilter } from "./hooks/use-knowledge-filter";
+import { useKnowledge } from "./hooks/use-knowledge";
 
 export default function KnowledgePage() {
   const { knowledgeList, isLoading, refreshKnowledge } = useKnowledge();
   const [view, setView] = useState<"grid" | "table">("grid");
-  const { applicationId, filteredKnowledge, handleApplicationFilterChange } = useKnowledgeFilter(knowledgeList);
+  const [applicationId, setApplicationId] = useState<string | null>(null);
 
   useEffect(() => {
     refreshKnowledge();
   }, [refreshKnowledge]);
+
+  const filteredKnowledge = applicationId
+    ? knowledgeList.filter((knowledge) => (knowledge as any).application.id === applicationId)
+    : knowledgeList;
 
   return (
     <div className="h-full p-4 space-y-4">
@@ -32,10 +35,10 @@ export default function KnowledgePage() {
 
       <KnowledgeFilter
         applicationId={applicationId}
-        onApplicationChange={handleApplicationFilterChange}
+        onApplicationChange={setApplicationId}
       />
 
-      <KnowledgeList 
+      <KnowledgeList
         knowledgeList={filteredKnowledge}
         isLoading={isLoading}
         view={view}

@@ -6,13 +6,10 @@ import { useEffect } from "react";
 
 interface KnowledgeFilterProps {
   applicationId: string | null;
-  onApplicationChange: (applicationId: string | null) => void;
+  onApplicationChange: (value: string | null) => void;
 }
 
-export function KnowledgeFilter({ 
-  applicationId,
-  onApplicationChange,
-}: KnowledgeFilterProps) {
+export function KnowledgeFilter({ applicationId, onApplicationChange }: KnowledgeFilterProps) {
   const { applications, refreshApplications } = useApplications();
 
   useEffect(() => {
