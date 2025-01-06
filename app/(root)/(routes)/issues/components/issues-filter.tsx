@@ -6,31 +6,22 @@ import { useEffect } from "react";
 
 interface IssuesFilterProps {
   applicationId: string | null;
-  onApplicationChange: (applicationId: string | null) => void;
+  onApplicationChange: (value: string | null) => void;
 }
 
-export function IssuesFilter({ 
-  applicationId,
-  onApplicationChange,
-}: IssuesFilterProps) {
+export function IssuesFilter({ applicationId, onApplicationChange }: IssuesFilterProps) {
   const { applications, refreshApplications } = useApplications();
 
   useEffect(() => {
     refreshApplications();
   }, [refreshApplications]);
 
-  const handleChange = (value: string) => {
-    // デバッグログを追加
-    console.log('IssuesFilter: handleChange called with value:', value);
-    onApplicationChange(value === "all" ? null : value);
-  };
-
   return (
     <div className="flex items-center gap-4">
       <span className="text-sm font-medium">アプリケーション:</span>
       <Select
         value={applicationId || "all"}
-        onValueChange={handleChange}
+        onValueChange={(value) => onApplicationChange(value === "all" ? null : value)}
       >
         <SelectTrigger className="w-[200px]">
           <SelectValue placeholder="全て" />

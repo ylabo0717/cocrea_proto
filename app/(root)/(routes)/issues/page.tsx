@@ -5,57 +5,33 @@ import { IssuesList } from "./components/issues-list";
 import { CreateIssueButton } from "./components/create-issue-button";
 import { IssuesFilter } from "./components/issues-filter";
 import { ViewToggle } from "@/components/view-toggle";
-import { useIssues } from "./hooks/use-issues";
-import { useIssuesFilter } from "./hooks/use-issues-filter";
-
-try {
-  console.log('==== IssuesPage Debug ====');
-  console.log('Module loaded at:', new Date().toISOString());
-} catch (error) {
-  console.error('Debug log error:', error);
-}
+import { fetchIssues } from "./actions";
+import { Content } from "@/lib/types";
 
 export default function IssuesPage() {
-  try {
-    console.log('==== IssuesPage Component ====');
-    console.log('Component rendered at:', new Date().toISOString());
-  } catch (error) {
-    console.error('Component debug error:', error);
-  }
-
-  const { issues, isLoading, refreshIssues } = useIssues();
-  const {
-    applicationId,
-    filteredIssues,
-    handleApplicationFilterChange,
-  } = useIssuesFilter(issues);
+  const [issues, setIssues] = useState<Content[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [view, setView] = useState<"grid" | "table">("grid");
+  const [applicationId, setApplicationId] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      console.log('==== IssuesPage Effect ====');
-      console.log('Effect triggered at:', new Date().toISOString());
-      console.log('Current issues:', issues.length);
-      refreshIssues();
-    } catch (error) {
-      console.error('Effect error:', error);
-    }
-  }, [refreshIssues, issues.length]);
+    const loadIssues = async () => {
+      try {
+        const data = await fetchIssues();
+        setIssues(data);
+      } catch (error) {
+        console.error('Failed to load issues:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  // Render debug
-  try {
-    console.log('==== IssuesPage Render ====');
-    console.log('State:', {
-      isLoading,
-      issuesCount: issues.length,
-      filteredCount: filteredIssues.length,
-      applicationId,
-      view,
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    console.error('Render debug error:', error);
-  }
+    loadIssues();
+  }, []);
+
+  const filteredIssues = applicationId
+    ? issues.filter((issue) => (issue as any).application.id === applicationId)
+    : issues;
 
   return (
     <div className="h-full">
@@ -74,7 +50,7 @@ export default function IssuesPage() {
           <div className="py-2">
             <IssuesFilter
               applicationId={applicationId}
-              onApplicationChange={handleApplicationFilterChange}
+              onApplicationChange={setApplicationId}
             />
           </div>
         </div>
