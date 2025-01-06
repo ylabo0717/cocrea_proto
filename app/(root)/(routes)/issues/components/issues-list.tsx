@@ -3,7 +3,6 @@
 import { Content } from "@/lib/types";
 import { IssueCard } from "./issue-card";
 import { IssuesTable } from "./issues-table";
-import { useIssuesFilter } from "../hooks/use-issues-filter";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface IssuesListProps {
@@ -13,8 +12,6 @@ interface IssuesListProps {
 }
 
 export function IssuesList({ issues, isLoading, view }: IssuesListProps) {
-  const { filteredIssues } = useIssuesFilter(issues);
-
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -27,16 +24,24 @@ export function IssuesList({ issues, isLoading, view }: IssuesListProps) {
     );
   }
 
+  if (issues.length === 0) {
+    return (
+      <div className="text-center text-muted-foreground py-8">
+        表示するアイテムがありません
+      </div>
+    );
+  }
+
   return (
     <div>
       {view === "grid" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredIssues.map((issue) => (
+          {issues.map((issue) => (
             <IssueCard key={issue.id} issue={issue as any} />
           ))}
         </div>
       ) : (
-        <IssuesTable issues={filteredIssues} />
+        <IssuesTable issues={issues} />
       )}
     </div>
   );

@@ -1,8 +1,16 @@
-import { Suspense } from 'react'
-import { UsersData } from './components/users-data'
-import { Skeleton } from '@/components/ui/skeleton'
+"use client";
 
-export default async function UsersPage() {
+import { useEffect } from "react";
+import { UsersList } from "./components/users-list";
+import { useUsers } from "./hooks/use-users";
+
+export default function UsersPage() {
+  const { users, isLoading, refreshUsers } = useUsers();
+
+  useEffect(() => {
+    refreshUsers();
+  }, [refreshUsers]);
+
   return (
     <div className="h-full p-4 space-y-4">
       <div>
@@ -10,20 +18,7 @@ export default async function UsersPage() {
         <p className="text-muted-foreground">システムを利用しているユーザーの一覧です</p>
       </div>
 
-      <Suspense fallback={<UsersSkeleton />}>
-        <UsersData />
-      </Suspense>
+      <UsersList users={users} isLoading={isLoading} />
     </div>
-  )
-}
-
-function UsersSkeleton() {
-  return (
-    <div className="space-y-3">
-      <Skeleton className="h-10 w-full" />
-      <Skeleton className="h-20 w-full" />
-      <Skeleton className="h-20 w-full" />
-      <Skeleton className="h-20 w-full" />
-    </div>
-  )
+  );
 }
