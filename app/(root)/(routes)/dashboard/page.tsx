@@ -1,36 +1,26 @@
-"use client";
+import { Suspense } from "react";
+import { ApplicationsListClient } from "./components/applications-list-client";
+import { fetchApplications, fetchRecentContents } from "./actions";
 
-import { useEffect } from "react";
-import { ApplicationsList } from "./components/applications-list";
-import { CreateApplicationDialog } from "@/components/applications/create-application-dialog";
-import { useApplications } from "./hooks/use-applications";
-import { useSession } from "@/hooks/use-session";
-
-export default function DashboardPage() {
-  const { applications, isLoading: isLoadingApps, refreshApplications } = useApplications();
-  const { isDeveloper, isLoading: isLoadingSession } = useSession();
-
-  useEffect(() => {
-    refreshApplications();
-  }, [refreshApplications]);
+export default async function DashboardPage() {
+  const [applications, recentContents] = await Promise.all([
+    fetchApplications(),
+    fetchRecentContents()
+  ]);
 
   return (
     <div className="h-full p-4 space-y-4 bg-background">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold text-foreground">Dashboard</h2>
-          <p className="text-muted-foreground">社内アプリケーションの開発状況を一覧で確認できます</p>
-        </div>
-        {!isLoadingSession && isDeveloper && (
-          <CreateApplicationDialog onSuccess={refreshApplications} />
-        )}
+      <div>
+        <h2 className="text-3xl font-bold text-foreground">Dashboard</h2>
+        <p className="text-muted-foreground">社内アプリケーションの開発状況を一覧で確認できます</p>
       </div>
 
-      <ApplicationsList 
-        applications={applications}
-        isLoading={isLoadingApps}
-        onUpdate={refreshApplications}
-      />
+      <Suspense fallback={<div>Loading...</div>}>
+        <ApplicationsListClient 
+          initialApplications={applications}
+          initialContents={recentContents}
+        />
+      </Suspense>
     </div>
   );
 }
