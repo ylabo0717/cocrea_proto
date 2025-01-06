@@ -1,15 +1,28 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { UsersList } from "./components/users-list";
-import { useUsers } from "./hooks/use-users";
+import { fetchUsers } from "./actions";
+import { User } from "@/lib/types";
 
 export default function UsersPage() {
-  const { users, isLoading, refreshUsers } = useUsers();
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    refreshUsers();
-  }, [refreshUsers]);
+    const loadUsers = async () => {
+      try {
+        const data = await fetchUsers();
+        setUsers(data);
+      } catch (error) {
+        console.error('Failed to load users:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUsers();
+  }, []);
 
   return (
     <div className="h-full p-4 space-y-4">
