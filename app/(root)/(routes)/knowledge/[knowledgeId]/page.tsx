@@ -17,6 +17,7 @@ import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { CommentForm } from "@/components/comments/comment-form";
 import { CommentList } from "@/components/comments/comment-list";
+import { LikeButton } from "@/components/likes/like-button";
 
 export default function KnowledgeDetailPage({ params }: { params: { knowledgeId: string } }) {
   const router = useRouter();
@@ -134,12 +135,15 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
                   </div>
                 )}
               </div>
-              {canEditKnowledge && (
-                <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
-                  <Pencil className="h-4 w-4" />
-                  編集
-                </Button>
-              )}
+              <div className="flex items-center gap-2">
+                <LikeButton contentId={knowledge.id} />
+                {canEditKnowledge && (
+                  <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
+                    <Pencil className="h-4 w-4" />
+                    編集
+                  </Button>
+                )}
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">

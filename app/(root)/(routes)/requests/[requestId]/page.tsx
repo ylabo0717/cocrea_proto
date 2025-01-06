@@ -19,6 +19,7 @@ import { RequestStatusBadge } from "../components/request-status-badge";
 import { RequestPriorityBadge } from "../components/request-priority-badge";
 import { CommentForm } from "@/components/comments/comment-form";
 import { CommentList } from "@/components/comments/comment-list";
+import { LikeButton } from "@/components/likes/like-button";
 
 export default function RequestDetailPage({ params }: { params: { requestId: string } }) {
   const router = useRouter();
@@ -42,14 +43,7 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
 
   const handleSubmit = async (data: RequestFormData) => {
     try {
-      await updateRequest(params.requestId, {
-        title: data.title,
-        body: data.body,
-        status: data.status,
-        priority: data.priority,
-        application_id: data.application_id,
-        assignee_id: data.assignee_id
-      });
+      await updateRequest(params.requestId, data);
       
       toast({
         title: "成功",
@@ -134,12 +128,15 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
                   <Badge variant="outline">{(request as any).application.name}</Badge>
                 </div>
               </div>
-              {canEditRequest && (
-                <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
-                  <Pencil className="h-4 w-4" />
-                  編集
-                </Button>
-              )}
+              <div className="flex items-center gap-2">
+                <LikeButton contentId={request.id} />
+                {canEditRequest && (
+                  <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
+                    <Pencil className="h-4 w-4" />
+                    編集
+                  </Button>
+                )}
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
