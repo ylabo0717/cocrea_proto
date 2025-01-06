@@ -1,27 +1,9 @@
-"use client";
+import { Suspense } from 'react'
+import { RequestsData } from './components/requests-data'
+import { CreateRequestButton } from './components/create-request-button'
+import { Skeleton } from '@/components/ui/skeleton'
 
-import { useEffect, useState } from "react";
-import { RequestsList } from "./components/requests-list";
-import { CreateRequestButton } from "./components/create-request-button";
-import { RequestsFilter } from "./components/requests-filter";
-import { ViewToggle } from "@/components/view-toggle";
-import { useRequests } from "./hooks/use-requests";
-import { useRequestsFilter } from "./hooks/use-requests-filter";
-
-export default function RequestsPage() {
-  const { requests, isLoading, refreshRequests } = useRequests();
-  const {
-    filters,
-    handleStatusFilterChange,
-    handlePriorityFilterChange,
-    handleApplicationFilterChange,
-  } = useRequestsFilter(requests);
-  const [view, setView] = useState<"grid" | "table">("grid");
-
-  useEffect(() => {
-    refreshRequests();
-  }, [refreshRequests]);
-
+export default async function RequestsPage() {
   return (
     <div className="h-full">
       <div className="sticky top-0 z-10 bg-background border-b">
@@ -31,31 +13,26 @@ export default function RequestsPage() {
               <h2 className="text-3xl font-bold text-foreground">Requests</h2>
               <p className="text-muted-foreground">アプリケーションへの要望やアイデアを共有できます</p>
             </div>
-            <div className="flex items-center gap-4">
-              <ViewToggle view={view} onViewChange={setView} />
-              <CreateRequestButton />
-            </div>
+            <CreateRequestButton />
           </div>
-          <div className="py-2">
-            <RequestsFilter
-              statuses={filters.statuses}
-              priorities={filters.priorities}
-              applicationId={filters.applicationId}
-              onStatusChange={handleStatusFilterChange}
-              onPriorityChange={handlePriorityFilterChange}
-              onApplicationChange={handleApplicationFilterChange}
-            />
-          </div>
+          
+          <Suspense fallback={<RequestsSkeleton />}>
+            <RequestsData />
+          </Suspense>
         </div>
       </div>
+    </div>
+  )
+}
 
-      <div className="p-4">
-        <RequestsList 
-          requests={requests} 
-          isLoading={isLoading} 
-          view={view}
-        />
+function RequestsSkeleton() {
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <Skeleton key={i} className="h-[200px]" />
+        ))}
       </div>
     </div>
-  );
+  )
 }
