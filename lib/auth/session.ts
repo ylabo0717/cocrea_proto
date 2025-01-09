@@ -24,12 +24,3 @@ export function getSession(): Session | null {
     return null;
   }
 }
-
-export function setSession(session: Session) {
-  const value = JSON.stringify(session);
-  document.cookie = `auth=${encodeURIComponent(value)}; path=/; max-age=${24 * 60 * 60}; samesite=lax`;
-}
-
-export function clearSession() {
-  document.cookie = 'auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;';
-}
