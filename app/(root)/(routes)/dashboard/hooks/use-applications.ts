@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from 'react';
 import { Application } from '@/lib/types';
-import { fetchApplications } from '@/lib/api/applications';
 import { useToast } from '@/hooks/use-toast';
 
 export function useApplications() {
@@ -12,12 +11,16 @@ export function useApplications() {
 
   const loadApplications = useCallback(async () => {
     try {
-      const apps = await fetchApplications();
-      setApplications(apps);
+      const response = await fetch('/api/applications');
+      if (!response.ok) {
+        throw new Error('アプリケーションの取得に失敗しました');
+      }
+      const data = await response.json();
+      setApplications(data);
     } catch (error) {
       toast({
         title: "エラー",
-        description: "アプリケーションの読み込みに失敗しました",
+        description: error instanceof Error ? error.message : "アプリケーションの読み込みに失敗しました",
         variant: "destructive",
       });
     } finally {
