@@ -11,7 +11,6 @@ import { ArrowLeft, Pencil, User, Calendar, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { useSession } from "@/hooks/use-session";
-import { updateIssue } from "@/lib/api/issues";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -43,7 +42,18 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
 
   const handleSubmit = async (data: IssueFormData) => {
     try {
-      await updateIssue(params.issueId, data);
+      const response = await fetch(`/api/issues/${params.issueId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '課題の更新に失敗しました');
+      }
       
       toast({
         title: "成功",
@@ -83,7 +93,25 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
   if (!issue) {
     return (
       <div className="h-full p-4">
-        <p className="text-muted-foreground">課題が見つかりませんでした。</p>
+        <div className="flex items-center gap-2 text-muted-foreground mb-8">
+          <Link href="/issues" className="hover:text-foreground transition-colors">
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+          <span>課題一覧</span>
+        </div>
+        <div className="text-center py-8">
+          <h2 className="text-2xl font-bold text-foreground mb-2">課題が見つかりません</h2>
+          <p className="text-muted-foreground">
+            指定された課題は存在しないか、削除された可能性があります。
+          </p>
+          <Button 
+            variant="outline" 
+            className="mt-4"
+            onClick={() => router.push('/issues')}
+          >
+            課題一覧に戻る
+          </Button>
+        </div>
       </div>
     );
   }
@@ -125,7 +153,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
                 <div className="flex items-center gap-2">
                   <IssueStatusBadge status={issue.status!} size="lg" />
                   <IssuePriorityBadge priority={issue.priority!} size="lg" />
-                  <Badge variant="outline">{(issue as any).application.name}</Badge>
+                  <Badge variant="outline">{(issue as any).application?.name}</Badge>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -143,7 +171,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4" />
-                  <span>作成者: {(issue as any).author.name}</span>
+                  <span>作成者: {(issue as any).author?.name}</span>
                 </div>
                 {(issue as any).assignee && (
                   <div className="flex items-center gap-2">
