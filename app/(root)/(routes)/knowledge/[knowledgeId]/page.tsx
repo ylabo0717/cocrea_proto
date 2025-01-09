@@ -11,7 +11,6 @@ import { ArrowLeft, Pencil, User, Calendar, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { useSession } from "@/hooks/use-session";
-import { updateKnowledge } from "@/lib/api/knowledge";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -41,7 +40,18 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
 
   const handleSubmit = async (data: KnowledgeFormData) => {
     try {
-      await updateKnowledge(params.knowledgeId, data);
+      const response = await fetch(`/api/knowledge/${params.knowledgeId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'ナレッジの更新に失敗しました');
+      }
       
       toast({
         title: "成功",
@@ -81,7 +91,25 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
   if (!knowledge) {
     return (
       <div className="h-full p-4">
-        <p className="text-muted-foreground">ナレッジが見つかりませんでした。</p>
+        <div className="flex items-center gap-2 text-muted-foreground mb-8">
+          <Link href="/knowledge" className="hover:text-foreground transition-colors">
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+          <span>ナレッジ一覧</span>
+        </div>
+        <div className="text-center py-8">
+          <h2 className="text-2xl font-bold text-foreground mb-2">ナレッジが見つかりません</h2>
+          <p className="text-muted-foreground">
+            指定されたナレッジは存在しないか、削除された可能性があります。
+          </p>
+          <Button 
+            variant="outline" 
+            className="mt-4"
+            onClick={() => router.push('/knowledge')}
+          >
+            ナレッジ一覧に戻る
+          </Button>
+        </div>
       </div>
     );
   }
@@ -107,7 +135,7 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
             body: knowledge.body,
             category: knowledge.category || undefined,
             tags: knowledge.tags || undefined,
-            application_id: (knowledge as any).application.id,
+            application_id: (knowledge as any).application?.id,
           }}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
@@ -120,7 +148,7 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold">{knowledge.title}</h1>
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary">{(knowledge as any).application.name}</Badge>
+                  <Badge variant="secondary">{(knowledge as any).application?.name}</Badge>
                   {knowledge.category && (
                     <Badge variant="outline">{knowledge.category}</Badge>
                   )}
@@ -150,7 +178,7 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4" />
-                  <span>作成者: {(knowledge as any).author.name}</span>
+                  <span>作成者: {(knowledge as any).author?.name}</span>
                 </div>
               </div>
               <div className="space-y-2">
