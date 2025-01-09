@@ -23,6 +23,39 @@ export function AttachmentUpload({ contentId, onUpload }: AttachmentUploadProps)
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // ファイルサイズのチェック (50MB)
+    if (file.size > 52428800) {
+      toast({
+        title: "エラー",
+        description: "ファイルサイズは50MB以下にしてください",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // MIMEタイプのチェック
+    const allowedMimeTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/plain'
+    ];
+
+    if (!allowedMimeTypes.includes(file.type)) {
+      toast({
+        title: "エラー",
+        description: "許可されていないファイル形式です",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsUploading(true);
     try {
       await uploadAttachment(file, contentId);
@@ -32,13 +65,14 @@ export function AttachmentUpload({ contentId, onUpload }: AttachmentUploadProps)
       });
       onUpload();
     } catch (error) {
+      console.error('Upload error:', error);
       toast({
         title: "エラー",
         description: error instanceof Error ? error.message : "アップロードに失敗しました",
         variant: "destructive",
       });
     } finally {
-      setIsUploading(false); // Changed from setIsLoading to setIsUploading
+      setIsUploading(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }

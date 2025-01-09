@@ -5,50 +5,51 @@ import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { createLike, deleteLike, getLikeCount, hasLiked } from "@/lib/api/likes";
-import { useSession } from "@/hooks/use-session";
 
 interface LikeButtonProps {
   contentId: string;
 }
 
 export function LikeButton({ contentId }: LikeButtonProps) {
-  const { userId } = useSession();
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
+    let mounted = true;
+    let retryCount = 0;
+    const maxRetries = 3;
+
     const loadLikeStatus = async () => {
       try {
         const [liked, count] = await Promise.all([
           hasLiked(contentId),
           getLikeCount(contentId)
         ]);
-        setIsLiked(liked);
-        setLikeCount(count);
+        if (mounted) {
+          setIsLiked(liked);
+          setLikeCount(count);
+        }
       } catch (error) {
         console.error("Error loading like status:", error);
+        if (retryCount < maxRetries) {
+          retryCount++;
+          setTimeout(loadLikeStatus, 1000 * retryCount); // Exponential backoff
+        }
       }
     };
 
-    if (contentId) {
-      loadLikeStatus();
-    }
+    loadLikeStatus();
+
+    return () => {
+      mounted = false;
+    };
   }, [contentId]);
 
   const handleClick = async (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent link navigation
+    e.preventDefault();
     e.stopPropagation();
-
-    if (!userId) {
-      toast({
-        title: "認証が必要です",
-        description: "いいねするにはログインが必要です",
-        variant: "destructive",
-      });
-      return;
-    }
 
     if (isLoading) return;
     setIsLoading(true);
@@ -56,7 +57,7 @@ export function LikeButton({ contentId }: LikeButtonProps) {
     try {
       if (isLiked) {
         await deleteLike(contentId);
-        setLikeCount(prev => prev - 1);
+        setLikeCount(prev => Math.max(0, prev - 1));
         setIsLiked(false);
       } else {
         await createLike(contentId);
@@ -64,11 +65,19 @@ export function LikeButton({ contentId }: LikeButtonProps) {
         setIsLiked(true);
       }
     } catch (error) {
+      console.error('Like operation failed:', error);
       toast({
         title: "エラー",
         description: error instanceof Error ? error.message : "操作に失敗しました",
         variant: "destructive",
       });
+      // エラー時は状態を元に戻す
+      const [liked, count] = await Promise.all([
+        hasLiked(contentId),
+        getLikeCount(contentId)
+      ]);
+      setIsLiked(liked);
+      setLikeCount(count);
     } finally {
       setIsLoading(false);
     }

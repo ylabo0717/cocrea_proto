@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { getAttachmentUrl } from "@/lib/api/attachments";
 
 interface CopyMarkdownButtonProps {
   fileName: string;
@@ -17,16 +16,16 @@ export function CopyMarkdownButton({ fileName, filePath }: CopyMarkdownButtonPro
     e.preventDefault();
     e.stopPropagation();
 
-    const publicUrl = getAttachmentUrl(filePath);
-    const markdownLink = `![${fileName}](${publicUrl})`;
-
     try {
+      const markdownLink = `![${fileName}](${filePath})`;
       await navigator.clipboard.writeText(markdownLink);
+      
       toast({
         title: "コピー完了",
         description: "Markdown形式のリンクをコピーしました",
       });
     } catch (error) {
+      console.error('Error copying to clipboard:', error);
       toast({
         title: "エラー",
         description: "クリップボードへのコピーに失敗しました",

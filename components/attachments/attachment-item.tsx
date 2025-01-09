@@ -1,10 +1,13 @@
 "use client";
 
-import { Attachment, getAttachmentUrl } from "@/lib/api/attachments";
+import { useState } from "react";
+import { Attachment } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { FileIcon, Trash2, Download } from "lucide-react";
 import { formatFileSize } from "@/lib/utils";
 import { CopyMarkdownButton } from "./copy-markdown-button";
+import { useToast } from "@/hooks/use-toast";
+import { getPublicUrl } from "@/lib/api/attachments/storage";
 
 interface AttachmentItemProps {
   attachment: Attachment;
@@ -12,15 +15,24 @@ interface AttachmentItemProps {
 }
 
 export function AttachmentItem({ attachment, onDelete }: AttachmentItemProps) {
-  const publicUrl = getAttachmentUrl(attachment.file_path);
+  const { toast } = useToast();
+  const [isDownloading, setIsDownloading] = useState(false);
+  const publicUrl = getPublicUrl(attachment.file_path);
   const isImage = attachment.mime_type.startsWith('image/');
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
+    if (isDownloading) return;
+    setIsDownloading(true);
+
     try {
       const response = await fetch(publicUrl);
+      if (!response.ok) {
+        throw new Error('Failed to download file');
+      }
+      
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -32,6 +44,13 @@ export function AttachmentItem({ attachment, onDelete }: AttachmentItemProps) {
       document.body.removeChild(a);
     } catch (error) {
       console.error('Download error:', error);
+      toast({
+        title: "エラー",
+        description: "ダウンロードに失敗しました",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -56,13 +75,14 @@ export function AttachmentItem({ attachment, onDelete }: AttachmentItemProps) {
         {isImage && (
           <CopyMarkdownButton
             fileName={attachment.file_name}
-            filePath={attachment.file_path}
+            filePath={publicUrl}
           />
         )}
         <Button
           variant="ghost"
           size="icon"
           onClick={handleDownload}
+          disabled={isDownloading}
           className="hover:bg-accent hover:text-accent-foreground"
         >
           <Download className="h-4 w-4" />

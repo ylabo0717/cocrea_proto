@@ -1,99 +1,103 @@
 "use client";
 
-import { supabase } from "@/lib/supabase";
-import { Attachment } from "@/lib/types";
+import { Attachment } from '@/lib/types';
 
+/**
+ * ファイルをアップロードする
+ */
 export async function uploadAttachment(file: File, contentId?: string): Promise<Attachment> {
   try {
-    // Create safe file path
-    const timestamp = new Date().getTime();
-    const fileName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-    const filePath = `${contentId || 'temp'}/${fileName}`;
+    const formData = new FormData();
+    formData.append('file', file);
+    if (contentId) {
+      formData.append('contentId', contentId);
+    }
 
-    // Upload to storage
-    const { error: uploadError } = await supabase.storage
-      .from('issue-attachments')
-      .upload(filePath, file);
+    const response = await fetch('/api/attachments', {
+      method: 'POST',
+      body: formData,
+    });
 
-    if (uploadError) throw uploadError;
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'ファイルのアップロードに失敗しました');
+    }
 
-    // Create database record
-    const { data: attachment, error: dbError } = await supabase
-      .from('attachments')
-      .insert({
-        content_id: contentId || null,
-        file_name: file.name,
-        file_path: filePath,
-        file_size: file.size,
-        mime_type: file.type
-      })
-      .select()
-      .single();
-
-    if (dbError) throw dbError;
-
-    return attachment;
+    return await response.json();
   } catch (error) {
-    console.error('Upload error:', error);
-    throw new Error("ファイルのアップロードに失敗しました");
+    console.error('Error in uploadAttachment:', error);
+    throw error;
   }
 }
 
-export async function fetchAttachments(contentId: string | null): Promise<Attachment[]> {
-  try {
-    const { data, error } = await supabase
-      .from('attachments')
-      .select()
-      .eq('content_id', contentId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data || [];
-  } catch (error) {
-    console.error('Error fetching attachments:', error);
-    throw new Error("添付ファイルの取得に失敗しました");
-  }
-}
-
-export async function updateAttachments(contentId: string): Promise<void> {
-  try {
-    const { error } = await supabase
-      .from('attachments')
-      .update({ content_id: contentId })
-      .is('content_id', null);
-
-    if (error) throw error;
-  } catch (error) {
-    console.error('Error updating attachments:', error);
-    throw new Error("添付ファイルの更新に失敗しました");
-  }
-}
-
+/**
+ * 添付ファイルを削除する
+ */
 export async function deleteAttachment(attachment: Attachment): Promise<void> {
   try {
-    // Delete from storage
-    const { error: storageError } = await supabase.storage
-      .from('issue-attachments')
-      .remove([attachment.file_path]);
+    const response = await fetch(`/api/attachments/${attachment.id}`, {
+      method: 'DELETE',
+    });
 
-    if (storageError) throw storageError;
-
-    // Delete from database
-    const { error: dbError } = await supabase
-      .from('attachments')
-      .delete()
-      .eq('id', attachment.id);
-
-    if (dbError) throw dbError;
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || '添付ファイルの削除に失敗しました');
+    }
   } catch (error) {
-    console.error('Delete error:', error);
-    throw new Error("添付ファイルの削除に失敗しました");
+    console.error('Error in deleteAttachment:', error);
+    throw error;
   }
 }
 
-export function getAttachmentUrl(filePath: string): string {
-  const { data } = supabase.storage
-    .from('issue-attachments')
-    .getPublicUrl(filePath);
-  return data.publicUrl;
+/**
+ * 添付ファイルのcontent_idを更新する
+ */
+export async function updateAttachments(contentId: string): Promise<void> {
+  try {
+    const response = await fetch('/api/attachments/update-content', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ contentId }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || '添付ファイルの更新に失敗しました');
+    }
+  } catch (error) {
+    console.error('Error in updateAttachments:', error);
+    throw error;
+  }
+}
+
+/**
+ * 添付ファイル一覧を取得する
+ */
+export async function fetchAttachments(contentId: string | null): Promise<Attachment[]> {
+  try {
+    const url = new URL('/api/attachments', window.location.origin);
+    if (contentId !== undefined) {
+      url.searchParams.set('contentId', contentId || '');
+    }
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || '添付ファイルの取得に失敗しました');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error in fetchAttachments:', error);
+    throw error;
+  }
+}
+
+/**
+ * 添付ファイルの公開URLを取得する
+ */
+export function getAttachmentUrl(path: string): string {
+  return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/issue-attachments/${path}`;
 }

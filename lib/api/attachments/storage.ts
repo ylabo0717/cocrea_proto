@@ -1,4 +1,4 @@
-"use server";
+"use client";
 
 import { supabase } from '@/lib/supabase';
 
@@ -53,6 +53,6 @@ export function getPublicUrl(path: string): string {
 /**
  * ファイル名をサニタイズする
  */
-export function sanitizeFilename(filename: string): string {
+export async function sanitizeFilename(filename: string): Promise<string> {
   return filename.replace(/[^a-zA-Z0-9._-]/g, '_');
 }
