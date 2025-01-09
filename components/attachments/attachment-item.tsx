@@ -7,7 +7,6 @@ import { FileIcon, Trash2, Download } from "lucide-react";
 import { formatFileSize } from "@/lib/utils";
 import { CopyMarkdownButton } from "./copy-markdown-button";
 import { useToast } from "@/hooks/use-toast";
-import { getPublicUrl } from "@/lib/api/attachments/storage";
 
 interface AttachmentItemProps {
   attachment: Attachment;
@@ -17,7 +16,7 @@ interface AttachmentItemProps {
 export function AttachmentItem({ attachment, onDelete }: AttachmentItemProps) {
   const { toast } = useToast();
   const [isDownloading, setIsDownloading] = useState(false);
-  const publicUrl = getPublicUrl(attachment.file_path);
+  const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/issue-attachments/${attachment.file_path}`;
   const isImage = attachment.mime_type.startsWith('image/');
 
   const handleDownload = async (e: React.MouseEvent) => {

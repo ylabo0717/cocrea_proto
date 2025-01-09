@@ -1,15 +1,19 @@
-"use client";
+"use server";
 
 import { supabase } from '@/lib/supabase';
 
 /**
  * ファイルをストレージにアップロードする
  */
-export async function uploadFile(file: File, path: string): Promise<void> {
+export async function uploadFile(buffer: Uint8Array, path: string, contentType: string): Promise<void> {
   try {
     const { error } = await supabase.storage
       .from('issue-attachments')
-      .upload(path, file);
+      .upload(path, buffer, {
+        contentType,
+        cacheControl: '3600',
+        upsert: false
+      });
 
     if (error) {
       console.error('Storage upload error:', error);
@@ -43,8 +47,8 @@ export async function deleteFile(path: string): Promise<void> {
 /**
  * ファイルの公開URLを取得する
  */
-export function getPublicUrl(path: string): string {
-  const { data } = supabase.storage
+export async function getPublicUrl(path: string): Promise<string> {
+  const { data } = await supabase.storage
     .from('issue-attachments')
     .getPublicUrl(path);
   return data.publicUrl;

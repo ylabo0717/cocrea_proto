@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { uploadFile } from '@/lib/api/attachments/storage';
 
 // ファイルをアップロードする
 export async function POST(req: NextRequest) {
@@ -54,21 +55,7 @@ export async function POST(req: NextRequest) {
     const buffer = new Uint8Array(arrayBuffer);
 
     // ストレージにアップロード
-    const { error: uploadError } = await supabase.storage
-      .from('issue-attachments')
-      .upload(filePath, buffer, {
-        contentType: file.type,
-        cacheControl: '3600',
-        upsert: false
-      });
-
-    if (uploadError) {
-      console.error('Storage upload error:', uploadError);
-      return NextResponse.json(
-        { error: 'ファイルのアップロードに失敗しました' },
-        { status: 500 }
-      );
-    }
+    await uploadFile(buffer, filePath, file.type);
 
     // データベースに登録
     const { data: attachment, error: dbError } = await supabase
