@@ -7,7 +7,6 @@ import { IssueForm } from "../components/issue-form/issue-form";
 import { useState } from "react";
 import { IssueFormData } from "../components/issue-form/types";
 import { useToast } from "@/hooks/use-toast";
-import { createIssue } from "@/lib/api/issues";
 import { updateAttachments } from "@/lib/api/attachments";
 
 export default function NewIssuePage() {
@@ -17,10 +16,10 @@ export default function NewIssuePage() {
   const [tempId] = useState(() => crypto.randomUUID());
 
   const handleSubmit = async (data: IssueFormData) => {
-    console.log('Form submission started:', data); // デバッグログ
+    console.log('Form submission started:', data);
 
     if (!data.title || !data.body || !data.application_id) {
-      console.log('Validation failed:', { data }); // デバッグログ
+      console.log('Validation failed:', { data });
       toast({
         title: "エラー",
         description: "必須項目を入力してください",
@@ -31,17 +30,24 @@ export default function NewIssuePage() {
 
     setIsLoading(true);
     try {
-      console.log('Creating issue...'); // デバッグログ
-      const issue = await createIssue({
-        ...data,
-        status: data.status || 'open',
-        priority: data.priority || 'medium'
+      const response = await fetch('/api/issues', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
       });
-      
-      console.log('Issue created:', issue); // デバッグログ
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '課題の作成に失敗しました');
+      }
+
+      const issue = await response.json();
+      console.log('Issue created:', issue);
 
       if (issue.id) {
-        console.log('Updating attachments...'); // デバッグログ
+        console.log('Updating attachments...');
         await updateAttachments(issue.id);
       }
 
