@@ -7,7 +7,6 @@ import { KnowledgeForm } from "../components/knowledge-form/knowledge-form";
 import { useState } from "react";
 import { KnowledgeFormData } from "../components/knowledge-form/types";
 import { useToast } from "@/hooks/use-toast";
-import { createKnowledge } from "@/lib/api/knowledge";
 import { updateAttachments } from "@/lib/api/attachments";
 
 export default function NewKnowledgePage() {
@@ -17,15 +16,28 @@ export default function NewKnowledgePage() {
   const [tempId] = useState(() => crypto.randomUUID());
 
   const handleSubmit = async (data: KnowledgeFormData) => {
-    console.log('Creating knowledge with data:', data); // デバッグログ
+    console.log('Creating knowledge with data:', data);
     setIsLoading(true);
 
     try {
-      const knowledge = await createKnowledge(data);
-      console.log('Knowledge created:', knowledge); // デバッグログ
+      const response = await fetch('/api/knowledge', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'ナレッジの作成に失敗しました');
+      }
+
+      const knowledge = await response.json();
+      console.log('Knowledge created:', knowledge);
 
       if (knowledge.id) {
-        console.log('Updating attachments...'); // デバッグログ
+        console.log('Updating attachments...');
         await updateAttachments(knowledge.id);
       }
 
