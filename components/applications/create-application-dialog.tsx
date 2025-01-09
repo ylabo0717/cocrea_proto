@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { createApplication } from "@/lib/api/applications";
 
 interface CreateApplicationDialogProps {
   onSuccess: () => void;
@@ -26,7 +25,18 @@ export function CreateApplicationDialog({ onSuccess }: CreateApplicationDialogPr
     setIsLoading(true);
 
     try {
-      await createApplication(formData);
+      const response = await fetch('/api/applications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'アプリケーションの作成に失敗しました');
+      }
       
       toast({
         title: "成功",
@@ -34,8 +44,8 @@ export function CreateApplicationDialog({ onSuccess }: CreateApplicationDialogPr
       });
 
       setOpen(false);
-      setFormData({ name: "", description: "" }); // フォームをリセット
-      onSuccess(); // ダッシュボードを更新
+      setFormData({ name: "", description: "" });
+      onSuccess();
     } catch (error) {
       toast({
         title: "エラー",
