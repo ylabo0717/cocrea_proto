@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { updateApplication } from "@/lib/api/applications";
 import { Application } from "@/lib/types";
 import { Pencil } from "lucide-react";
 
@@ -33,10 +32,21 @@ export function EditApplicationDialog({ application, onSuccess }: EditApplicatio
     setIsLoading(true);
 
     try {
-      await updateApplication(application.id, {
-        ...formData,
-        next_release_date: formData.next_release_date ? `${formData.next_release_date}T00:00:00Z` : null
+      const response = await fetch(`/api/applications/${application.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          next_release_date: formData.next_release_date ? `${formData.next_release_date}T00:00:00Z` : null
+        }),
       });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'アプリケーションの更新に失敗しました');
+      }
       
       toast({
         title: "成功",
