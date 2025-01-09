@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Comment } from "@/lib/types";
-import { fetchComments } from "@/lib/api/comments";
 import { useToast } from "@/hooks/use-toast";
 import { CommentItem } from "./comment-item";
 
@@ -18,7 +17,11 @@ export function CommentList({ contentId, refreshKey = 0 }: CommentListProps) {
 
   const loadComments = async () => {
     try {
-      const data = await fetchComments(contentId);
+      const response = await fetch(`/api/comments?contentId=${contentId}`);
+      if (!response.ok) {
+        throw new Error('コメントの取得に失敗しました');
+      }
+      const data = await response.json();
       setComments(data);
     } catch (error) {
       toast({

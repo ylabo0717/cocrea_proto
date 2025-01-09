@@ -5,7 +5,6 @@ import { Comment } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { updateComment } from "@/lib/api/comments";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactMarkdown from "react-markdown";
 import { AttachmentUpload } from "../attachments/attachment-upload";
@@ -31,7 +30,19 @@ export function CommentEditForm({ comment, onSuccess, onCancel }: CommentEditFor
 
     setIsLoading(true);
     try {
-      await updateComment(comment.id, body);
+      const response = await fetch(`/api/comments/${comment.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ body: body.trim() }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'コメントの更新に失敗しました');
+      }
+
       onSuccess();
       toast({
         title: "成功",

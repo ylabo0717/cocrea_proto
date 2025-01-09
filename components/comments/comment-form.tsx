@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { createComment } from "@/lib/api/comments";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactMarkdown from "react-markdown";
 import { AttachmentUpload } from "../attachments/attachment-upload";
@@ -29,7 +28,22 @@ export function CommentForm({ contentId, onSuccess }: CommentFormProps) {
 
     setIsLoading(true);
     try {
-      const comment = await createComment(contentId, body);
+      const response = await fetch('/api/comments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contentId,
+          body: body.trim()
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'コメントの投稿に失敗しました');
+      }
+
       setBody("");
       setTab("write");
       onSuccess();
