@@ -7,7 +7,6 @@ import { RequestForm } from "../components/request-form/request-form";
 import { useState } from "react";
 import { RequestFormData } from "../components/request-form/types";
 import { useToast } from "@/hooks/use-toast";
-import { createRequest } from "@/lib/api/requests";
 import { updateAttachments } from "@/lib/api/attachments";
 
 export default function NewRequestPage() {
@@ -21,7 +20,20 @@ export default function NewRequestPage() {
     setIsLoading(true);
 
     try {
-      const request = await createRequest(data);
+      const response = await fetch('/api/requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '要望の作成に失敗しました');
+      }
+
+      const request = await response.json();
       console.log('Request created:', request);
 
       if (request.id) {
