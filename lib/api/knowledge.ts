@@ -1,80 +1,39 @@
-"use client";
+"use server";
 
-import { supabase } from "@/lib/supabase";
-import { getSession } from "@/lib/auth/session";
-import { Content } from "@/lib/types";
+import { supabase } from '@/lib/supabase';
+import { Content } from '@/lib/types';
+import { cookies } from 'next/headers';
 
-interface CreateKnowledgeData {
-  title: string;
-  body: string;
-  category?: string;
-  tags?: string[];
-  application_id: string;
-}
-
-interface UpdateKnowledgeData {
-  title: string;
-  body: string;
-  category?: string;
-  tags?: string[];
-  application_id: string;
-}
-
-export async function createKnowledge(data: CreateKnowledgeData): Promise<Content> {
-  const session = getSession();
-  if (!session) {
-    throw new Error("認証情報が見つかりません");
-  }
-
-  if (!data.application_id) {
-    throw new Error("アプリケーションを選択してください");
-  }
-
-  const { data: knowledge, error } = await supabase
-    .from("contents")
-    .insert({
-      type: "knowledge",
-      title: data.title,
-      body: data.body,
-      category: data.category,
-      tags: data.tags,
-      application_id: data.application_id,
-      author_id: session.userId
-    })
-    .select(`
-      *,
-      author:author_id(name),
-      application:application_id(id, name)
-    `)
-    .single();
-
-  if (error) {
-    console.error("Knowledge creation error:", error);
-    throw new Error("ナレッジの作成に失敗しました");
-  }
-
-  return knowledge;
-}
-
+/**
+ * ナレッジ一覧を取得する
+ */
 export async function fetchKnowledge(): Promise<Content[]> {
-  const { data, error } = await supabase
-    .from("contents")
-    .select(`
-      *,
-      author:author_id(name),
-      application:application_id(id, name)
-    `)
-    .eq('type', 'knowledge')
-    .order('created_at', { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from("contents")
+      .select(`
+        *,
+        author:author_id(name),
+        application:application_id(id, name)
+      `)
+      .eq('type', 'knowledge')
+      .order('created_at', { ascending: false });
 
-  if (error) {
-    console.error("Error fetching knowledge:", error);
-    throw new Error("ナレッジの取得に失敗しました");
+    if (error) {
+      console.error("Error fetching knowledge:", error);
+      throw new Error("ナレッジの取得に失敗しました");
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error("Error in fetchKnowledge:", error);
+    throw error;
   }
-
-  return data || [];
 }
 
+/**
+ * 指定されたIDのナレッジを取得する
+ */
 export async function fetchKnowledgeById(id: string): Promise<Content> {
   const { data, error } = await supabase
     .from("contents")
@@ -94,38 +53,118 @@ export async function fetchKnowledgeById(id: string): Promise<Content> {
   return data;
 }
 
-export async function updateKnowledge(id: string, data: UpdateKnowledgeData): Promise<Content> {
-  const session = getSession();
-  if (!session) {
-    throw new Error("認証情報が見つかりません");
+/**
+ * ナレッジを作成する
+ */
+export async function createKnowledge(data: {
+  title: string;
+  body: string;
+  category?: string;
+  tags?: string[];
+  application_id: string;
+}): Promise<Content> {
+  try {
+    // セッションの取得
+    const cookieStore = cookies();
+    const authCookie = cookieStore.get('auth');
+    if (!authCookie) {
+      throw new Error("認証が必要です");
+    }
+
+    const session = JSON.parse(decodeURIComponent(authCookie.value));
+    if (!session || !session.userId) {
+      throw new Error("認証が必要です");
+    }
+
+    // バリデーション
+    if (!data.application_id) {
+      throw new Error("アプリケーションを選択してください");
+    }
+
+    const { data: knowledge, error } = await supabase
+      .from("contents")
+      .insert({
+        type: "knowledge",
+        title: data.title,
+        body: data.body,
+        category: data.category,
+        tags: data.tags,
+        application_id: data.application_id,
+        author_id: session.userId
+      })
+      .select(`
+        *,
+        author:author_id(name),
+        application:application_id(id, name)
+      `)
+      .single();
+
+    if (error) {
+      console.error("Knowledge creation error:", error);
+      throw new Error("ナレッジの作成に失敗しました");
+    }
+
+    return knowledge;
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    throw error;
   }
+}
 
-  if (!data.application_id) {
-    throw new Error("アプリケーションを選択してください");
+/**
+ * ナレッジを更新する
+ */
+export async function updateKnowledge(id: string, data: {
+  title: string;
+  body: string;
+  category?: string;
+  tags?: string[];
+  application_id: string;
+}): Promise<Content> {
+  try {
+    // セッションの取得
+    const cookieStore = cookies();
+    const authCookie = cookieStore.get('auth');
+    if (!authCookie) {
+      throw new Error("認証が必要です");
+    }
+
+    const session = JSON.parse(decodeURIComponent(authCookie.value));
+    if (!session || !session.userId) {
+      throw new Error("認証が必要です");
+    }
+
+    // バリデーション
+    if (!data.application_id) {
+      throw new Error("アプリケーションを選択してください");
+    }
+
+    const { data: knowledge, error } = await supabase
+      .from("contents")
+      .update({
+        title: data.title,
+        body: data.body,
+        category: data.category,
+        tags: data.tags,
+        application_id: data.application_id,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select(`
+        *,
+        author:author_id(name),
+        application:application_id(id, name)
+      `)
+      .single();
+
+    if (error) {
+      console.error("Knowledge update error:", error);
+      throw new Error("ナレッジの更新に失敗しました");
+    }
+
+    return knowledge;
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    throw error;
   }
-
-  const { data: knowledge, error } = await supabase
-    .from("contents")
-    .update({
-      title: data.title,
-      body: data.body,
-      category: data.category,
-      tags: data.tags,
-      application_id: data.application_id,
-      updated_at: new Date().toISOString()
-    })
-    .eq('id', id)
-    .select(`
-      *,
-      author:author_id(name),
-      application:application_id(id, name)
-    `)
-    .single();
-
-  if (error) {
-    console.error("Knowledge update error:", error);
-    throw new Error("ナレッジの更新に失敗しました");
-  }
-
-  return knowledge;
 }
