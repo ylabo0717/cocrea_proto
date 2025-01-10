@@ -11,31 +11,31 @@ import { useSession } from "@/hooks/use-session";
 
 const routes = [
   {
-    label: "Dashboard",
+    label: "アプリダッシュボード",
     icon: LayoutDashboard,
     href: "/dashboard",
     color: "text-sky-500",
   },
   {
-    label: "Requests",
+    label: "要望・アイデア",
     icon: Lightbulb,
     href: "/requests",
     color: "text-yellow-500",
   },
   {
-    label: "Issues",
+    label: "お困りごと",
     icon: MessageSquare,
     href: "/issues",
     color: "text-violet-500",
   },
   {
-    label: "Knowledge",
+    label: "知識共有",
     icon: BookOpen,
     href: "/knowledge",
     color: "text-pink-500",
   },
   {
-    label: "Users",
+    label: "ユーザー一覧",
     icon: Users,
     href: "/users",
     color: "text-orange-500",
