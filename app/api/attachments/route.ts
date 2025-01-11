@@ -57,6 +57,22 @@ export async function POST(req: NextRequest) {
     // ストレージにアップロード
     await uploadFile(buffer, filePath, file.type);
 
+    // コンテンツが存在するか確認
+    if (contentId) {
+      const { data: content, error: contentError } = await supabase
+        .from('contents')
+        .select('id')
+        .eq('id', contentId)
+        .single();
+
+      if (contentError || !content) {
+        return NextResponse.json(
+          { error: '指定されたコンテンツが見つかりません' },
+          { status: 404 }
+        );
+      }
+    }
+
     // データベースに登録
     const { data: attachment, error: dbError } = await supabase
       .from('attachments')
