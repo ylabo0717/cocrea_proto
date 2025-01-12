@@ -59,6 +59,7 @@ export async function fetchIssueById(id: string): Promise<Content> {
  * 課題を作成する
  */
 export async function createIssue(data: {
+  id?: string;  // Draft ID if exists
   title: string;
   body: string;
   status: 'open' | 'in_progress' | 'resolved';
@@ -84,18 +85,38 @@ export async function createIssue(data: {
       throw new Error("アプリケーションを選択してください");
     }
 
-    const { data: issue, error } = await supabase
-      .from("contents")
-      .insert({
-        type: "issue",
-        title: data.title,
-        body: data.body,
-        status: data.status || 'open',
-        priority: data.priority || 'medium',
-        application_id: data.application_id,
-        assignee_id: data.assignee_id,
-        author_id: session.userId
-      })
+    const updateData = {
+      title: data.title,
+      body: data.body,
+      status: data.status || 'open',
+      priority: data.priority || 'medium',
+      application_id: data.application_id,
+      assignee_id: data.assignee_id,
+      is_draft: false,
+      updated_at: new Date().toISOString()
+    };
+
+    let query;
+
+    if (data.id) {
+      // Update existing draft
+      query = supabase
+        .from("contents")
+        .update(updateData)
+        .eq('id', data.id)
+        .eq('is_draft', true);
+    } else {
+      // Create new issue
+      query = supabase
+        .from("contents")
+        .insert({
+          ...updateData,
+          type: "issue",
+          author_id: session.userId
+        });
+    }
+
+    const { data: issue, error } = await query
       .select(`
         *,
         author:author_id(name),

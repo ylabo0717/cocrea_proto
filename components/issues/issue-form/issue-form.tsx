@@ -8,29 +8,62 @@ import { useIssueForm } from "./use-issue-form";
 import { IssueFormProps } from "./types";
 import { useApplications } from "@/app/(root)/(routes)/dashboard/hooks/use-applications";
 import { useUsers } from "@/app/(root)/(routes)/users/hooks/use-users";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactMarkdown from "react-markdown";
 import { IssueFormAttachments } from "./issue-form-attachments";
 
-export function IssueForm({ initialData, onSubmit, onCancel, isLoading, tempId }: IssueFormProps) {
+export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueFormProps) {
   const { formData, handleChange } = useIssueForm(initialData);
+  const { toast } = useToast();
   const { applications, refreshApplications } = useApplications();
   const { users, refreshUsers } = useUsers();
   const [tab, setTab] = useState<"write" | "preview">("write");
+  const [draftId, setDraftId] = useState<string | null>(null);
+
+  const createDraft = useCallback(async () => {
+    if (initialData) return; // Skip if editing existing issue
+    try {
+      const response = await fetch('/api/issues/draft', {
+        method: 'POST',
+      });
+      if (!response.ok) throw new Error('Failed to create draft');
+      const draft = await response.json();
+      setDraftId(draft.id);
+    } catch (error) {
+      console.error('Error creating draft:', error);
+    }
+  }, [initialData]);
 
   useEffect(() => {
     refreshApplications();
     refreshUsers();
-  }, [refreshApplications, refreshUsers]);
+    createDraft();
+  }, [refreshApplications, refreshUsers, createDraft]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit(formData);
+
+    // Validate required fields
+    if (!formData.application_id) {
+      toast({
+        title: "エラー",
+        description: "アプリケーションを選択してください",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (draftId) {
+      await onSubmit({ ...formData, id: draftId });
+    } else {
+      await onSubmit(formData);
+    }
   };
 
   // 開発者のみをフィルタリング
-  const developers = users.filter(user => 
+  const developers = users.filter(user =>
     user.role === 'developer' || user.role === 'admin'
   );
 
@@ -161,7 +194,7 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading, tempId }
       </div>
 
       <div className="space-y-4">
-        <IssueFormAttachments contentId={tempId || initialData?.id || ''} />
+        <IssueFormAttachments contentId={draftId || initialData?.id} />
       </div>
 
       <div className="flex justify-end space-x-2">

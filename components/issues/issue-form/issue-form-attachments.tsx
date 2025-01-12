@@ -6,11 +6,11 @@ import { AttachmentList } from "@/components/attachments/attachment-list";
 import { Paperclip } from "lucide-react";
 
 interface IssueFormAttachmentsProps {
-  contentId: string;
+  contentId?: string | null;
   canDelete?: boolean;
 }
 
-export function IssueFormAttachments({ contentId, canDelete = true }: IssueFormAttachmentsProps) {
+export function IssueFormAttachments({ contentId = '', canDelete = true }: IssueFormAttachmentsProps) {
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState(0);
 
   const handleAttachmentUpload = () => {

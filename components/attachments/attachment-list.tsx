@@ -6,12 +6,12 @@ import { AttachmentItem } from "./attachment-item";
 import { useToast } from "@/hooks/use-toast";
 
 interface AttachmentListProps {
-  contentId: string;
+  contentId?: string | null;
   canDelete?: boolean;
   refreshKey?: number;
 }
 
-export function AttachmentList({ contentId, canDelete = false, refreshKey = 0 }: AttachmentListProps) {
+export function AttachmentList({ contentId = '', canDelete = false, refreshKey = 0 }: AttachmentListProps) {
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -35,7 +35,8 @@ export function AttachmentList({ contentId, canDelete = false, refreshKey = 0 }:
 
   const loadAttachments = async () => {
     try {
-      const data = await fetchAttachments(contentId);
+      setIsLoading(true);
+      const data = await fetchAttachments(contentId || null);
       setAttachments(data);
     } catch (error) {
       toast({

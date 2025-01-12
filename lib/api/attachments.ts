@@ -5,7 +5,7 @@ import { Attachment } from '@/lib/types';
 /**
  * ファイルをアップロードする
  */
-export async function uploadAttachment(file: File, contentId?: string): Promise<Attachment> {
+export async function uploadAttachment(file: File, contentId?: string | null): Promise<Attachment> {
   try {
     const formData = new FormData();
     formData.append('file', file);
@@ -75,11 +75,11 @@ export async function updateAttachments(contentId: string): Promise<void> {
 /**
  * 添付ファイル一覧を取得する
  */
-export async function fetchAttachments(contentId: string | null): Promise<Attachment[]> {
+export async function fetchAttachments(contentId?: string | null): Promise<Attachment[]> {
   try {
     const url = new URL('/api/attachments', window.location.origin);
-    if (contentId !== undefined) {
-      url.searchParams.set('contentId', contentId || '');
+    if (contentId) {
+      url.searchParams.set('contentId', contentId);
     }
 
     const response = await fetch(url);

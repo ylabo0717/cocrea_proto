@@ -7,11 +7,11 @@ import { useToast } from "@/hooks/use-toast";
 import { uploadAttachment } from "@/lib/api/attachments";
 
 interface AttachmentUploadProps {
-  contentId: string;
+  contentId?: string | null;
   onUpload: () => void;
 }
 
-export function AttachmentUpload({ contentId, onUpload }: AttachmentUploadProps) {
+export function AttachmentUpload({ contentId = '', onUpload }: AttachmentUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -19,7 +19,7 @@ export function AttachmentUpload({ contentId, onUpload }: AttachmentUploadProps)
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     event.stopPropagation();
-    
+
     const file = event.target.files?.[0];
     if (!file) return;
 
