@@ -31,15 +31,24 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
       if (!response.ok) throw new Error('Failed to create draft');
       const draft = await response.json();
       setDraftId(draft.id);
+      return draft.id;
     } catch (error) {
       console.error('Error creating draft:', error);
+      return null;
     }
   }, [initialData]);
 
   useEffect(() => {
-    refreshApplications();
-    refreshUsers();
-    createDraft();
+    const initForm = async () => {
+      await Promise.all([
+        refreshApplications(),
+        refreshUsers(),
+      ]);
+      // Make sure draft is created after refreshing data
+      await createDraft();
+    };
+
+    initForm();
   }, [refreshApplications, refreshUsers, createDraft]);
 
   const handleSubmit = async (e: React.FormEvent) => {

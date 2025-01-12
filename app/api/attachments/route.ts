@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
+    // MIMEタイプのチェック
     // MIMEタイプのチェック
     const allowedMimeTypes = [
       'image/jpeg',
@@ -57,19 +57,22 @@ export async function POST(req: NextRequest) {
     // ストレージにアップロード
     await uploadFile(buffer, filePath, file.type);
 
-    // コンテンツが存在するか確認
-    if (contentId) {
+    // コンテンツIDの確認
+    let validContentId = null;
+    
+    if (contentId && contentId.trim() !== '') {
       const { data: content, error: contentError } = await supabase
         .from('contents')
-        .select('id')
+        .select('id, is_draft')
         .eq('id', contentId)
         .single();
 
+      // コンテンツが存在しない場合は一時ファイルとして扱う
       if (contentError || !content) {
-        return NextResponse.json(
-          { error: '指定されたコンテンツが見つかりません' },
-          { status: 404 }
-        );
+        console.log('Content not found or error:', contentError);
+        validContentId = null;
+      } else {
+        validContentId = content.id;
       }
     }
 
@@ -77,7 +80,7 @@ export async function POST(req: NextRequest) {
     const { data: attachment, error: dbError } = await supabase
       .from('attachments')
       .insert({
-        content_id: contentId || null,
+        content_id: validContentId,
         file_name: file.name,
         file_path: filePath,
         file_size: file.size,

@@ -99,12 +99,51 @@ export async function createIssue(data: {
     let query;
 
     if (data.id) {
-      // Update existing draft
-      query = supabase
+      // Update draft content first
+      const { error: updateError } = await supabase
         .from("contents")
         .update(updateData)
         .eq('id', data.id)
         .eq('is_draft', true);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      // Update attachments if they exist
+      const { data: attachments } = await supabase
+        .from('attachments')
+        .select('id')
+        .eq('content_id', data.id);
+
+      if (attachments && attachments.length > 0) {
+        const { error: attachmentError } = await supabase
+          .from('attachments')
+          .update({ content_id: data.id })
+          .eq('content_id', data.id);
+
+        if (attachmentError) {
+          throw attachmentError;
+        }
+      }
+
+      // Get the updated content
+      const { data: publishedIssue, error: fetchError } = await supabase
+        .from("contents")
+        .select(`
+          *,
+          author:author_id(name),
+          assignee:assignee_id(name),
+          application:application_id(id, name)
+        `)
+        .eq('id', data.id)
+        .single();
+
+      if (fetchError) {
+        throw fetchError;
+      }
+
+      return publishedIssue;
     } else {
       // Create new issue
       query = supabase
@@ -116,14 +155,12 @@ export async function createIssue(data: {
         });
     }
 
-    const { data: issue, error } = await query
-      .select(`
-        *,
-        author:author_id(name),
-        assignee:assignee_id(name),
-        application:application_id(id, name)
-      `)
-      .single();
+    const { data: issue, error } = await query.select(`
+      *,
+      author:author_id(name),
+      assignee:assignee_id(name),
+      application:application_id(id, name)
+    `).single();
 
     if (error) {
       console.error("Issue creation error:", error);
