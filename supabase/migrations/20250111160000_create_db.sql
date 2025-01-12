@@ -49,6 +49,7 @@ CREATE TABLE contents (
   author_id uuid REFERENCES users(id) ON DELETE SET NULL,
   assignee_id uuid REFERENCES users(id) ON DELETE SET NULL,
   application_id uuid REFERENCES applications(id) ON DELETE SET NULL,
+  is_draft boolean NOT NULL DEFAULT false,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now(),
   CONSTRAINT valid_type CHECK (type IN ('issue', 'knowledge', 'request')),
