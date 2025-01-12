@@ -18,14 +18,5 @@ CREATE POLICY "storage_all_operations"
   ON storage.objects FOR ALL
 USING (true);
 
-DROP POLICY IF EXISTS "attachments_all_operations" ON storage.objects;
-DROP POLICY IF EXISTS "attachments_select" ON storage.objects;
-DROP POLICY IF EXISTS "attachments_insert" ON storage.objects;
-DROP POLICY IF EXISTS "attachments_update" ON storage.objects;
-DROP POLICY IF EXISTS "attachments_delete" ON storage.objects;
-CREATE POLICY "attachments_all_operations"
-  ON attachments FOR ALL
-USING (true);
-
 
 

@@ -40,8 +40,8 @@ CREATE TABLE applications (
 CREATE TABLE contents (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   type text NOT NULL,
-  title text NOT NULL,
-  body text NOT NULL,
+  title text,
+  body text,
   status text,
   priority text,
   category text,
