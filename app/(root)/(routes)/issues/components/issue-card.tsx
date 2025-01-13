@@ -29,7 +29,7 @@ export function IssueCard({ issue }: IssueCardProps) {
               <div className="flex items-center gap-2">
                 <IssuePriorityBadge priority={issue.priority!} />
                 <Badge variant="secondary" className="font-normal">
-                  {issue.application.name}
+                  {issue.application?.name}
                 </Badge>
               </div>
               <h3 className="text-xl font-bold">{issue.title}</h3>
