@@ -8,6 +8,7 @@ import { UserNav } from "./user-nav";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "@/hooks/use-session";
+import { useTheme } from "next-themes";
 
 const routes = [
   {
@@ -45,6 +46,11 @@ const routes = [
 export function Sidebar() {
   const pathname = usePathname();
   const { email, role } = useSession();
+  const { theme, setTheme } = useTheme();
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
 
   return (
     <div className="space-y-4 py-4 flex flex-col h-full bg-gray-900 text-white">
@@ -72,6 +78,11 @@ export function Sidebar() {
             ))}
           </div>
         </ScrollArea>
+      </div>
+      <div className="px-6 py-3 border-t border-gray-800">
+        <Button variant="themeToggle" onClick={toggleTheme}>
+          {theme === "dark" ? "ライトモード" : "ダークモード"}
+        </Button>
       </div>
       {email && (
         <div className="px-6 py-3 border-t border-gray-800">
