@@ -54,19 +54,19 @@ export async function POST(req: NextRequest) {
       userId: user.id,
       email: user.email,
       role: user.role,
-      expiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24時間
+      expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24時間
     };
 
     // レスポンスの作成
     const response = NextResponse.json({ success: true });
-    
+
     // セッションCookieの設定
     response.cookies.set('auth', JSON.stringify(session), {
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 24 * 60 * 60 // 24時間（秒単位）
+      maxAge: 24 * 60 * 60, // 24時間（秒単位）
     });
 
     return response;
