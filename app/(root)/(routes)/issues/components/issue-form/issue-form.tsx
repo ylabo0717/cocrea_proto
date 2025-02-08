@@ -1,27 +1,39 @@
-"use client";
+'use client';
 
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useIssueForm } from "./use-issue-form";
-import { IssueFormProps } from "./types";
-import { useApplications } from "@/app/(root)/(routes)/dashboard/hooks/use-applications";
-import { useUsers } from "@/app/(root)/(routes)/users/hooks/use-users";
-import { useEffect, useState } from "react";
-import { AttachmentUpload } from "@/components/attachments/attachment-upload";
-import { AttachmentList } from "@/components/attachments/attachment-list";
-import { Paperclip } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ReactMarkdown from "react-markdown";
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useIssueForm } from './use-issue-form';
+import { IssueFormProps } from './types';
+import { useApplications } from '@/app/(root)/(routes)/dashboard/hooks/use-applications';
+import { useUsers } from '@/app/(root)/(routes)/users/hooks/use-users';
+import { useEffect, useState } from 'react';
+import { AttachmentUpload } from '@/components/attachments/attachment-upload';
+import { AttachmentList } from '@/components/attachments/attachment-list';
+import { Paperclip } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import ReactMarkdown from 'react-markdown';
 
-export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueFormProps) {
+export function IssueForm({
+  initialData,
+  onSubmit,
+  onCancel,
+  isLoading,
+}: IssueFormProps) {
   const { formData, handleChange } = useIssueForm(initialData);
   const { applications, refreshApplications } = useApplications();
   const { users, refreshUsers } = useUsers();
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState(0);
-  const [tab, setTab] = useState<"write" | "preview">("write");
-  const [tempId] = useState(() => crypto.randomUUID());
+  const [tab, setTab] = useState<'write' | 'preview'>('write');
+  const { v4: uuidv4 } = require('uuid');
+  const [tempId] = useState(() => uuidv4());
 
   useEffect(() => {
     refreshApplications();
@@ -34,12 +46,12 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
   };
 
   const handleAttachmentUpload = () => {
-    setAttachmentRefreshKey(prev => prev + 1);
+    setAttachmentRefreshKey((prev) => prev + 1);
   };
 
   // 開発者のみをフィルタリング
-  const developers = users.filter(user => 
-    user.role === 'developer' || user.role === 'admin'
+  const developers = users.filter(
+    (user) => user.role === 'developer' || user.role === 'admin'
   );
 
   return (
@@ -49,7 +61,7 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
           <label className="text-sm font-medium">タイトル</label>
           <Input
             value={formData.title}
-            onChange={(e) => handleChange("title", e.target.value)}
+            onChange={(e) => handleChange('title', e.target.value)}
             placeholder="課題のタイトルを入力"
             disabled={isLoading}
             required
@@ -58,7 +70,10 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
 
         <div className="space-y-2">
           <label className="text-sm font-medium">内容</label>
-          <Tabs value={tab} onValueChange={(value) => setTab(value as "write" | "preview")}>
+          <Tabs
+            value={tab}
+            onValueChange={(value) => setTab(value as 'write' | 'preview')}
+          >
             <TabsList>
               <TabsTrigger value="write">書く</TabsTrigger>
               <TabsTrigger value="preview">プレビュー</TabsTrigger>
@@ -66,7 +81,7 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
             <TabsContent value="write">
               <Textarea
                 value={formData.body}
-                onChange={(e) => handleChange("body", e.target.value)}
+                onChange={(e) => handleChange('body', e.target.value)}
                 placeholder="課題の詳細を入力（Markdown形式で記述可能）"
                 className="min-h-[200px] font-mono"
                 disabled={isLoading}
@@ -78,7 +93,9 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
                 {formData.body ? (
                   <ReactMarkdown>{formData.body}</ReactMarkdown>
                 ) : (
-                  <p className="text-muted-foreground">プレビューする内容がありません</p>
+                  <p className="text-muted-foreground">
+                    プレビューする内容がありません
+                  </p>
                 )}
               </div>
             </TabsContent>
@@ -90,7 +107,7 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
             <label className="text-sm font-medium">ステータス</label>
             <Select
               value={formData.status}
-              onValueChange={(value) => handleChange("status", value)}
+              onValueChange={(value) => handleChange('status', value)}
               disabled={isLoading}
             >
               <SelectTrigger>
@@ -108,7 +125,7 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
             <label className="text-sm font-medium">優先度</label>
             <Select
               value={formData.priority}
-              onValueChange={(value) => handleChange("priority", value)}
+              onValueChange={(value) => handleChange('priority', value)}
               disabled={isLoading}
             >
               <SelectTrigger>
@@ -128,7 +145,7 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
             <label className="text-sm font-medium">アプリケーション</label>
             <Select
               value={formData.application_id}
-              onValueChange={(value) => handleChange("application_id", value)}
+              onValueChange={(value) => handleChange('application_id', value)}
               disabled={isLoading}
               required
             >
@@ -148,8 +165,13 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
           <div className="space-y-2">
             <label className="text-sm font-medium">担当者</label>
             <Select
-              value={formData.assignee_id || "unassigned"}
-              onValueChange={(value) => handleChange("assignee_id", value === "unassigned" ? undefined : value)}
+              value={formData.assignee_id || 'unassigned'}
+              onValueChange={(value) =>
+                handleChange(
+                  'assignee_id',
+                  value === 'unassigned' ? undefined : value
+                )
+              }
               disabled={isLoading}
             >
               <SelectTrigger>
@@ -196,7 +218,7 @@ export function IssueForm({ initialData, onSubmit, onCancel, isLoading }: IssueF
           キャンセル
         </Button>
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "保存中..." : "保存"}
+          {isLoading ? '保存中...' : '保存'}
         </Button>
       </div>
     </form>

@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Content } from "@/lib/types";
-import { User, Calendar, RefreshCw } from "lucide-react";
-import { format } from "date-fns";
-import { ja } from "date-fns/locale";
-import Link from "next/link";
-import { IssueStatusBadge } from "./issue-status-badge";
-import { IssuePriorityBadge } from "./issue-priority-badge";
-import { LikeButton } from "@/components/likes/like-button";
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Content } from '@/lib/types';
+import { User, Calendar, RefreshCw } from 'lucide-react';
+import { format } from 'date-fns';
+import { ja } from 'date-fns/locale';
+import Link from 'next/link';
+import { IssueStatusBadge } from './issue-status-badge';
+import { IssuePriorityBadge } from './issue-priority-badge';
+import { LikeButton } from '@/components/likes/like-button';
 
 interface IssueCardProps {
   issue: Content & {

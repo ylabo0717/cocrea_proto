@@ -1,19 +1,20 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { IssueForm } from "../components/issue-form/issue-form";
-import { useState } from "react";
-import { IssueFormData } from "../components/issue-form/types";
-import { useToast } from "@/hooks/use-toast";
-import { updateAttachments } from "@/lib/api/attachments";
+import { useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+import { IssueForm } from '../components/issue-form/issue-form';
+import { useState } from 'react';
+import { IssueFormData } from '../components/issue-form/types';
+import { useToast } from '@/hooks/use-toast';
+import { updateAttachments } from '@/lib/api/attachments';
 
 export default function NewIssuePage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [tempId] = useState(() => crypto.randomUUID());
+  const { v4: uuidv4 } = require('uuid');
+  const [tempId] = useState(() => uuidv4());
 
   const handleSubmit = async (data: IssueFormData) => {
     console.log('Form submission started:', data);
@@ -21,9 +22,9 @@ export default function NewIssuePage() {
     if (!data.title || !data.body || !data.application_id) {
       console.log('Validation failed:', { data });
       toast({
-        title: "エラー",
-        description: "必須項目を入力してください",
-        variant: "destructive",
+        title: 'エラー',
+        description: '必須項目を入力してください',
+        variant: 'destructive',
       });
       return;
     }
@@ -52,16 +53,17 @@ export default function NewIssuePage() {
       }
 
       toast({
-        title: "成功",
-        description: "課題を作成しました",
+        title: '成功',
+        description: '課題を作成しました',
       });
-      router.push("/issues");
+      router.push('/issues');
     } catch (error) {
       console.error('Failed to create issue:', error);
       toast({
-        title: "エラー",
-        description: error instanceof Error ? error.message : "課題の作成に失敗しました",
-        variant: "destructive",
+        title: 'エラー',
+        description:
+          error instanceof Error ? error.message : '課題の作成に失敗しました',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -69,13 +71,16 @@ export default function NewIssuePage() {
   };
 
   const handleCancel = () => {
-    router.push("/issues");
+    router.push('/issues');
   };
 
   return (
     <div className="h-full p-4 space-y-4">
       <div className="flex items-center gap-2 text-muted-foreground">
-        <Link href="/issues" className="hover:text-foreground transition-colors">
+        <Link
+          href="/issues"
+          className="hover:text-foreground transition-colors"
+        >
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <span>課題一覧</span>
