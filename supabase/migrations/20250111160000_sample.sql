@@ -17,7 +17,7 @@ BEGIN
     hashed_password
   ) VALUES (
     '堀江陽介',
-    'yosuke.horie@gmail.com',
+    'horie@example.com',
     'システム部',
     'admin',
     admin_salt,
