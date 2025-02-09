@@ -12,10 +12,16 @@ import { useTheme } from "next-themes";
 
 const routes = [
   {
+    label: "マイページ",
+    icon: User,
+    href: "/mypage",
+    color: "text-[#ACB0B9]",
+  },
+  {
     label: "アプリダッシュボード",
     icon: LayoutDashboard,
     href: "/dashboard",
-    color: "text-[#ACB0B9]",
+    color: "text-[#959AA3]",
   },
   {
     label: "要望・アイデア",
