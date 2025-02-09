@@ -51,7 +51,9 @@ export function Sidebar() {
   return (
     <div className={cn(
       "space-y-4 py-4 flex flex-col h-full",
-      theme === 'dark' ? 'bg-[#2D394D] text-[#E5EBF3]' : 'bg-[#9FB7D4] text-[#353B48]'
+      theme === 'dark' 
+        ? 'bg-[#2D394D] text-[#E5EBF3]' 
+        : 'bg-[#E5EBF3]/80 text-[#353B48] shadow-md'
     )}>
       <div className="px-3 py-2 flex-1">
         <div className="flex items-center justify-between pl-3 mb-14">
@@ -68,7 +70,7 @@ export function Sidebar() {
                 "w-8 h-8",
                 theme === 'dark' 
                   ? 'text-[#E5EBF3] hover:text-[#E5EBF3] hover:bg-[#202A3C]' 
-                  : 'text-[#353B48] hover:text-[#353B48] hover:bg-[#B8CFDF]'
+                  : 'text-[#353B48] hover:text-[#353B48] hover:bg-[#D3DCE6]'
               )}
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
@@ -89,18 +91,16 @@ export function Sidebar() {
                     {
                       [theme === 'dark' 
                         ? 'bg-[#202A3C] hover:bg-[#202A3C]/80' 
-                        : 'bg-[#B8CFDF] hover:bg-[#B8CFDF]/80'
+                        : 'bg-[#D3DCE6] hover:bg-[#D3DCE6]/80'
                       ]: pathname === route.href,
                       [theme === 'dark'
                         ? 'hover:bg-[#202A3C]/50'
-                        : 'hover:bg-[#B8CFDF]/50'
+                        : 'hover:bg-[#D3DCE6]/50'
                       ]: pathname !== route.href
                     }
                   )}
                 >
-                  <route.icon className={cn("h-5 w-5 mr-3", 
-                    theme === 'dark' ? 'text-[#7A95B8]' : 'text-[#353B48]'
-                  )} />
+                  <route.icon className={cn("h-5 w-5 mr-3", route.color)} />
                   {route.label}
                 </Button>
               </Link>
@@ -113,7 +113,7 @@ export function Sidebar() {
           "px-6 py-3 border-t",
           theme === 'dark' 
             ? 'border-[#202A3C] text-[#E5EBF3]/90' 
-            : 'border-[#B8CFDF] text-[#353B48]/90'
+            : 'border-[#D3DCE6] text-[#353B48]/90'
         )}>
           <div className="flex items-center gap-2 text-sm">
             <User className="h-4 w-4" />
