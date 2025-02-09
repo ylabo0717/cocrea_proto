@@ -18,79 +18,79 @@
 
 @layer base {
   :root {
-    --background: 210 30% 98%;    /* #F7F8FA */
-    --foreground: 220 25% 25%;    /* #353B48 */
+    --background: 195 30% 96%;    /* #F3F8FA */
+    --foreground: 220 25% 20%;    /* #2A2F3B */
     
-    --card: 210 30% 98%;
-    --card-foreground: 220 25% 25%;
+    --card: 195 30% 96%;
+    --card-foreground: 220 25% 20%;
     
-    --popover: 210 30% 98%;
-    --popover-foreground: 220 25% 25%;
+    --popover: 195 30% 96%;
+    --popover-foreground: 220 25% 20%;
     
-    --primary: 210 35% 65%;      /* #94AFC8 */
-    --primary-foreground: 220 25% 25%;
+    --primary: 189 95% 55%;      /* #0CDDF3 */
+    --primary-foreground: 210 40% 98%;
     
-    --secondary: 210 25% 85%;    /* #D3DCE6 */
-    --secondary-foreground: 220 25% 25%;
+    --secondary: 187 100% 89%;   /* #BFFAF7 */
+    --secondary-foreground: 220 25% 20%;
     
-    --muted: 210 20% 92%;       /* #E5EBF3 */
+    --muted: 195 25% 92%;       /* #E8F0F3 */
     --muted-foreground: 220 15% 45%;
     
-    --accent: 205 35% 75%;      /* #A8C2D6 */
-    --accent-foreground: 220 25% 25%;
+    --accent: 185 95% 50%;      /* #0CE3E3 */
+    --accent-foreground: 220 25% 20%;
     
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 30% 98%;
+    --destructive-foreground: 210 40% 98%;
     
-    --border: 210 20% 92%;      /* #E5EBF3 */
-    --input: 210 20% 92%;
+    --border: 187 100% 92%;     /* #E5FCF9 */
+    --input: 187 100% 92%;
     
-    --ring: 210 35% 65%;        /* #94AFC8 */
+    --ring: 189 95% 55%;        /* #0CDDF3 */
 
-    --chart-1: 210 35% 65%;     /* #94AFC8 */
-    --chart-2: 205 35% 75%;     /* #A8C2D6 */
-    --chart-3: 210 20% 92%;     /* #E5EBF3 */
-    --chart-4: 210 30% 70%;     /* #9FB7D4 */
-    --chart-5: 215 25% 65%;     /* #8B9DBF */
+    --chart-1: 189 95% 55%;     /* #0CDDF3 */
+    --chart-2: 185 95% 50%;     /* #0CE3E3 */
+    --chart-3: 187 100% 89%;    /* #BFFAF7 */
+    --chart-4: 190 90% 60%;     /* #1EEDF2 */
+    --chart-5: 183 90% 55%;     /* #0CECE6 */
     
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 215 32% 16%;   /* #1C2736 */
-    --foreground: 210 25% 92%;   /* #E5EBF3 */
+    --background: 215 35% 12%;   /* #151B26 */
+    --foreground: 195 30% 98%;   /* #F3F8FA */
     
-    --card: 215 32% 16%;
-    --card-foreground: 210 25% 92%;
+    --card: 215 35% 12%;
+    --card-foreground: 195 30% 98%;
     
-    --popover: 215 32% 16%;
-    --popover-foreground: 210 25% 92%;
+    --popover: 215 35% 12%;
+    --popover-foreground: 195 30% 98%;
     
-    --primary: 210 25% 55%;     /* #7A95B8 */
-    --primary-foreground: 215 32% 16%;
+    --primary: 189 85% 45%;     /* #0DBDD1 */
+    --primary-foreground: 210 40% 98%;
     
-    --secondary: 210 25% 45%;    /* #5E84A3 */
-    --secondary-foreground: 210 25% 92%;
+    --secondary: 187 75% 35%;    /* #0D9B96 */
+    --secondary-foreground: 195 30% 98%;
     
-    --muted: 215 30% 22%;       /* #2D394D */
-    --muted-foreground: 210 20% 80%;
+    --muted: 215 30% 18%;       /* #1F2937 */
+    --muted-foreground: 195 25% 80%;
     
-    --accent: 205 30% 45%;      /* #4B7A97 */
-    --accent-foreground: 210 25% 92%;
+    --accent: 185 85% 40%;      /* #0CC4C4 */
+    --accent-foreground: 195 30% 98%;
     
     --destructive: 0 63% 31%;
-    --destructive-foreground: 210 25% 92%;
+    --destructive-foreground: 195 30% 98%;
     
-    --border: 215 30% 22%;      /* #2D394D */
-    --input: 215 30% 22%;
+    --border: 215 30% 18%;      /* #1F2937 */
+    --input: 215 30% 18%;
     
-    --ring: 210 25% 55%;        /* #7A95B8 */
+    --ring: 189 85% 45%;        /* #0DBDD1 */
 
-    --chart-1: 210 25% 55%;     /* #7A95B8 */
-    --chart-2: 205 30% 45%;     /* #4B7A97 */
-    --chart-3: 215 30% 22%;     /* #2D394D */
-    --chart-4: 210 25% 50%;     /* #6889A8 */
-    --chart-5: 215 20% 45%;     /* #556075 */
+    --chart-1: 189 85% 45%;     /* #0DBDD1 */
+    --chart-2: 185 85% 40%;     /* #0CC4C4 */
+    --chart-3: 187 75% 35%;     /* #0D9B96 */
+    --chart-4: 190 80% 50%;     /* #0DD4D8 */
+    --chart-5: 183 80% 45%;     /* #0DCBC6 */
   }
 }
 
@@ -100,5 +100,6 @@
   }
   body {
     @apply bg-background text-foreground;
+    @apply transition-colors duration-200;
   }
 }
