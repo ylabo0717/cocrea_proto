@@ -1,8 +1,9 @@
 import { Metadata } from "next"
-import { ContentType, fetchUserContentCounts, fetchUserContents } from "./actions"
+import { ContentType, fetchUserContentCounts, fetchUserContents, fetchContributionData } from "./actions"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { ContentList } from "./components/content-list"
+import { ContributionGraph } from "./components/contribution-graph"
 import { contentTypeInfo } from "./constants"
 
 export const metadata: Metadata = {
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 export default async function MyPage({searchParams}: {searchParams: { [key: string]: string | string[] | undefined }}) {
   const counts = await fetchUserContentCounts()
   const selectedType = searchParams.type as ContentType | undefined
+  const contributions = await fetchContributionData()
   
   let contents = []
   if (selectedType && selectedType in contentTypeInfo) {
@@ -24,6 +26,16 @@ export default async function MyPage({searchParams}: {searchParams: { [key: stri
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">マイページ</h2>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>投稿履歴</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ContributionGraph contributions={contributions} />
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4 md:grid-cols-3">
         {Object.entries(contentTypeInfo).map(([type, info]) => (
           <Link key={type} href={`/mypage?type=${type}`} className="transition-transform hover:scale-105">

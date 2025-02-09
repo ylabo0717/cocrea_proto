@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/session";
+import { subMonths, startOfDay, parseISO, format } from 'date-fns';
 
 export type ContentType = 'request' | 'issue' | 'knowledge';
 
@@ -10,6 +11,11 @@ export interface Content {
   status: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface DailyContribution {
+  date: string;
+  count: number;
 }
 
 export async function fetchUserContentCounts() {
@@ -66,4 +72,38 @@ export async function fetchUserContents(type: ContentType) {
   }
 
   return data as Content[];
+}
+
+export async function fetchContributionData(): Promise<DailyContribution[]> {
+  const session = getSession();
+  if (!session) return [];
+
+  // 過去12ヶ月のデータを取得
+  const startDate = subMonths(new Date(), 12);
+
+  const { data, error } = await supabase
+    .from('contents')
+    .select('created_at')
+    .eq('author_id', session.userId)
+    .not('is_draft', 'eq', true)
+    .gte('created_at', startDate.toISOString())
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching contribution data:', error);
+    return [];
+  }
+
+  // 日付ごとの投稿数をカウント
+  const contributionMap = new Map<string, number>();
+  data.forEach(content => {
+    const date = format(startOfDay(parseISO(content.created_at)), 'yyyy-MM-dd');
+    contributionMap.set(date, (contributionMap.get(date) || 0) + 1);
+  });
+
+  // Map を配列に変換
+  return Array.from(contributionMap.entries()).map(([date, count]) => ({
+    date,
+    count,
+  }));
 }
