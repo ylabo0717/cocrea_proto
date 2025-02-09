@@ -1,6 +1,78 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+// 下書きを公開する
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { knowledgeId: string } }
+) {
+  try {
+    const { publish_draft } = await req.json();
+
+    if (!publish_draft) {
+      return NextResponse.json(
+        { error: '無効なリクエストです' },
+        { status: 400 }
+      );
+    }
+
+    // 現在の下書きデータを取得
+    const { data: currentDraft, error: fetchError } = await supabase
+      .from('contents')
+      .select('draft_title, draft_body, draft_category, draft_tags')
+      .eq('id', params.knowledgeId)
+      .single();
+
+    if (fetchError || !currentDraft) {
+      console.error('Draft fetch error:', fetchError);
+      return NextResponse.json(
+        { error: '下書きの取得に失敗しました' },
+        { status: 500 }
+      );
+    }
+
+    // 下書きを公開（メインコンテンツに反映）
+    const { data: knowledge, error: updateError } = await supabase
+      .from('contents')
+      .update({
+        title: currentDraft.draft_title,
+        body: currentDraft.draft_body,
+        category: currentDraft.draft_category,
+        tags: currentDraft.draft_tags,
+        // 下書きフィールドをクリア
+        draft_title: null,
+        draft_body: null,
+        draft_category: null,
+        draft_tags: null,
+        last_draft_saved_at: null,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', params.knowledgeId)
+      .select(`
+        *,
+        author:author_id(name),
+        application:application_id(id, name)
+      `)
+      .single();
+
+    if (updateError) {
+      console.error('Draft publish error:', updateError);
+      return NextResponse.json(
+        { error: '下書きの公開に失敗しました' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(knowledge);
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return NextResponse.json(
+      { error: '予期せぬエラーが発生しました' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PUT(
   req: NextRequest,
   { params }: { params: { knowledgeId: string } }

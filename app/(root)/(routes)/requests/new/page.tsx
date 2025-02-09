@@ -60,6 +60,56 @@ export default function NewRequestPage() {
     }
   };
 
+  const handleSaveDraft = async (data: RequestFormData) => {
+    console.log('Saving draft with data:', data);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/requests', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          draft_title: data.title,
+          draft_body: data.body,
+          draft_status: data.status,
+          draft_priority: data.priority,
+          last_draft_saved_at: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '下書きの保存に失敗しました');
+      }
+
+      const request = await response.json();
+      console.log('Draft saved:', request);
+
+      if (request.id) {
+        console.log('Updating attachments...');
+        await updateAttachments(request.id);
+      }
+
+      toast({
+        title: '成功',
+        description: '下書きを保存しました',
+      });
+    } catch (error) {
+      console.error('Failed to save draft:', error);
+      toast({
+        title: 'エラー',
+        description:
+          error instanceof Error ? error.message : '下書きの保存に失敗しました',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleCancel = () => {
     router.push('/requests');
   };
@@ -89,6 +139,7 @@ export default function NewRequestPage() {
           onCancel={handleCancel}
           isLoading={isLoading}
           tempId={tempId}
+          onSaveDraft={handleSaveDraft}
         />
       </div>
     </div>

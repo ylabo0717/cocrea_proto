@@ -70,6 +70,75 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
     }
   };
 
+  const handleSaveDraft = async (data: KnowledgeFormData) => {
+    try {
+      const response = await fetch(`/api/knowledge/${params.knowledgeId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          draft_title: data.title,
+          draft_body: data.body,
+          draft_category: data.category,
+          draft_tags: data.tags,
+          last_draft_saved_at: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '下書きの保存に失敗しました');
+      }
+
+      toast({
+        title: "成功",
+        description: "下書きを保存しました",
+      });
+
+      await refreshKnowledge();
+    } catch (error) {
+      console.error('Failed to save draft:', error);
+      toast({
+        title: "エラー",
+        description: error instanceof Error ? error.message : "下書きの保存に失敗しました",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePublishDraft = async () => {
+    try {
+      const response = await fetch(`/api/knowledge/${params.knowledgeId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '下書きの公開に失敗しました');
+      }
+
+      toast({
+        title: "成功",
+        description: "下書きを公開しました",
+      });
+
+      setIsEditing(false);
+      await refreshKnowledge();
+    } catch (error) {
+      console.error('Failed to publish draft:', error);
+      toast({
+        title: "エラー",
+        description: error instanceof Error ? error.message : "下書きの公開に失敗しました",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleCommentSuccess = () => {
     setCommentRefreshKey(prev => prev + 1);
   };
@@ -136,10 +205,18 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
             category: knowledge.category || undefined,
             tags: knowledge.tags || undefined,
             application_id: (knowledge as any).application?.id,
+            draft_title: knowledge.draft_title || undefined,
+            draft_body: knowledge.draft_body || undefined,
+            draft_category: knowledge.draft_category || undefined,
+            draft_tags: knowledge.draft_tags || undefined,
+            last_draft_saved_at: knowledge.last_draft_saved_at || undefined,
           }}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           isLoading={false}
+          onSaveDraft={handleSaveDraft}
+          onPublishDraft={handlePublishDraft}
+          isDraft={!!knowledge.draft_title || !!knowledge.draft_body}
         />
       ) : (
         <div className="space-y-8">

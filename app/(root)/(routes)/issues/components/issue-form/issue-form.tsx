@@ -26,14 +26,16 @@ export function IssueForm({
   onSubmit,
   onCancel,
   isLoading,
+  tempId,
+  onSaveDraft,
+  onPublishDraft,
+  isDraft
 }: IssueFormProps) {
   const { formData, handleChange } = useIssueForm(initialData);
   const { applications, refreshApplications } = useApplications();
   const { users, refreshUsers } = useUsers();
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState(0);
   const [tab, setTab] = useState<'write' | 'preview'>('write');
-  const { v4: uuidv4 } = require('uuid');
-  const [tempId] = useState(() => uuidv4());
 
   useEffect(() => {
     refreshApplications();
@@ -190,6 +192,13 @@ export function IssueForm({
         </div>
       </div>
 
+      {/* 下書きの最終保存日時 */}
+      {formData.last_draft_saved_at && (
+        <div className="text-sm text-muted-foreground">
+          下書きの最終保存日時: {new Date(formData.last_draft_saved_at).toLocaleString()}
+        </div>
+      )}
+
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold flex items-center gap-2">
@@ -217,6 +226,32 @@ export function IssueForm({
         >
           キャンセル
         </Button>
+
+        {/* 下書き保存ボタン */}
+        {onSaveDraft && (
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => onSaveDraft(formData)}
+            disabled={isLoading}
+          >
+            {isLoading ? '下書き保存中...' : '下書き保存'}
+          </Button>
+        )}
+
+        {/* 下書き公開ボタン */}
+        {isDraft && onPublishDraft && (
+          <Button
+            type="button"
+            variant="default"
+            onClick={onPublishDraft}
+            disabled={isLoading}
+          >
+            {isLoading ? '公開中...' : '下書きを公開'}
+          </Button>
+        )}
+
+        {/* 通常の保存ボタン */}
         <Button type="submit" disabled={isLoading}>
           {isLoading ? '保存中...' : '保存'}
         </Button>

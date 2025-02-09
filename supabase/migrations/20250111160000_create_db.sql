@@ -52,9 +52,18 @@ CREATE TABLE contents (
   is_draft boolean NOT NULL DEFAULT false,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now(),
+  draft_title text,
+  draft_body text,
+  draft_status text,
+  draft_priority text,
+  draft_category text,
+  draft_tags text[],
+  last_draft_saved_at timestamptz,
   CONSTRAINT valid_type CHECK (type IN ('issue', 'knowledge', 'request')),
   CONSTRAINT valid_status CHECK (status IS NULL OR status IN ('open', 'in_progress', 'resolved')),
-  CONSTRAINT valid_priority CHECK (priority IS NULL OR priority IN ('low', 'medium', 'high'))
+  CONSTRAINT valid_priority CHECK (priority IS NULL OR priority IN ('low', 'medium', 'high')),
+  CONSTRAINT valid_draft_status CHECK (draft_status IS NULL OR draft_status IN ('open', 'in_progress', 'resolved')),
+  CONSTRAINT valid_draft_priority CHECK (draft_priority IS NULL OR draft_priority IN ('low', 'medium', 'high'))
 );
 
 -- Create comments table
