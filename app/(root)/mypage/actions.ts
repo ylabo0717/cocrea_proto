@@ -1,6 +1,17 @@
 import { supabase } from "@/lib/supabase";
 import { getSession } from "@/lib/session";
 
+export type ContentType = 'request' | 'issue' | 'knowledge';
+
+export interface Content {
+  id: string;
+  type: ContentType;
+  title: string;
+  status: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export async function fetchUserContentCounts() {
   const session = getSession();
   if (!session) return null;
@@ -35,4 +46,24 @@ export async function fetchUserContentCounts() {
   }
 
   return data;
+}
+
+export async function fetchUserContents(type: ContentType) {
+  const session = getSession();
+  if (!session) return [];
+
+  const { data, error } = await supabase
+    .from('contents')
+    .select('id, type, title, status, created_at, updated_at')
+    .eq('author_id', session.userId)
+    .eq('type', type)
+    .not('is_draft', 'eq', true)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching user contents:', error);
+    return [];
+  }
+
+  return data as Content[];
 }
