@@ -33,11 +33,11 @@ BEGIN
 
   -- Insert sample applications
   INSERT INTO applications (name, description, status, developer_id, progress) VALUES
-    ('営業管理システム', 'リアルタイム営業データ分析プラットフォーム', 'released', 
+    ('データ解析ダッシュボード', 'リアルタイムにデータを解析してダッシュボードとして表示するWebサービスです', 'released', 
      (SELECT id FROM users WHERE email = 'yamada@example.com'), 80),
-    ('マーケティングハブ', 'キャンペーン管理システム', 'development',
+    ('画像分類アプリ', '画像を分類するアプリです', 'development',
      (SELECT id FROM users WHERE email = 'sato@example.com'), 45),
-    ('人事ポータル', '従業員管理システム', 'released',
+    ('テキスト解析サービス', 'テキスト解析するアプリです', 'released',
      (SELECT id FROM users WHERE email = 'yamada@example.com'), 95);
 
   -- Insert sample issues
@@ -45,29 +45,30 @@ BEGIN
   SELECT 
     'issue',
     'ダッシュボードの表示速度改善',
-    E'# 課題の概要\n\nダッシュボードの初期表示に時間がかかりすぎている（3秒以上）。\n\n## 現状の問題点\n\n- 大量のデータを一度に取得している\n- 画像の最適化ができていない\n- クエリの実行回数が多い',
+    E'## 問題点\n\n## ダッシュボードの表示が遅いです。 ##再現方法\n\n1. ダッシュボードを開く\n2. データが表示されるまで待つ',
     'open',
     'high',
     (SELECT id FROM users WHERE email = 'suzuki@example.com'),
-    (SELECT id FROM applications WHERE name = '営業管理システム');
+    (SELECT id FROM applications WHERE name = 'データ解析ダッシュボード');
 
   -- Insert sample knowledge
   INSERT INTO contents (type, title, body, category, tags, author_id, application_id)
   SELECT 
     'knowledge',
-    'フロントエンド開発ガイドライン',
-    E'# フロントエンド開発ガイドライン\n\n## コーディング規約\n\n### 1. ファイル構成\n- コンポーネントは機能単位でディレクトリを分割\n- スタイルは同一ディレクトリ内に配置\n- テストファイルは`__tests__`ディレクトリに配置',
-    'guidelines',
-    ARRAY['frontend', 'development', 'react'],
-    (SELECT id FROM users WHERE email = 'yamada@example.com'),
-    (SELECT id FROM applications WHERE name = '営業管理システム');
+    '画像分類アプリ使ってみた',
+    E'# 画像分類アプリのレビュー\n\n## 使用した感想\n\n画像分類アプリを実際に使用してみました。\n\n### 良かった点\n- 分類の精度が高い\n- 操作が直感的\n\n### 改善点\n- 処理速度がもう少し速いと良い\n- 一度に複数画像を処理できると便利',
+    'review',
+    ARRAY['AI', 'image-processing', 'review'],
+    (SELECT id FROM users WHERE email = 'tanaka@example.com'),
+    (SELECT id FROM applications WHERE name = '画像分類アプリ');
 
   -- Insert sample requests
   INSERT INTO contents (type, title, body, status, priority, author_id, application_id)
   VALUES
-    ('request', 'モバイルアプリ版の開発',
-    E'# モバイルアプリ開発の提案\n\n## 背景\n\n多くのユーザーがスマートフォンでの利用を希望しており、モバイルアプリの開発が必要と考えられます。',
-    'open', 'high',
-    (SELECT id FROM users WHERE email = 'suzuki@example.com'),
-    (SELECT id FROM applications WHERE name = '営業管理システム'));
+    ('request', 'テキストファイルの類似度分析機能追加',
+    E'# テキストファイル類似度分析機能の追加要望\n\n## 概要\n複数のテキストファイル間の類似度を分析する機能が必要です。\n\n## 期待する機能\n- 複数のテキストファイルをアップロード可能\n- ファイル間の類似度をパーセンテージで表示\n- 類似箇所のハイライト表示\n\n## 期待される効果\n- 重複文書の特定が容易になる\n- 文書の盗用チェックが効率化される',
+    'open', 'medium',
+    (SELECT id FROM users WHERE email = 'tanaka@example.com'),
+    (SELECT id FROM applications WHERE name = 'テキスト解析サービス'));
+
 END $$;
