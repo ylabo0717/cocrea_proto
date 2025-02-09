@@ -83,7 +83,7 @@ export function EditApplicationDialog({ application, onSuccess }: EditApplicatio
             <Input
               value={formData.name}
               onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-              placeholder="例: 営業管理システム"
+              placeholder="例: データ解析ダッシュボード"
               disabled={isLoading}
               required
             />
