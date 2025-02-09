@@ -62,6 +62,80 @@ BEGIN
     (SELECT id FROM users WHERE email = 'suzuki@example.com'),
     (SELECT id FROM applications WHERE name = 'データ解析ダッシュボード');
 
+  -- Insert additional sample issues
+  INSERT INTO contents (type, title, body, status, priority, author_id, application_id) VALUES
+    ('issue', '画像分類アプリのクラッシュ', 
+    E'## 現象\n\n画像分類アプリが特定の画像を処理中にクラッシュします。\n\n## 再現手順\n\n1. アプリを起動\n2. 特定の画像をアップロード\n3. クラッシュが発生',
+    'open', 'high', 
+    (SELECT id FROM users WHERE email = 'sato@example.com'), 
+    (SELECT id FROM applications WHERE name = '画像分類アプリ')),
+
+    ('issue', 'データ解析ダッシュボードのメモリリーク', 
+    E'## 現象\n\nデータ解析ダッシュボードを長時間使用するとメモリリークが発生します。\n\n## 再現手順\n\n1. ダッシュボードを開く\n2. 数時間使用する\n3. メモリ使用量が増加し続ける',
+    'open', 'medium', 
+    (SELECT id FROM users WHERE email = 'yamada@example.com'), 
+    (SELECT id FROM applications WHERE name = 'データ解析ダッシュボード')),
+
+    ('issue', '信号解析アプリのデータ保存エラー', 
+    E'## 現象\n\n信号解析アプリでデータ保存時にエラーが発生します。\n\n## 再現手順\n\n1. アプリを起動\n2. データを解析\n3. 保存ボタンをクリック\n4. エラーが表示される',
+    'open', 'high', 
+    (SELECT id FROM users WHERE email = 'sato@example.com'), 
+    (SELECT id FROM applications WHERE name = '信号解析アプリ')),
+
+    ('issue', 'データ取得アプリのタイムアウト', 
+    E'## 現象\n\nデータ取得アプリで大規模データを取得する際にタイムアウトが発生します。\n\n## 再現手順\n\n1. アプリを起動\n2. 大規模データを取得\n3. タイムアウトエラーが発生',
+    'open', 'medium', 
+    (SELECT id FROM users WHERE email = 'sato@example.com'), 
+    (SELECT id FROM applications WHERE name = 'データ取得アプリ')),
+
+    ('issue', '進捗確認アプリの進捗バーが更新されない', 
+    E'## 現象\n\n進捗確認アプリで進捗バーが正しく更新されません。\n\n## 再現手順\n\n1. アプリを起動\n2. 進捗を更新\n3. 進捗バーが変化しない',
+    'open', 'low', 
+    (SELECT id FROM users WHERE email = 'yamada@example.com'), 
+    (SELECT id FROM applications WHERE name = '進捗確認アプリ')),
+
+    ('issue', 'テキスト解析サービスの文字化け', 
+    E'## 現象\n\nテキスト解析サービスで特定の文字が文字化けします。\n\n## 再現手順\n\n1. アプリを起動\n2. 特定の文字を含むテキストを解析\n3. 文字化けが発生',
+    'open', 'medium', 
+    (SELECT id FROM users WHERE email = 'yamada@example.com'), 
+    (SELECT id FROM applications WHERE name = 'テキスト解析サービス')),
+
+    ('issue', '画像分類アプリの精度低下', 
+    E'## 現象\n\n画像分類アプリの分類精度が低下しています。\n\n## 再現手順\n\n1. アプリを起動\n2. 画像をアップロード\n3. 分類結果が不正確',
+    'open', 'high', 
+    (SELECT id FROM users WHERE email = 'sato@example.com'), 
+    (SELECT id FROM applications WHERE name = '画像分類アプリ')),
+
+    ('issue', 'データ解析ダッシュボードのグラフ表示エラー', 
+    E'## 現象\n\nデータ解析ダッシュボードでグラフが正しく表示されません。\n\n## 再現手順\n\n1. ダッシュボードを開く\n2. データを選択\n3. グラフが表示されない',
+    'open', 'medium', 
+    (SELECT id FROM users WHERE email = 'yamada@example.com'), 
+    (SELECT id FROM applications WHERE name = 'データ解析ダッシュボード')),
+
+    ('issue', '信号解析アプリの解析結果が不正確', 
+    E'## 現象\n\n信号解析アプリの解析結果が不正確です。\n\n## 再現手順\n\n1. アプリを起動\n2. 信号データを解析\n3. 結果が不正確',
+    'open', 'high', 
+    (SELECT id FROM users WHERE email = 'sato@example.com'), 
+    (SELECT id FROM applications WHERE name = '信号解析アプリ')),
+
+    ('issue', 'データ取得アプリのUIバグ', 
+    E'## 現象\n\nデータ取得アプリのUIにバグがあります。\n\n## 再現手順\n\n1. アプリを起動\n2. 特定の操作を行う\n3. UIが崩れる',
+    'open', 'low', 
+    (SELECT id FROM users WHERE email = 'sato@example.com'), 
+    (SELECT id FROM applications WHERE name = 'データ取得アプリ')),
+
+    ('issue', '進捗確認アプリの通知機能が動作しない', 
+    E'## 現象\n\n進捗確認アプリの通知機能が動作しません。\n\n## 再現手順\n\n1. アプリを起動\n2. 通知を設定\n3. 通知が届かない',
+    'open', 'medium', 
+    (SELECT id FROM users WHERE email = 'yamada@example.com'), 
+    (SELECT id FROM applications WHERE name = '進捗確認アプリ')),
+
+    ('issue', 'テキスト解析サービスの結果が遅い', 
+    E'## 現象\n\nテキスト解析サービスの解析結果が遅いです。\n\n## 再現手順\n\n1. アプリを起動\n2. テキストを解析\n3. 結果が表示されるまで時間がかかる',
+    'open', 'medium', 
+    (SELECT id FROM users WHERE email = 'yamada@example.com'), 
+    (SELECT id FROM applications WHERE name = 'テキスト解析サービス'));
+
   -- Insert sample knowledge
   INSERT INTO contents (type, title, body, category, tags, author_id, application_id)
   SELECT 
