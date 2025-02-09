@@ -7,6 +7,11 @@ DECLARE
   -- Hash for 'CocreaTest2024!'
   test_hash text := 'ba437c9c81a632d1370021fe97d0c96e7bb5c7b309ffc00e56d9d1b1e7bed1e6065f0289585d94c36097f40b3b59f2a2237acee92ce25a9e0f1ba4e573e6ffcc';
 BEGIN 
+  -- Delete all existing sample data
+  DELETE FROM contents;
+  DELETE FROM applications;
+  DELETE FROM users;
+
   -- Insert admin user
   INSERT INTO users (
     name,
@@ -36,7 +41,13 @@ BEGIN
     ('データ解析ダッシュボード', 'リアルタイムにデータを解析してダッシュボードとして表示するWebサービスです', 'released', 
      (SELECT id FROM users WHERE email = 'yamada@example.com'), 80),
     ('画像分類アプリ', '画像を分類するアプリです', 'development',
-     (SELECT id FROM users WHERE email = 'sato@example.com'), 45),
+     (SELECT id FROM users WHERE email = 'sato@example.com'), 60),
+    ('信号解析アプリ', '信号を解析するアプリです', 'development',
+     (SELECT id FROM users WHERE email = 'sato@example.com'), 60),
+    ('データ取得アプリ', 'データを取得するアプリです', 'development',
+     (SELECT id FROM users WHERE email = 'sato@example.com'), 80),
+    ('進捗確認アプリ', '進捗確認のためのアプリです', 'development',
+     (SELECT id FROM users WHERE email = 'yamada@example.com'), 80),
     ('テキスト解析サービス', 'テキスト解析するアプリです', 'released',
      (SELECT id FROM users WHERE email = 'yamada@example.com'), 95);
 
