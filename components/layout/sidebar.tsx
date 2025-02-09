@@ -15,31 +15,31 @@ const routes = [
     label: "アプリダッシュボード",
     icon: LayoutDashboard,
     href: "/dashboard",
-    color: "text-sky-500",
+    color: "text-[#7A95B8]", // メインブルー
   },
   {
     label: "要望・アイデア",
     icon: Lightbulb,
     href: "/requests",
-    color: "text-yellow-500",
+    color: "text-[#A5C9DD]", // ライトブルー
   },
   {
     label: "お困りごと",
     icon: MessageSquare,
     href: "/issues",
-    color: "text-violet-500",
+    color: "text-[#6889A8]", // ミッドブルー
   },
   {
     label: "知識共有",
     icon: BookOpen,
     href: "/knowledge",
-    color: "text-pink-500",
+    color: "text-[#9FB7D4]", // ソフトブルー
   },
   {
     label: "ユーザー一覧",
     icon: Users,
     href: "/users",
-    color: "text-orange-500",
+    color: "text-[#95A8C7]", // グレイッシュブルー
   },
 ];
 
@@ -50,19 +50,26 @@ export function Sidebar() {
 
   return (
     <div className={cn(
-      "space-y-4 py-4 flex flex-col h-full text-white",
-      theme === 'dark' ? 'bg-gray-950' : 'bg-blue-500/80'
+      "space-y-4 py-4 flex flex-col h-full",
+      theme === 'dark' ? 'bg-[#2D394D] text-[#E5EBF3]' : 'bg-[#9FB7D4] text-[#353B48]'
     )}>
       <div className="px-3 py-2 flex-1">
         <div className="flex items-center justify-between pl-3 mb-14">
           <Link href="/dashboard">
-            <h1 className="text-2xl font-bold text-white">Cocrea</h1>
+            <h1 className={cn("text-2xl font-bold",
+              theme === 'dark' ? 'text-[#E5EBF3]' : 'text-[#353B48]'
+            )}>Cocrea</h1>
           </Link>
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="icon"
-              className="w-8 h-8 text-white hover:text-white hover:bg-white/10"
+              className={cn(
+                "w-8 h-8",
+                theme === 'dark' 
+                  ? 'text-[#E5EBF3] hover:text-[#E5EBF3] hover:bg-[#202A3C]' 
+                  : 'text-[#353B48] hover:text-[#353B48] hover:bg-[#B8CFDF]'
+              )}
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -76,12 +83,24 @@ export function Sidebar() {
               <Link key={route.href} href={route.href}>
                 <Button
                   variant={pathname === route.href ? "secondary" : "ghost"}
-                  className={cn("w-full justify-start text-white", {
-                    [theme === 'dark' ? 'bg-gray-900/80' : 'bg-blue-600/20']: pathname === route.href,
-                    'hover:bg-white/10': true
-                  })}
+                  className={cn(
+                    "w-full justify-start",
+                    theme === 'dark' ? 'text-[#E5EBF3]' : 'text-[#353B48]',
+                    {
+                      [theme === 'dark' 
+                        ? 'bg-[#202A3C] hover:bg-[#202A3C]/80' 
+                        : 'bg-[#B8CFDF] hover:bg-[#B8CFDF]/80'
+                      ]: pathname === route.href,
+                      [theme === 'dark'
+                        ? 'hover:bg-[#202A3C]/50'
+                        : 'hover:bg-[#B8CFDF]/50'
+                      ]: pathname !== route.href
+                    }
+                  )}
                 >
-                  <route.icon className={cn("h-5 w-5 mr-3", route.color)} />
+                  <route.icon className={cn("h-5 w-5 mr-3", 
+                    theme === 'dark' ? 'text-[#7A95B8]' : 'text-[#353B48]'
+                  )} />
                   {route.label}
                 </Button>
               </Link>
@@ -92,9 +111,11 @@ export function Sidebar() {
       {email && (
         <div className={cn(
           "px-6 py-3 border-t",
-          theme === 'dark' ? 'border-gray-800' : 'border-white/10'
+          theme === 'dark' 
+            ? 'border-[#202A3C] text-[#E5EBF3]/90' 
+            : 'border-[#B8CFDF] text-[#353B48]/90'
         )}>
-          <div className="flex items-center gap-2 text-sm text-white/90">
+          <div className="flex items-center gap-2 text-sm">
             <User className="h-4 w-4" />
             <div className="flex flex-col">
               <span>{email}</span>
