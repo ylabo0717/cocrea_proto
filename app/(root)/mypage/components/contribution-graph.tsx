@@ -94,11 +94,11 @@ export function ContributionGraph({ contributions }: ContributionGraphProps) {
   return (
     <div className="space-y-2">
       <div className="relative pl-8">
-        <div className="flex mb-2 text-sm text-muted-foreground">
+        <div className="flex h-8 relative text-sm text-muted-foreground">
           {monthLabels.map((label, index) => (
             <div
               key={`${label.text}-${label.index}`}
-              className="absolute"
+              className="absolute top-0"
               style={{ left: `${label.index * 1.5}rem` }}
             >
               {label.text}
