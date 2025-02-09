@@ -33,8 +33,29 @@ BEGIN
   INSERT INTO users (name, email, department, role, salt, hashed_password) VALUES
     ('山田太郎', 'yamada@example.com', '開発部', 'developer', admin_salt, test_hash),
     ('佐藤花子', 'sato@example.com', '開発部', 'developer', admin_salt, test_hash),
-    ('鈴木一郎', 'suzuki@example.com', '営業部', 'user', admin_salt, test_hash),
-    ('田中美咲', 'tanaka@example.com', 'マーケティング部', 'user', admin_salt, test_hash);
+    ('鈴木一郎', 'suzuki@example.com', '事業部', 'user', admin_salt, test_hash),
+    ('田中美咲', 'tanaka@example.com', 'データサイエンス部', 'user', admin_salt, test_hash);
+
+  -- Insert additional developers
+  INSERT INTO users (name, email, department, role, salt, hashed_password) VALUES
+    ('高橋健太', 'takahashi@example.com', '開発部', 'developer', admin_salt, test_hash),
+    ('伊藤真一', 'ito@example.com', '開発部', 'developer', admin_salt, test_hash),
+    ('中村優子', 'nakamura@example.com', '開発部', 'developer', admin_salt, test_hash),
+    ('小林直樹', 'kobayashi@example.com', '開発部', 'developer', admin_salt, test_hash),
+    ('加藤美穂', 'kato@example.com', '開発部', 'developer', admin_salt, test_hash);
+
+  -- Insert additional users
+  INSERT INTO users (name, email, department, role, salt, hashed_password) VALUES
+    ('松本一郎', 'matsumoto@example.com', '事業部', 'user', admin_salt, test_hash),
+    ('林美咲', 'hayashi@example.com', 'データサイエンス部', 'user', admin_salt, test_hash),
+    ('清水健', 'shimizu@example.com', '事業部', 'user', admin_salt, test_hash),
+    ('山本花子', 'yamamoto@example.com', 'データ', 'user', admin_salt, test_hash),
+    ('森田太郎', 'morita@example.com', '事業部', 'user', admin_salt, test_hash),
+    ('石井直子', 'ishii@example.com', 'データサイエンス', 'user', admin_salt, test_hash),
+    ('渡辺健一', 'watanabe@example.com', '事業部', 'user', admin_salt, test_hash),
+    ('藤田美穂', 'fujita@example.com', 'データサイエンス部', 'user', admin_salt, test_hash),
+    ('長谷川一郎', 'hasegawa@example.com', '事業部', 'user', admin_salt, test_hash),
+    ('斎藤花子', 'saito@example.com', 'データサイエンス部', 'user', admin_salt, test_hash);
 
   -- Insert sample applications
   INSERT INTO applications (name, description, status, developer_id, progress) VALUES
