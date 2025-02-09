@@ -17,7 +17,7 @@ export function middleware(request: NextRequest) {
   // ルートパスの処理
   if (request.nextUrl.pathname === '/') {
     return NextResponse.redirect(
-      new URL(isAuthed ? '/dashboard' : '/login', request.url)
+      new URL(isAuthed ? '/mypage' : '/login', request.url)
     );
   }
 
@@ -28,7 +28,7 @@ export function middleware(request: NextRequest) {
 
   // 認証済みでログインページにアクセス
   if (isAuthed && isPublicPath) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.redirect(new URL('/mypage', request.url));
   }
 
   return NextResponse.next();
