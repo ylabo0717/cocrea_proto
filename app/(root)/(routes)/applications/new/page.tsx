@@ -1,54 +1,63 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useApplication } from "../../hooks/use-application";
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactMarkdown from "react-markdown";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 
-export default function ApplicationEditPage() {
-  const params = useParams();
+export default function NewApplicationPage() {
   const router = useRouter();
-  const { application, isLoading, fetchApplication, updateApplication } = useApplication(params.applicationId as string);
+  const { toast } = useToast();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
-  useEffect(() => {
-    fetchApplication();
-  }, [fetchApplication]);
-
-  useEffect(() => {
-    if (application) {
-      setName(application.name);
-      setDescription(application.description || "");
-    }
-  }, [application]);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!application) {
-    return <div>アプリケーションが見つかりません</div>;
-  }
-
   const handleSave = async () => {
     if (!name.trim()) {
+      toast({
+        title: "エラー",
+        description: "アプリケーション名を入力してください",
+        variant: "destructive",
+      });
       return;
     }
 
-    await updateApplication({
-      ...application,
-      name,
-      description,
-    });
-    router.push(`/applications/${application.id}`);
+    try {
+      const response = await fetch("/api/applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          description,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create application");
+      }
+
+      toast({
+        title: "作成完了",
+        description: "アプリケーションを作成しました",
+      });
+
+      router.push("/applications");
+      router.refresh();
+    } catch (error) {
+      toast({
+        title: "エラー",
+        description: "アプリケーションの作成に失敗しました",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -61,12 +70,12 @@ export default function ApplicationEditPage() {
       </div>
 
       <div>
-        <h2 className="text-3xl font-bold text-foreground">{application.name}の編集</h2>
+        <h2 className="text-3xl font-bold text-foreground">新規アプリケーション</h2>
       </div>
 
-      <Card className="min-h-[600px]">
+      <Card>
         <CardHeader>
-          <CardTitle>アプリケーション情報の編集</CardTitle>
+          <CardTitle>アプリケーション情報</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -103,7 +112,7 @@ export default function ApplicationEditPage() {
           </div>
 
           <div className="flex justify-end">
-            <Button onClick={handleSave}>保存</Button>
+            <Button onClick={handleSave}>作成</Button>
           </div>
         </CardContent>
       </Card>
