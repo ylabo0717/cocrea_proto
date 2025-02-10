@@ -25,6 +25,12 @@ export function IssueCard({ issue }: IssueCardProps) {
   
   const canViewDraft = isDeveloper || issue.author_id === userId;
   
+  // 下書きのみで、かつ閲覧権限がない場合は表示しない
+  const isDraftOnly = !issue.title && issue.draft_title;
+  if (isDraftOnly && !canViewDraft) {
+    return null;
+  }
+  
   // 下書きの内容を表示するかどうかを判定
   const displayTitle = canViewDraft ? (issue.draft_title || issue.title) : issue.title;
   const displayStatus = canViewDraft ? (issue.draft_status || issue.status!) : issue.status!;

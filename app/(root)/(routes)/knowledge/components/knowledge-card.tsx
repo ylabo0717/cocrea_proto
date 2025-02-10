@@ -22,6 +22,12 @@ export function KnowledgeCard({ knowledge }: KnowledgeCardProps) {
   
   const canViewDraft = isDeveloper || knowledge.author_id === userId;
   
+  // 下書きのみで、かつ閲覧権限がない場合は表示しない
+  const isDraftOnly = !knowledge.title && knowledge.draft_title;
+  if (isDraftOnly && !canViewDraft) {
+    return null;
+  }
+  
   // 下書きの内容を表示するかどうかを判定
   const displayTitle = canViewDraft ? (knowledge.draft_title || knowledge.title) : knowledge.title;
   const displayCategory = canViewDraft ? (knowledge.draft_category || knowledge.category) : knowledge.category;

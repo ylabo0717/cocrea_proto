@@ -25,6 +25,12 @@ export function RequestCard({ request }: RequestCardProps) {
   
   const canViewDraft = isDeveloper || request.author_id === userId;
   
+  // 下書きのみで、かつ閲覧権限がない場合は表示しない
+  const isDraftOnly = !request.title && request.draft_title;
+  if (isDraftOnly && !canViewDraft) {
+    return null;
+  }
+  
   // 下書きの内容を表示するかどうかを判定
   const displayTitle = canViewDraft ? (request.draft_title || request.title) : request.title;
   const displayStatus = canViewDraft ? (request.draft_status || request.status!) : request.status!;
