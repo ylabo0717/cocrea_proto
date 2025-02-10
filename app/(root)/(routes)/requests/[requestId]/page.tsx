@@ -186,6 +186,13 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
   }
 
   const canEditRequest = isDeveloper || request.author_id === request.id;
+  const canViewDraft = isDeveloper || request.author_id === request.id;
+  
+  // 下書きの内容を表示するかどうかを判定
+  const displayTitle = canViewDraft ? (request.draft_title || request.title) : request.title;
+  const displayBody = canViewDraft ? (request.draft_body || request.body) : request.body;
+  const displayStatus = canViewDraft ? (request.draft_status || request.status!) : request.status!;
+  const displayPriority = canViewDraft ? (request.draft_priority || request.priority!) : request.priority!;
 
   return (
     <div className="h-full p-4 space-y-8">
@@ -228,12 +235,12 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
           <div className="space-y-6">
             <div className="flex justify-between items-start">
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold">{request.draft_title || request.title}</h1>
+                <h1 className="text-3xl font-bold">{displayTitle}</h1>
                 <div className="flex items-center gap-2">
-                  <RequestStatusBadge status={request.draft_status || request.status!} size="lg" />
-                  <RequestPriorityBadge priority={request.draft_priority || request.priority!} size="lg" />
+                  <RequestStatusBadge status={displayStatus} size="lg" />
+                  <RequestPriorityBadge priority={displayPriority} size="lg" />
                   <Badge variant="outline">{(request as any).application?.name}</Badge>
-                  {request.draft_title && (
+                  {canViewDraft && request.draft_title && (
                     <Badge variant="secondary">下書き</Badge>
                   )}
                 </div>
@@ -277,7 +284,7 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
             </div>
 
             <div className="prose prose-neutral dark:prose-invert max-w-none">
-              <ReactMarkdown>{request.draft_body || request.body}</ReactMarkdown>
+              <ReactMarkdown>{displayBody}</ReactMarkdown>
             </div>
           </div>
 

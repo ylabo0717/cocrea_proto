@@ -186,6 +186,13 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
   }
 
   const canEditIssue = isDeveloper || issue.author_id === issue.id;
+  const canViewDraft = isDeveloper || issue.author_id === issue.id;
+  
+  // 下書きの内容を表示するかどうかを判定
+  const displayTitle = canViewDraft ? (issue.draft_title || issue.title) : issue.title;
+  const displayBody = canViewDraft ? (issue.draft_body || issue.body) : issue.body;
+  const displayStatus = canViewDraft ? (issue.draft_status || issue.status!) : issue.status!;
+  const displayPriority = canViewDraft ? (issue.draft_priority || issue.priority!) : issue.priority!;
 
   return (
     <div className="h-full p-4 space-y-8">
@@ -228,12 +235,12 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
           <div className="space-y-6">
             <div className="flex justify-between items-start">
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold">{issue.draft_title || issue.title}</h1>
+                <h1 className="text-3xl font-bold">{displayTitle}</h1>
                 <div className="flex items-center gap-2">
-                  <IssueStatusBadge status={issue.draft_status || issue.status!} size="lg" />
-                  <IssuePriorityBadge priority={issue.draft_priority || issue.priority!} size="lg" />
+                  <IssueStatusBadge status={displayStatus} size="lg" />
+                  <IssuePriorityBadge priority={displayPriority} size="lg" />
                   <Badge variant="outline">{(issue as any).application?.name}</Badge>
-                  {issue.draft_title && (
+                  {canViewDraft && issue.draft_title && (
                     <Badge variant="secondary">下書き</Badge>
                   )}
                 </div>
@@ -277,7 +284,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
             </div>
 
             <div className="prose prose-neutral dark:prose-invert max-w-none">
-              <ReactMarkdown>{issue.draft_body || issue.body}</ReactMarkdown>
+              <ReactMarkdown>{displayBody}</ReactMarkdown>
             </div>
           </div>
 

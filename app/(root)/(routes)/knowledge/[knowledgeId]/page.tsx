@@ -184,6 +184,13 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
   }
 
   const canEditKnowledge = isDeveloper || knowledge.author_id === knowledge.id;
+  const canViewDraft = isDeveloper || knowledge.author_id === knowledge.id;
+  
+  // 下書きの内容を表示するかどうかを判定
+  const displayTitle = canViewDraft ? (knowledge.draft_title || knowledge.title) : knowledge.title;
+  const displayBody = canViewDraft ? (knowledge.draft_body || knowledge.body) : knowledge.body;
+  const displayCategory = canViewDraft ? (knowledge.draft_category || knowledge.category) : knowledge.category;
+  const displayTags = canViewDraft ? (knowledge.draft_tags || knowledge.tags) : knowledge.tags;
 
   return (
     <div className="h-full p-4 space-y-8">
@@ -223,19 +230,19 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
           <div className="space-y-6">
             <div className="flex justify-between items-start">
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold">{knowledge.draft_title || knowledge.title}</h1>
+                <h1 className="text-3xl font-bold">{displayTitle}</h1>
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary">{(knowledge as any).application?.name}</Badge>
-                  {(knowledge.draft_category || knowledge.category) && (
-                    <Badge variant="outline">{knowledge.draft_category || knowledge.category}</Badge>
+                  {displayCategory && (
+                    <Badge variant="outline">{displayCategory}</Badge>
                   )}
-                  {knowledge.draft_title && (
+                  {canViewDraft && knowledge.draft_title && (
                     <Badge variant="secondary">下書き</Badge>
                   )}
                 </div>
-                {(knowledge.draft_tags || knowledge.tags)?.length > 0 && (
+                {displayTags?.length > 0 && (
                   <div className="flex flex-wrap gap-2">
-                    {(knowledge.draft_tags || knowledge.tags).map((tag) => (
+                    {displayTags.map((tag) => (
                       <Badge key={tag} variant="outline" className="text-xs">
                         {tag}
                       </Badge>
@@ -276,7 +283,7 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
             </div>
 
             <div className="prose prose-neutral dark:prose-invert max-w-none">
-              <ReactMarkdown>{knowledge.draft_body || knowledge.body}</ReactMarkdown>
+              <ReactMarkdown>{displayBody}</ReactMarkdown>
             </div>
           </div>
 

@@ -10,6 +10,7 @@ import Link from "next/link";
 import { RequestStatusBadge } from "./request-status-badge";
 import { RequestPriorityBadge } from "./request-priority-badge";
 import { LikeButton } from "@/components/likes/like-button";
+import { useSession } from "@/hooks/use-session";
 
 interface RequestCardProps {
   request: Content & {
@@ -20,6 +21,14 @@ interface RequestCardProps {
 }
 
 export function RequestCard({ request }: RequestCardProps) {
+  const { isDeveloper, userId } = useSession();
+  
+  const canViewDraft = isDeveloper || request.author_id === userId;
+  
+  // 下書きの内容を表示するかどうかを判定
+  const displayTitle = canViewDraft ? (request.draft_title || request.title) : request.title;
+  const displayStatus = canViewDraft ? (request.draft_status || request.status!) : request.status!;
+  const displayPriority = canViewDraft ? (request.draft_priority || request.priority!) : request.priority!;
   return (
     <Link href={`/requests/${request.id}`}>
       <Card className="p-6 hover:shadow-lg transition-shadow">
@@ -27,19 +36,19 @@ export function RequestCard({ request }: RequestCardProps) {
           <div className="flex justify-between items-start">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <RequestPriorityBadge priority={request.draft_priority || request.priority!} />
+                <RequestPriorityBadge priority={displayPriority} />
                 <Badge variant="secondary" className="font-normal">
                   {request.application.name}
                 </Badge>
-                {request.draft_title && (
+                {canViewDraft && request.draft_title && (
                   <Badge variant="secondary">下書き</Badge>
                 )}
               </div>
-              <h3 className="text-xl font-bold">{request.draft_title || request.title}</h3>
+              <h3 className="text-xl font-bold">{displayTitle}</h3>
             </div>
             <div className="flex items-center gap-2">
               <LikeButton contentId={request.id} />
-              <RequestStatusBadge status={request.draft_status || request.status!} />
+              <RequestStatusBadge status={displayStatus} />
             </div>
           </div>
 

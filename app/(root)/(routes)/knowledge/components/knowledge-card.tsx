@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import Link from "next/link";
 import { LikeButton } from "@/components/likes/like-button";
+import { useSession } from "@/hooks/use-session";
 
 interface KnowledgeCardProps {
   knowledge: Content & {
@@ -17,6 +18,14 @@ interface KnowledgeCardProps {
 }
 
 export function KnowledgeCard({ knowledge }: KnowledgeCardProps) {
+  const { isDeveloper, userId } = useSession();
+  
+  const canViewDraft = isDeveloper || knowledge.author_id === userId;
+  
+  // 下書きの内容を表示するかどうかを判定
+  const displayTitle = canViewDraft ? (knowledge.draft_title || knowledge.title) : knowledge.title;
+  const displayCategory = canViewDraft ? (knowledge.draft_category || knowledge.category) : knowledge.category;
+  const displayTags = canViewDraft ? (knowledge.draft_tags || knowledge.tags) : knowledge.tags;
   return (
     <Link href={`/knowledge/${knowledge.id}`}>
       <Card className="p-6 hover:shadow-lg transition-shadow">
@@ -27,16 +36,16 @@ export function KnowledgeCard({ knowledge }: KnowledgeCardProps) {
                 <Badge variant="secondary" className="font-normal">
                   {knowledge.application.name}
                 </Badge>
-                {(knowledge.draft_category || knowledge.category) && (
+                {displayCategory && (
                   <Badge variant="outline" className="font-normal">
-                    {knowledge.draft_category || knowledge.category}
+                    {displayCategory}
                   </Badge>
                 )}
-                {knowledge.draft_title && (
+                {canViewDraft && knowledge.draft_title && (
                   <Badge variant="secondary">下書き</Badge>
                 )}
               </div>
-              <h3 className="text-xl font-bold">{knowledge.draft_title || knowledge.title}</h3>
+              <h3 className="text-xl font-bold">{displayTitle}</h3>
             </div>
             <LikeButton contentId={knowledge.id} />
           </div>
