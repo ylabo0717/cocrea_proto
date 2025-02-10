@@ -135,7 +135,7 @@ export function RequestForm({
           <div className="space-y-2">
             <label className="text-sm font-medium">アプリケーション</label>
             <Select
-              value={formData.application_id}
+              value={formData.application_id || undefined}
               onValueChange={(value) => handleChange("application_id", value)}
               disabled={isLoading}
               required
