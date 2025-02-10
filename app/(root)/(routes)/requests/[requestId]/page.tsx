@@ -24,7 +24,7 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
   const router = useRouter();
   const { toast } = useToast();
   const { request, isLoading: isLoadingRequest, refreshRequest } = useRequest(params.requestId);
-  const { isDeveloper, isLoading: isLoadingSession } = useSession();
+  const { isDeveloper, isAdmin, isLoading: isLoadingSession } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [commentRefreshKey, setCommentRefreshKey] = useState(0);
 

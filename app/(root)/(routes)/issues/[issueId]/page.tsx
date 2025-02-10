@@ -24,7 +24,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
   const router = useRouter();
   const { toast } = useToast();
   const { issue, isLoading: isLoadingIssue, refreshIssue } = useIssue(params.issueId);
-  const { isDeveloper, isLoading: isLoadingSession } = useSession();
+  const { isDeveloper, isAdmin, isLoading: isLoadingSession } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [commentRefreshKey, setCommentRefreshKey] = useState(0);
 

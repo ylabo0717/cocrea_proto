@@ -22,7 +22,7 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
   const router = useRouter();
   const { toast } = useToast();
   const { knowledge, isLoading: isLoadingKnowledge, refreshKnowledge } = useKnowledge(params.knowledgeId);
-  const { isDeveloper, isLoading: isLoadingSession } = useSession();
+  const { isDeveloper, isAdmin, isLoading: isLoadingSession } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [commentRefreshKey, setCommentRefreshKey] = useState(0);
 
