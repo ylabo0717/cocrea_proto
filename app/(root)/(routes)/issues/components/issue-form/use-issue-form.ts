@@ -10,7 +10,7 @@ export function useIssueForm(initialData?: Partial<IssueFormData>) {
     body: initialData?.draft_body || initialData?.body || "",
     status: initialData?.draft_status || initialData?.status || "open",
     priority: initialData?.draft_priority || initialData?.priority || "medium",
-    application_id: initialData?.application_id || "",
+    application_id: initialData?.application_id || undefined,
     assignee_id: initialData?.assignee_id,
     // 下書きフィールド
     draft_title: initialData?.draft_title || "",

@@ -17,13 +17,29 @@ export default function NewIssuePage() {
   const [tempId] = useState(() => uuidv4());
 
   const handleSubmit = async (data: IssueFormData) => {
-    console.log('Form submission started:', data);
+    console.log('Form submission started:', {
+      data,
+      applicationId: data.application_id,
+      applicationIdType: typeof data.application_id,
+      isEmpty: data.application_id === '',
+      isUndefined: data.application_id === undefined,
+    });
 
-    if (!data.title || !data.body || !data.application_id) {
-      console.log('Validation failed:', { data });
+    if (!data.title || !data.body) {
+      console.log('Validation failed: missing title or body', { data });
       toast({
         title: 'エラー',
-        description: '必須項目を入力してください',
+        description: 'タイトルと本文を入力してください',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!data.application_id || data.application_id === '') {
+      console.log('Validation failed: no application selected', { data });
+      toast({
+        title: 'エラー',
+        description: 'アプリケーションを選択してください',
         variant: 'destructive',
       });
       return;
