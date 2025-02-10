@@ -24,13 +24,48 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
   const router = useRouter();
   const { toast } = useToast();
   const { issue, isLoading: isLoadingIssue, refreshIssue } = useIssue(params.issueId);
-  const { isDeveloper, isLoading: isLoadingSession } = useSession();
+  const { isDeveloper, isAdmin, userId, isLoading: isLoadingSession } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [commentRefreshKey, setCommentRefreshKey] = useState(0);
 
   useEffect(() => {
     refreshIssue();
   }, [refreshIssue]);
+
+  // ローディング中の表示
+  if (isLoadingIssue || isLoadingSession) {
+    return (
+      <div className="h-full p-4 space-y-4">
+        <div className="flex items-center space-x-2">
+          <ArrowLeft className="h-4 w-4" />
+          <Link href="/issues" className="text-sm hover:underline">
+            課題一覧に戻る
+          </Link>
+        </div>
+        <div className="flex items-center justify-center h-[calc(100vh-200px)]">
+          <RefreshCw className="h-6 w-6 animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  // コンテンツが見つからない場合
+  if (!issue) {
+    return (
+      <div className="h-full p-4 space-y-4">
+        <div className="flex items-center space-x-2">
+          <ArrowLeft className="h-4 w-4" />
+          <Link href="/issues" className="text-sm hover:underline">
+            課題一覧に戻る
+          </Link>
+        </div>
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)]">
+          <p className="text-lg font-semibold mb-2">課題が見つかりません</p>
+          <p className="text-sm text-muted-foreground">この課題は削除されたか、アクセス権限がない可能性があります</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -67,6 +102,75 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
       toast({
         title: "エラー",
         description: error instanceof Error ? error.message : "課題の更新に失敗しました",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSaveDraft = async (data: IssueFormData) => {
+    try {
+      const response = await fetch(`/api/issues/${params.issueId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          draft_title: data.title,
+          draft_body: data.body,
+          draft_status: data.status,
+          draft_priority: data.priority,
+          last_draft_saved_at: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '下書きの保存に失敗しました');
+      }
+
+      toast({
+        title: "成功",
+        description: "下書きを保存しました",
+      });
+
+      await refreshIssue();
+    } catch (error) {
+      console.error('Failed to save draft:', error);
+      toast({
+        title: "エラー",
+        description: error instanceof Error ? error.message : "下書きの保存に失敗しました",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePublishDraft = async () => {
+    try {
+      const response = await fetch(`/api/issues/${params.issueId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '下書きの公開に失敗しました');
+      }
+
+      toast({
+        title: "成功",
+        description: "下書きを公開しました",
+      });
+
+      setIsEditing(false);
+      await refreshIssue();
+    } catch (error) {
+      console.error('Failed to publish draft:', error);
+      toast({
+        title: "エラー",
+        description: error instanceof Error ? error.message : "下書きの公開に失敗しました",
         variant: "destructive",
       });
     }
@@ -116,7 +220,11 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
     );
   }
 
-  const canEditIssue = isDeveloper || issue.author_id === issue.id;
+  // 下書きの内容を含めて表示
+  const displayTitle = issue.draft_title || issue.title;
+  const displayBody = issue.draft_body || issue.body;
+  const displayStatus = issue.draft_status || issue.status!;
+  const displayPriority = issue.draft_priority || issue.priority!;
 
   return (
     <div className="h-full p-4 space-y-8">
@@ -133,32 +241,45 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
         <IssueForm
           initialData={{
             id: issue.id,
-            title: issue.title,
-            body: issue.body,
-            status: issue.status as any,
-            priority: issue.priority as any,
+            title: issue.draft_title || issue.title,
+            body: issue.draft_body || issue.body,
+            status: issue.draft_status || issue.status as any,
+            priority: issue.draft_priority || issue.priority as any,
             application_id: (issue as any).application.id,
-            assignee_id: issue.assignee_id || undefined
+            assignee_id: issue.assignee_id || undefined,
+            draft_title: issue.draft_title || undefined,
+            draft_body: issue.draft_body || undefined,
+            draft_status: issue.draft_status as any,
+            draft_priority: issue.draft_priority as any,
+            draft_category: issue.draft_category || undefined,
+            draft_tags: issue.draft_tags || undefined,
+            last_draft_saved_at: issue.last_draft_saved_at || undefined,
           }}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           isLoading={false}
+          onSaveDraft={handleSaveDraft}
+          onPublishDraft={handlePublishDraft}
+          isDraft={!!issue.draft_title || !!issue.draft_body}
         />
       ) : (
         <div className="space-y-8">
           <div className="space-y-6">
             <div className="flex justify-between items-start">
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold">{issue.title}</h1>
+                <h1 className="text-3xl font-bold">{displayTitle}</h1>
                 <div className="flex items-center gap-2">
-                  <IssueStatusBadge status={issue.status!} size="lg" />
-                  <IssuePriorityBadge priority={issue.priority!} size="lg" />
+                  <IssueStatusBadge status={displayStatus} size="lg" />
+                  <IssuePriorityBadge priority={displayPriority} size="lg" />
                   <Badge variant="outline">{(issue as any).application?.name}</Badge>
+                  {issue.draft_title && (
+                    <Badge variant="secondary">下書き</Badge>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <LikeButton contentId={issue.id} />
-                {canEditIssue && (
+                {!isLoadingSession && (isAdmin || issue.author_id === userId) && (
                   <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
                     <Pencil className="h-4 w-4" />
                     編集
@@ -195,7 +316,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
             </div>
 
             <div className="prose prose-neutral dark:prose-invert max-w-none">
-              <ReactMarkdown>{issue.body}</ReactMarkdown>
+              <ReactMarkdown>{displayBody}</ReactMarkdown>
             </div>
           </div>
 

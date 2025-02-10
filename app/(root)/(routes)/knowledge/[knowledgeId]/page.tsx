@@ -22,13 +22,48 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
   const router = useRouter();
   const { toast } = useToast();
   const { knowledge, isLoading: isLoadingKnowledge, refreshKnowledge } = useKnowledge(params.knowledgeId);
-  const { isDeveloper, isLoading: isLoadingSession } = useSession();
+  const { isDeveloper, isAdmin, userId, isLoading: isLoadingSession } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [commentRefreshKey, setCommentRefreshKey] = useState(0);
 
   useEffect(() => {
     refreshKnowledge();
   }, [refreshKnowledge]);
+
+  // ローディング中の表示
+  if (isLoadingKnowledge || isLoadingSession) {
+    return (
+      <div className="h-full p-4 space-y-4">
+        <div className="flex items-center space-x-2">
+          <ArrowLeft className="h-4 w-4" />
+          <Link href="/knowledge" className="text-sm hover:underline">
+            ナレッジ一覧に戻る
+          </Link>
+        </div>
+        <div className="flex items-center justify-center h-[calc(100vh-200px)]">
+          <RefreshCw className="h-6 w-6 animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  // コンテンツが見つからない場合の表示
+  if (!knowledge) {
+    return (
+      <div className="h-full p-4 space-y-4">
+        <div className="flex items-center space-x-2">
+          <ArrowLeft className="h-4 w-4" />
+          <Link href="/knowledge" className="text-sm hover:underline">
+            ナレッジ一覧に戻る
+          </Link>
+        </div>
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)]">
+          <p className="text-lg font-semibold mb-2">ナレッジが見つかりません</p>
+          <p className="text-sm text-muted-foreground">このナレッジは削除されたか、アクセス権限がない可能性があります</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -65,6 +100,75 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
       toast({
         title: "エラー",
         description: error instanceof Error ? error.message : "ナレッジの更新に失敗しました",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSaveDraft = async (data: KnowledgeFormData) => {
+    try {
+      const response = await fetch(`/api/knowledge/${params.knowledgeId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          draft_title: data.title,
+          draft_body: data.body,
+          draft_category: data.category,
+          draft_tags: data.tags,
+          last_draft_saved_at: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '下書きの保存に失敗しました');
+      }
+
+      toast({
+        title: "成功",
+        description: "下書きを保存しました",
+      });
+
+      await refreshKnowledge();
+    } catch (error) {
+      console.error('Failed to save draft:', error);
+      toast({
+        title: "エラー",
+        description: error instanceof Error ? error.message : "下書きの保存に失敗しました",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePublishDraft = async () => {
+    try {
+      const response = await fetch(`/api/knowledge/${params.knowledgeId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '下書きの公開に失敗しました');
+      }
+
+      toast({
+        title: "成功",
+        description: "下書きを公開しました",
+      });
+
+      setIsEditing(false);
+      await refreshKnowledge();
+    } catch (error) {
+      console.error('Failed to publish draft:', error);
+      toast({
+        title: "エラー",
+        description: error instanceof Error ? error.message : "下書きの公開に失敗しました",
         variant: "destructive",
       });
     }
@@ -114,7 +218,11 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
     );
   }
 
-  const canEditKnowledge = isDeveloper || knowledge.author_id === knowledge.id;
+  // 下書きの内容を含めて表示
+  const displayTitle = knowledge.draft_title || knowledge.title;
+  const displayBody = knowledge.draft_body || knowledge.body;
+  const displayCategory = knowledge.draft_category || knowledge.category;
+  const displayTags = knowledge.draft_tags || knowledge.tags;
 
   return (
     <div className="h-full p-4 space-y-8">
@@ -131,31 +239,42 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
         <KnowledgeForm
           initialData={{
             id: knowledge.id,
-            title: knowledge.title,
-            body: knowledge.body,
-            category: knowledge.category || undefined,
-            tags: knowledge.tags || undefined,
+            title: knowledge.draft_title || knowledge.title,
+            body: knowledge.draft_body || knowledge.body,
+            category: knowledge.draft_category || knowledge.category || undefined,
+            tags: knowledge.draft_tags || knowledge.tags || undefined,
             application_id: (knowledge as any).application?.id,
+            draft_title: knowledge.draft_title || undefined,
+            draft_body: knowledge.draft_body || undefined,
+            draft_category: knowledge.draft_category || undefined,
+            draft_tags: knowledge.draft_tags || undefined,
+            last_draft_saved_at: knowledge.last_draft_saved_at || undefined,
           }}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           isLoading={false}
+          onSaveDraft={handleSaveDraft}
+          onPublishDraft={handlePublishDraft}
+          isDraft={!!knowledge.draft_title || !!knowledge.draft_body}
         />
       ) : (
         <div className="space-y-8">
           <div className="space-y-6">
             <div className="flex justify-between items-start">
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold">{knowledge.title}</h1>
+                <h1 className="text-3xl font-bold">{displayTitle}</h1>
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary">{(knowledge as any).application?.name}</Badge>
-                  {knowledge.category && (
-                    <Badge variant="outline">{knowledge.category}</Badge>
+                  {displayCategory && (
+                    <Badge variant="outline">{displayCategory}</Badge>
+                  )}
+                  {knowledge.draft_title && (
+                    <Badge variant="secondary">下書き</Badge>
                   )}
                 </div>
-                {knowledge.tags && knowledge.tags.length > 0 && (
+                {displayTags?.length > 0 && (
                   <div className="flex flex-wrap gap-2">
-                    {knowledge.tags.map((tag) => (
+                    {displayTags.map((tag) => (
                       <Badge key={tag} variant="outline" className="text-xs">
                         {tag}
                       </Badge>
@@ -165,7 +284,7 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
               </div>
               <div className="flex items-center gap-2">
                 <LikeButton contentId={knowledge.id} />
-                {canEditKnowledge && (
+                {!isLoadingSession && (isAdmin || knowledge.author_id === userId) && (
                   <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
                     <Pencil className="h-4 w-4" />
                     編集
@@ -196,7 +315,7 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
             </div>
 
             <div className="prose prose-neutral dark:prose-invert max-w-none">
-              <ReactMarkdown>{knowledge.body}</ReactMarkdown>
+              <ReactMarkdown>{displayBody}</ReactMarkdown>
             </div>
           </div>
 

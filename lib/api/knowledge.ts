@@ -9,7 +9,21 @@ import { cookies } from 'next/headers';
  */
 export async function fetchKnowledge(): Promise<Content[]> {
   try {
-    const { data, error } = await supabase
+    // セッションの取得
+    const cookieStore = cookies();
+    const authCookie = cookieStore.get('auth');
+    let userId = null;
+    let isAdmin = false;
+
+    if (authCookie) {
+      const session = JSON.parse(decodeURIComponent(authCookie.value));
+      if (session?.userId) {
+        userId = session.userId;
+        isAdmin = session.role === 'admin';
+      }
+    }
+
+    const query = supabase
       .from("contents")
       .select(`
         *,
@@ -17,7 +31,22 @@ export async function fetchKnowledge(): Promise<Content[]> {
         application:application_id(id, name)
       `)
       .eq('type', 'knowledge')
-      .order('created_at', { ascending: false });
+
+    // 下書きの表示条件を追加
+    if (userId) {
+      // 管理者は全ての下書きを表示、一般ユーザーは自分の下書きのみ表示
+      if (isAdmin) {
+        // 制約なし - 全て表示
+      } else {
+        // 公開済みか、自分の下書きのみ表示
+        query.or(`is_draft.eq.false,and(is_draft.eq.true,author_id.eq.${userId})`);
+      }
+    } else {
+      // 非ログインユーザーは公開済みのみ表示
+      query.eq('is_draft', false);
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false });
 
     if (error) {
       console.error("Error fetching knowledge:", error);
@@ -48,6 +77,10 @@ export async function fetchKnowledgeById(id: string): Promise<Content> {
   if (error) {
     console.error("Error fetching knowledge:", error);
     throw new Error("ナレッジの取得に失敗しました");
+  }
+
+  if (!data) {
+    throw new Error("ナレッジが見つかりません");
   }
 
   return data;

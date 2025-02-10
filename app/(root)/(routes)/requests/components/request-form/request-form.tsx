@@ -15,7 +15,16 @@ import { AttachmentUpload } from "@/components/attachments/attachment-upload";
 import { AttachmentList } from "@/components/attachments/attachment-list";
 import { Paperclip } from "lucide-react";
 
-export function RequestForm({ initialData, onSubmit, onCancel, isLoading, tempId }: RequestFormProps) {
+export function RequestForm({
+  initialData,
+  onSubmit,
+  onCancel,
+  isLoading,
+  tempId,
+  onSaveDraft,
+  onPublishDraft,
+  isDraft
+}: RequestFormProps) {
   const { formData, handleChange } = useRequestForm(initialData);
   const { applications, refreshApplications } = useApplications();
   const { users, refreshUsers } = useUsers();
@@ -167,6 +176,13 @@ export function RequestForm({ initialData, onSubmit, onCancel, isLoading, tempId
         </div>
       </div>
 
+      {/* 下書きの最終保存日時 */}
+      {formData.last_draft_saved_at && (
+        <div className="text-sm text-muted-foreground">
+          下書きの最終保存日時: {new Date(formData.last_draft_saved_at).toLocaleString()}
+        </div>
+      )}
+
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold flex items-center gap-2">
@@ -194,6 +210,23 @@ export function RequestForm({ initialData, onSubmit, onCancel, isLoading, tempId
         >
           キャンセル
         </Button>
+
+        {/* 下書き保存ボタン */}
+        {onSaveDraft && (
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={async (e) => {
+              e.preventDefault();
+              await onSaveDraft(formData);
+            }}
+            disabled={isLoading}
+          >
+            {isLoading ? "下書き保存中..." : "下書き保存"}
+          </Button>
+        )}
+
+        {/* 通常の保存ボタン */}
         <Button type="submit" disabled={isLoading}>
           {isLoading ? "保存中..." : "保存"}
         </Button>

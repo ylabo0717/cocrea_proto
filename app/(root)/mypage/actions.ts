@@ -26,7 +26,6 @@ export async function fetchUserContentCounts() {
     .from('contents')
     .select('type', { count: 'exact' })
     .eq('author_id', session.userId)
-    .not('is_draft', 'eq', true)
     .then(result => {
       if (result.error) throw result.error;
       
@@ -63,7 +62,6 @@ export async function fetchUserContents(type: ContentType) {
     .select('id, type, title, status, created_at, updated_at')
     .eq('author_id', session.userId)
     .eq('type', type)
-    .not('is_draft', 'eq', true)
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -85,7 +83,6 @@ export async function fetchContributionData(): Promise<DailyContribution[]> {
     .from('contents')
     .select('created_at')
     .eq('author_id', session.userId)
-    .not('is_draft', 'eq', true)
     .gte('created_at', startDate.toISOString())
     .order('created_at', { ascending: true });
 
