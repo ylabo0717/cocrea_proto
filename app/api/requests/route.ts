@@ -4,6 +4,24 @@ import { supabase } from '@/lib/supabase';
 // 下書きを保存するエンドポイント
 export async function PATCH(req: NextRequest) {
   try {
+    // セッションの取得
+    const cookieStore = req.cookies;
+    const authCookie = cookieStore.get('auth');
+    if (!authCookie) {
+      return NextResponse.json(
+        { error: '認証が必要です' },
+        { status: 401 }
+      );
+    }
+
+    const session = JSON.parse(decodeURIComponent(authCookie.value));
+    if (!session?.userId) {
+      return NextResponse.json(
+        { error: '認証が必要です' },
+        { status: 401 }
+      );
+    }
+
     const {
       id,
       draft_title,
@@ -59,7 +77,9 @@ export async function PATCH(req: NextRequest) {
           status: 'open',
           priority: 'medium',
           created_at: now,
-          updated_at: now
+          updated_at: now,
+          author_id: session.userId,
+          is_draft: true
         })
         .select()
         .single();
