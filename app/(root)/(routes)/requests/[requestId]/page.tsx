@@ -32,6 +32,41 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
     refreshRequest();
   }, [refreshRequest]);
 
+  // ローディング中の表示
+  if (isLoadingRequest || isLoadingSession) {
+    return (
+      <div className="h-full p-4 space-y-4">
+        <div className="flex items-center space-x-2">
+          <ArrowLeft className="h-4 w-4" />
+          <Link href="/requests" className="text-sm hover:underline">
+            要望一覧に戻る
+          </Link>
+        </div>
+        <div className="flex items-center justify-center h-[calc(100vh-200px)]">
+          <RefreshCw className="h-6 w-6 animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  // コンテンツが見つからない場合の表示
+  if (!request) {
+    return (
+      <div className="h-full p-4 space-y-4">
+        <div className="flex items-center space-x-2">
+          <ArrowLeft className="h-4 w-4" />
+          <Link href="/requests" className="text-sm hover:underline">
+            要望一覧に戻る
+          </Link>
+        </div>
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)]">
+          <p className="text-lg font-semibold mb-2">要望が見つかりません</p>
+          <p className="text-sm text-muted-foreground">この要望は削除されたか、アクセス権限がない可能性があります</p>
+        </div>
+      </div>
+    );
+  }
+
   const handleEdit = () => {
     setIsEditing(true);
   };
@@ -185,14 +220,11 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
     );
   }
 
-  const canEditRequest = isDeveloper || request.author_id === request.id;
-  const canViewDraft = isAdmin || request.author_id === request.id;
-  
-  // 下書きの内容を表示するかどうかを判定
-  const displayTitle = canViewDraft ? (request.draft_title || request.title) : request.title;
-  const displayBody = canViewDraft ? (request.draft_body || request.body) : request.body;
-  const displayStatus = canViewDraft ? (request.draft_status || request.status!) : request.status!;
-  const displayPriority = canViewDraft ? (request.draft_priority || request.priority!) : request.priority!;
+  // 下書きの内容を含めて表示
+  const displayTitle = request.draft_title || request.title;
+  const displayBody = request.draft_body || request.body;
+  const displayStatus = request.draft_status || request.status!;
+  const displayPriority = request.draft_priority || request.priority!;
 
   return (
     <div className="h-full p-4 space-y-8">
@@ -240,19 +272,17 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
                   <RequestStatusBadge status={displayStatus} size="lg" />
                   <RequestPriorityBadge priority={displayPriority} size="lg" />
                   <Badge variant="outline">{(request as any).application?.name}</Badge>
-                  {canViewDraft && request.draft_title && (
+                  {request.draft_title && (
                     <Badge variant="secondary">下書き</Badge>
                   )}
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <LikeButton contentId={request.id} />
-                {canEditRequest && (
-                  <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
-                    <Pencil className="h-4 w-4" />
-                    編集
-                  </Button>
-                )}
+                <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
+                  <Pencil className="h-4 w-4" />
+                  編集
+                </Button>
               </div>
             </div>
 

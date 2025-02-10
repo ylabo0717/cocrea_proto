@@ -32,6 +32,41 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
     refreshIssue();
   }, [refreshIssue]);
 
+  // ローディング中の表示
+  if (isLoadingIssue || isLoadingSession) {
+    return (
+      <div className="h-full p-4 space-y-4">
+        <div className="flex items-center space-x-2">
+          <ArrowLeft className="h-4 w-4" />
+          <Link href="/issues" className="text-sm hover:underline">
+            課題一覧に戻る
+          </Link>
+        </div>
+        <div className="flex items-center justify-center h-[calc(100vh-200px)]">
+          <RefreshCw className="h-6 w-6 animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  // コンテンツが見つからない場合
+  if (!issue) {
+    return (
+      <div className="h-full p-4 space-y-4">
+        <div className="flex items-center space-x-2">
+          <ArrowLeft className="h-4 w-4" />
+          <Link href="/issues" className="text-sm hover:underline">
+            課題一覧に戻る
+          </Link>
+        </div>
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)]">
+          <p className="text-lg font-semibold mb-2">課題が見つかりません</p>
+          <p className="text-sm text-muted-foreground">この課題は削除されたか、アクセス権限がない可能性があります</p>
+        </div>
+      </div>
+    );
+  }
+
   const handleEdit = () => {
     setIsEditing(true);
   };
@@ -185,14 +220,11 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
     );
   }
 
-  const canEditIssue = isDeveloper || issue.author_id === issue.id;
-  const canViewDraft = isAdmin || issue.author_id === issue.id;
-  
-  // 下書きの内容を表示するかどうかを判定
-  const displayTitle = canViewDraft ? (issue.draft_title || issue.title) : issue.title;
-  const displayBody = canViewDraft ? (issue.draft_body || issue.body) : issue.body;
-  const displayStatus = canViewDraft ? (issue.draft_status || issue.status!) : issue.status!;
-  const displayPriority = canViewDraft ? (issue.draft_priority || issue.priority!) : issue.priority!;
+  // 下書きの内容を含めて表示
+  const displayTitle = issue.draft_title || issue.title;
+  const displayBody = issue.draft_body || issue.body;
+  const displayStatus = issue.draft_status || issue.status!;
+  const displayPriority = issue.draft_priority || issue.priority!;
 
   return (
     <div className="h-full p-4 space-y-8">
@@ -240,19 +272,17 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
                   <IssueStatusBadge status={displayStatus} size="lg" />
                   <IssuePriorityBadge priority={displayPriority} size="lg" />
                   <Badge variant="outline">{(issue as any).application?.name}</Badge>
-                  {canViewDraft && issue.draft_title && (
+                  {issue.draft_title && (
                     <Badge variant="secondary">下書き</Badge>
                   )}
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <LikeButton contentId={issue.id} />
-                {canEditIssue && (
-                  <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
-                    <Pencil className="h-4 w-4" />
-                    編集
-                  </Button>
-                )}
+                <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
+                  <Pencil className="h-4 w-4" />
+                  編集
+                </Button>
               </div>
             </div>
 

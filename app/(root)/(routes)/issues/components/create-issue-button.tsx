@@ -6,9 +6,9 @@ import Link from "next/link";
 import { useSession } from "@/hooks/use-session";
 
 export function CreateIssueButton() {
-  const { isDeveloper, isLoading } = useSession();
+  const { userId, isLoading } = useSession();
 
-  if (isLoading || !isDeveloper) {
+  if (isLoading || !userId) {
     return null;
   }
 

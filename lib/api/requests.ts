@@ -36,8 +36,14 @@ export async function fetchRequests(): Promise<Content[]> {
     // 下書きの表示条件を追加
     if (userId) {
       // 管理者は全ての下書きを表示、一般ユーザーは自分の下書きのみ表示
-      query.or(`is_draft.eq.false,and(is_draft.eq.true,${isAdmin ? 'id.gt.0' : `author_id.eq.${userId}`})`);
+      if (isAdmin) {
+        // 制約なし - 全て表示
+      } else {
+        // 公開済みか、自分の下書きのみ表示
+        query.or(`is_draft.eq.false,and(is_draft.eq.true,author_id.eq.${userId})`);
+      }
     } else {
+      // 非ログインユーザーは公開済みのみ表示
       query.eq('is_draft', false);
     }
 
@@ -73,6 +79,10 @@ export async function fetchRequestById(id: string): Promise<Content> {
   if (error) {
     console.error("Error fetching request:", error);
     throw new Error("要望の取得に失敗しました");
+  }
+
+  if (!data) {
+    throw new Error("要望が見つかりません");
   }
 
   return data;

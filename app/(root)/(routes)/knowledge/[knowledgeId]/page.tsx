@@ -30,6 +30,41 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
     refreshKnowledge();
   }, [refreshKnowledge]);
 
+  // ローディング中の表示
+  if (isLoadingKnowledge || isLoadingSession) {
+    return (
+      <div className="h-full p-4 space-y-4">
+        <div className="flex items-center space-x-2">
+          <ArrowLeft className="h-4 w-4" />
+          <Link href="/knowledge" className="text-sm hover:underline">
+            ナレッジ一覧に戻る
+          </Link>
+        </div>
+        <div className="flex items-center justify-center h-[calc(100vh-200px)]">
+          <RefreshCw className="h-6 w-6 animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  // コンテンツが見つからない場合の表示
+  if (!knowledge) {
+    return (
+      <div className="h-full p-4 space-y-4">
+        <div className="flex items-center space-x-2">
+          <ArrowLeft className="h-4 w-4" />
+          <Link href="/knowledge" className="text-sm hover:underline">
+            ナレッジ一覧に戻る
+          </Link>
+        </div>
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)]">
+          <p className="text-lg font-semibold mb-2">ナレッジが見つかりません</p>
+          <p className="text-sm text-muted-foreground">このナレッジは削除されたか、アクセス権限がない可能性があります</p>
+        </div>
+      </div>
+    );
+  }
+
   const handleEdit = () => {
     setIsEditing(true);
   };
@@ -183,14 +218,11 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
     );
   }
 
-  const canEditKnowledge = isDeveloper || knowledge.author_id === knowledge.id;
-  const canViewDraft = isAdmin || knowledge.author_id === knowledge.id;
-  
-  // 下書きの内容を表示するかどうかを判定
-  const displayTitle = canViewDraft ? (knowledge.draft_title || knowledge.title) : knowledge.title;
-  const displayBody = canViewDraft ? (knowledge.draft_body || knowledge.body) : knowledge.body;
-  const displayCategory = canViewDraft ? (knowledge.draft_category || knowledge.category) : knowledge.category;
-  const displayTags = canViewDraft ? (knowledge.draft_tags || knowledge.tags) : knowledge.tags;
+  // 下書きの内容を含めて表示
+  const displayTitle = knowledge.draft_title || knowledge.title;
+  const displayBody = knowledge.draft_body || knowledge.body;
+  const displayCategory = knowledge.draft_category || knowledge.category;
+  const displayTags = knowledge.draft_tags || knowledge.tags;
 
   return (
     <div className="h-full p-4 space-y-8">
@@ -236,7 +268,7 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
                   {displayCategory && (
                     <Badge variant="outline">{displayCategory}</Badge>
                   )}
-                  {canViewDraft && knowledge.draft_title && (
+                  {knowledge.draft_title && (
                     <Badge variant="secondary">下書き</Badge>
                   )}
                 </div>
@@ -252,12 +284,10 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
               </div>
               <div className="flex items-center gap-2">
                 <LikeButton contentId={knowledge.id} />
-                {canEditKnowledge && (
-                  <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
-                    <Pencil className="h-4 w-4" />
-                    編集
-                  </Button>
-                )}
+                <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
+                  <Pencil className="h-4 w-4" />
+                  編集
+                </Button>
               </div>
             </div>
 

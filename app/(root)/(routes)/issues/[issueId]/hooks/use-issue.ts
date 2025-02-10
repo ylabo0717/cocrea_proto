@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Content } from "@/lib/types";
 import { fetchIssueById } from "@/lib/api/issues";
 import { useToast } from "@/hooks/use-toast";
@@ -11,10 +11,18 @@ export function useIssue(issueId: string) {
   const { toast } = useToast();
 
   const loadIssue = useCallback(async () => {
+    if (!issueId) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
+      setIsLoading(true);
       const fetchedIssue = await fetchIssueById(issueId);
       setIssue(fetchedIssue);
     } catch (error) {
+      console.error('Failed to load issue:', error);
+      setIssue(null);
       toast({
         title: "エラー",
         description: "課題の読み込みに失敗しました",
@@ -24,6 +32,10 @@ export function useIssue(issueId: string) {
       setIsLoading(false);
     }
   }, [issueId, toast]);
+
+  useEffect(() => {
+    loadIssue();
+  }, [loadIssue]);
 
   return {
     issue,
