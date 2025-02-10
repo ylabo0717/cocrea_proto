@@ -51,7 +51,7 @@ export function RequestForm({
   );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form id="request-form" onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">タイトル</label>
@@ -61,6 +61,7 @@ export function RequestForm({
             placeholder="要望のタイトルを入力"
             disabled={isLoading}
             required
+
           />
         </div>
 
@@ -78,7 +79,8 @@ export function RequestForm({
                 placeholder="要望の詳細を入力（Markdown形式で記述可能）"
                 className="min-h-[200px] font-mono"
                 disabled={isLoading}
-                required
+            required
+    
               />
             </TabsContent>
             <TabsContent value="preview">
@@ -100,6 +102,7 @@ export function RequestForm({
               value={formData.status}
               onValueChange={(value) => handleChange("status", value)}
               disabled={isLoading}
+            required
             >
               <SelectTrigger>
                 <SelectValue />
@@ -118,6 +121,7 @@ export function RequestForm({
               value={formData.priority}
               onValueChange={(value) => handleChange("priority", value)}
               disabled={isLoading}
+            required
             >
               <SelectTrigger>
                 <SelectValue />
@@ -138,7 +142,8 @@ export function RequestForm({
               value={formData.application_id || undefined}
               onValueChange={(value) => handleChange("application_id", value)}
               disabled={isLoading}
-              required
+            required
+  
             >
               <SelectTrigger>
                 <SelectValue placeholder="アプリケーションを選択" />
@@ -159,6 +164,7 @@ export function RequestForm({
               value={formData.assignee_id || "unassigned"}
               onValueChange={(value) => handleChange("assignee_id", value === "unassigned" ? undefined : value)}
               disabled={isLoading}
+            required
             >
               <SelectTrigger>
                 <SelectValue placeholder="担当者を選択" />
@@ -216,12 +222,18 @@ export function RequestForm({
           <Button
             type="button"
             variant="secondary"
+            form="request-form"
             onClick={async (e) => {
               e.preventDefault();
-              if (!validateForm()) return;
+              const form = document.getElementById("request-form") as HTMLFormElement;
+              if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+              }
               await onSaveDraft(formData);
             }}
             disabled={isLoading}
+            required
           >
             {isLoading ? "下書き保存中..." : "下書き保存"}
           </Button>

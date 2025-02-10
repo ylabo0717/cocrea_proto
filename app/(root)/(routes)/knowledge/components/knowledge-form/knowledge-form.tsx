@@ -43,7 +43,7 @@ export function KnowledgeForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form id="knowledge-form" onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">タイトル</label>
@@ -53,6 +53,7 @@ export function KnowledgeForm({
             placeholder="ナレッジのタイトルを入力"
             disabled={isLoading}
             required
+
           />
         </div>
 
@@ -70,7 +71,8 @@ export function KnowledgeForm({
                 placeholder="ナレッジの内容を入力（Markdown形式で記述可能）"
                 className="min-h-[400px] font-mono"
                 disabled={isLoading}
-                required
+            required
+    
               />
             </TabsContent>
             <TabsContent value="preview">
@@ -92,7 +94,8 @@ export function KnowledgeForm({
               value={formData.application_id || undefined}
               onValueChange={(value) => handleChange("application_id", value)}
               disabled={isLoading}
-              required
+            required
+  
             >
               <SelectTrigger>
                 <SelectValue placeholder="アプリケーションを選択" />
@@ -114,6 +117,7 @@ export function KnowledgeForm({
               onChange={(e) => handleChange("category", e.target.value)}
               placeholder="例: guidelines"
               disabled={isLoading}
+            required
             />
           </div>
         </div>
@@ -125,6 +129,7 @@ export function KnowledgeForm({
             onChange={(e) => handleChange("tags", e.target.value.split(",").map(tag => tag.trim()))}
             placeholder="例: frontend, react, development"
             disabled={isLoading}
+            required
           />
         </div>
       </div>
@@ -169,12 +174,18 @@ export function KnowledgeForm({
           <Button
             type="button"
             variant="secondary"
+            form="knowledge-form"
             onClick={async (e) => {
               e.preventDefault();
-              if (!validateForm()) return;
+              const form = document.getElementById("knowledge-form") as HTMLFormElement;
+              if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+              }
               await onSaveDraft(formData);
             }}
             disabled={isLoading}
+            required
           >
             {isLoading ? "下書き保存中..." : "下書き保存"}
           </Button>

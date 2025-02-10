@@ -57,7 +57,7 @@ export function IssueForm({
   );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form id="issue-form" onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">タイトル</label>
@@ -67,6 +67,7 @@ export function IssueForm({
             placeholder="課題のタイトルを入力"
             disabled={isLoading}
             required
+
           />
         </div>
 
@@ -87,7 +88,8 @@ export function IssueForm({
                 placeholder="課題の詳細を入力（Markdown形式で記述可能）"
                 className="min-h-[200px] font-mono"
                 disabled={isLoading}
-                required
+            required
+    
               />
             </TabsContent>
             <TabsContent value="preview">
@@ -111,6 +113,7 @@ export function IssueForm({
               value={formData.status}
               onValueChange={(value) => handleChange('status', value)}
               disabled={isLoading}
+            required
             >
               <SelectTrigger>
                 <SelectValue />
@@ -129,6 +132,7 @@ export function IssueForm({
               value={formData.priority}
               onValueChange={(value) => handleChange('priority', value)}
               disabled={isLoading}
+            required
             >
               <SelectTrigger>
                 <SelectValue />
@@ -149,7 +153,8 @@ export function IssueForm({
               value={formData.application_id || undefined}
               onValueChange={(value) => handleChange('application_id', value)}
               disabled={isLoading}
-              required
+            required
+  
             >
               <SelectTrigger>
                 <SelectValue placeholder="アプリケーションを選択" />
@@ -175,6 +180,7 @@ export function IssueForm({
                 )
               }
               disabled={isLoading}
+            required
             >
               <SelectTrigger>
                 <SelectValue placeholder="担当者を選択" />
@@ -232,12 +238,18 @@ export function IssueForm({
           <Button
             type="button"
             variant="secondary"
+            form="issue-form"
             onClick={async (e) => {
               e.preventDefault();
-              if (!validateForm()) return;
+              const form = document.getElementById("issue-form") as HTMLFormElement;
+              if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+              }
               await onSaveDraft(formData);
             }}
             disabled={isLoading}
+            required
           >
             {isLoading ? '下書き保存中...' : '下書き保存'}
           </Button>
