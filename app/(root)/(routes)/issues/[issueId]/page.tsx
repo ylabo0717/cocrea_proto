@@ -228,11 +228,14 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
           <div className="space-y-6">
             <div className="flex justify-between items-start">
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold">{issue.title}</h1>
+                <h1 className="text-3xl font-bold">{issue.draft_title || issue.title}</h1>
                 <div className="flex items-center gap-2">
-                  <IssueStatusBadge status={issue.status!} size="lg" />
-                  <IssuePriorityBadge priority={issue.priority!} size="lg" />
+                  <IssueStatusBadge status={issue.draft_status || issue.status!} size="lg" />
+                  <IssuePriorityBadge priority={issue.draft_priority || issue.priority!} size="lg" />
                   <Badge variant="outline">{(issue as any).application?.name}</Badge>
+                  {issue.draft_title && (
+                    <Badge variant="secondary">下書き</Badge>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -274,7 +277,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
             </div>
 
             <div className="prose prose-neutral dark:prose-invert max-w-none">
-              <ReactMarkdown>{issue.body}</ReactMarkdown>
+              <ReactMarkdown>{issue.draft_body || issue.body}</ReactMarkdown>
             </div>
           </div>
 

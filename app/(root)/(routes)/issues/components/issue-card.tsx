@@ -27,16 +27,19 @@ export function IssueCard({ issue }: IssueCardProps) {
           <div className="flex justify-between items-start">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <IssuePriorityBadge priority={issue.priority!} />
+                <IssuePriorityBadge priority={issue.draft_priority || issue.priority!} />
                 <Badge variant="secondary" className="font-normal">
                   {issue.application?.name}
                 </Badge>
+                {issue.draft_title && (
+                  <Badge variant="secondary">下書き</Badge>
+                )}
               </div>
-              <h3 className="text-xl font-bold">{issue.title}</h3>
+              <h3 className="text-xl font-bold">{issue.draft_title || issue.title}</h3>
             </div>
             <div className="flex items-center gap-2">
               <LikeButton contentId={issue.id} />
-              <IssueStatusBadge status={issue.status!} />
+              <IssueStatusBadge status={issue.draft_status || issue.status!} />
             </div>
           </div>
 

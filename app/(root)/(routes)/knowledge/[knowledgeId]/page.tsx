@@ -223,16 +223,19 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
           <div className="space-y-6">
             <div className="flex justify-between items-start">
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold">{knowledge.title}</h1>
+                <h1 className="text-3xl font-bold">{knowledge.draft_title || knowledge.title}</h1>
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary">{(knowledge as any).application?.name}</Badge>
-                  {knowledge.category && (
-                    <Badge variant="outline">{knowledge.category}</Badge>
+                  {(knowledge.draft_category || knowledge.category) && (
+                    <Badge variant="outline">{knowledge.draft_category || knowledge.category}</Badge>
+                  )}
+                  {knowledge.draft_title && (
+                    <Badge variant="secondary">下書き</Badge>
                   )}
                 </div>
-                {knowledge.tags && knowledge.tags.length > 0 && (
+                {(knowledge.draft_tags || knowledge.tags)?.length > 0 && (
                   <div className="flex flex-wrap gap-2">
-                    {knowledge.tags.map((tag) => (
+                    {(knowledge.draft_tags || knowledge.tags).map((tag) => (
                       <Badge key={tag} variant="outline" className="text-xs">
                         {tag}
                       </Badge>
@@ -273,7 +276,7 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
             </div>
 
             <div className="prose prose-neutral dark:prose-invert max-w-none">
-              <ReactMarkdown>{knowledge.body}</ReactMarkdown>
+              <ReactMarkdown>{knowledge.draft_body || knowledge.body}</ReactMarkdown>
             </div>
           </div>
 

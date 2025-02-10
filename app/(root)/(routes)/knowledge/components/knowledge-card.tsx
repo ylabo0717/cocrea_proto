@@ -27,13 +27,16 @@ export function KnowledgeCard({ knowledge }: KnowledgeCardProps) {
                 <Badge variant="secondary" className="font-normal">
                   {knowledge.application.name}
                 </Badge>
-                {knowledge.category && (
+                {(knowledge.draft_category || knowledge.category) && (
                   <Badge variant="outline" className="font-normal">
-                    {knowledge.category}
+                    {knowledge.draft_category || knowledge.category}
                   </Badge>
                 )}
+                {knowledge.draft_title && (
+                  <Badge variant="secondary">下書き</Badge>
+                )}
               </div>
-              <h3 className="text-xl font-bold">{knowledge.title}</h3>
+              <h3 className="text-xl font-bold">{knowledge.draft_title || knowledge.title}</h3>
             </div>
             <LikeButton contentId={knowledge.id} />
           </div>

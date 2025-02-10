@@ -228,11 +228,14 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
           <div className="space-y-6">
             <div className="flex justify-between items-start">
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold">{request.title}</h1>
+                <h1 className="text-3xl font-bold">{request.draft_title || request.title}</h1>
                 <div className="flex items-center gap-2">
-                  <RequestStatusBadge status={request.status!} size="lg" />
-                  <RequestPriorityBadge priority={request.priority!} size="lg" />
+                  <RequestStatusBadge status={request.draft_status || request.status!} size="lg" />
+                  <RequestPriorityBadge priority={request.draft_priority || request.priority!} size="lg" />
                   <Badge variant="outline">{(request as any).application?.name}</Badge>
+                  {request.draft_title && (
+                    <Badge variant="secondary">下書き</Badge>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -274,7 +277,7 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
             </div>
 
             <div className="prose prose-neutral dark:prose-invert max-w-none">
-              <ReactMarkdown>{request.body}</ReactMarkdown>
+              <ReactMarkdown>{request.draft_body || request.body}</ReactMarkdown>
             </div>
           </div>
 

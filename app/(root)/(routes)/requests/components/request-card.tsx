@@ -27,16 +27,19 @@ export function RequestCard({ request }: RequestCardProps) {
           <div className="flex justify-between items-start">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <RequestPriorityBadge priority={request.priority!} />
+                <RequestPriorityBadge priority={request.draft_priority || request.priority!} />
                 <Badge variant="secondary" className="font-normal">
                   {request.application.name}
                 </Badge>
+                {request.draft_title && (
+                  <Badge variant="secondary">下書き</Badge>
+                )}
               </div>
-              <h3 className="text-xl font-bold">{request.title}</h3>
+              <h3 className="text-xl font-bold">{request.draft_title || request.title}</h3>
             </div>
             <div className="flex items-center gap-2">
               <LikeButton contentId={request.id} />
-              <RequestStatusBadge status={request.status!} />
+              <RequestStatusBadge status={request.draft_status || request.status!} />
             </div>
           </div>
 
