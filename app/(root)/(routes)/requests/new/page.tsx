@@ -26,6 +26,7 @@ export default function NewRequestPage() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(data),
       });
 
@@ -70,6 +71,7 @@ export default function NewRequestPage() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           ...data,
           draft_title: data.title,
