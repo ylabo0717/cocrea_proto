@@ -93,7 +93,7 @@ export async function PUT(
       );
     }
 
-    // 要望の更新
+    // 要望の更新（下書きを公開）
     const { data: request, error } = await supabase
       .from('contents')
       .update({
@@ -105,7 +105,16 @@ export async function PUT(
         tags,
         application_id,
         assignee_id,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        // 下書きフィールドをクリア
+        draft_title: null,
+        draft_body: null,
+        draft_status: null,
+        draft_priority: null,
+        draft_category: null,
+        draft_tags: null,
+        last_draft_saved_at: null,
+        is_draft: false
       })
       .eq('id', params.requestId)
       .select(`

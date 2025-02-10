@@ -176,18 +176,6 @@ export function KnowledgeForm({
           </Button>
         )}
 
-        {/* 下書き公開ボタン */}
-        {isDraft && onPublishDraft && (
-          <Button
-            type="button"
-            variant="default"
-            onClick={onPublishDraft}
-            disabled={isLoading}
-          >
-            {isLoading ? "公開中..." : "下書きを公開"}
-          </Button>
-        )}
-
         {/* 通常の保存ボタン */}
         <Button type="submit" disabled={isLoading}>
           {isLoading ? "保存中..." : "保存"}

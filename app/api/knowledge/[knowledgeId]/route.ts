@@ -88,7 +88,7 @@ export async function PUT(
       );
     }
 
-    // ナレッジの更新
+    // ナレッジの更新（下書きを公開）
     const { data: knowledge, error } = await supabase
       .from('contents')
       .update({
@@ -97,7 +97,14 @@ export async function PUT(
         category,
         tags,
         application_id,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        // 下書きフィールドをクリア
+        draft_title: null,
+        draft_body: null,
+        draft_category: null,
+        draft_tags: null,
+        last_draft_saved_at: null,
+        is_draft: false
       })
       .eq('id', params.knowledgeId)
       .select(`
