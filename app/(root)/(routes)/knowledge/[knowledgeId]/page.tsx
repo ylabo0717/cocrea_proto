@@ -184,7 +184,7 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
   }
 
   const canEditKnowledge = isDeveloper || knowledge.author_id === knowledge.id;
-  const canViewDraft = isDeveloper || knowledge.author_id === knowledge.id;
+  const canViewDraft = isAdmin || knowledge.author_id === knowledge.id;
   
   // 下書きの内容を表示するかどうかを判定
   const displayTitle = canViewDraft ? (knowledge.draft_title || knowledge.title) : knowledge.title;

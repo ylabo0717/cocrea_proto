@@ -186,7 +186,7 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
   }
 
   const canEditRequest = isDeveloper || request.author_id === request.id;
-  const canViewDraft = isDeveloper || request.author_id === request.id;
+  const canViewDraft = isAdmin || request.author_id === request.id;
   
   // 下書きの内容を表示するかどうかを判定
   const displayTitle = canViewDraft ? (request.draft_title || request.title) : request.title;

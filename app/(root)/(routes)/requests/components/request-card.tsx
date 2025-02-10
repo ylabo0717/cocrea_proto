@@ -21,9 +21,9 @@ interface RequestCardProps {
 }
 
 export function RequestCard({ request }: RequestCardProps) {
-  const { isDeveloper, userId } = useSession();
+  const { isAdmin, userId } = useSession();
   
-  const canViewDraft = isDeveloper || request.author_id === userId;
+  const canViewDraft = isAdmin || request.author_id === userId;
   
   // 下書きのみで、かつ閲覧権限がない場合は表示しない
   const isDraftOnly = !request.title && request.draft_title;

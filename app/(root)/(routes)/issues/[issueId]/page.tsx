@@ -186,7 +186,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
   }
 
   const canEditIssue = isDeveloper || issue.author_id === issue.id;
-  const canViewDraft = isDeveloper || issue.author_id === issue.id;
+  const canViewDraft = isAdmin || issue.author_id === issue.id;
   
   // 下書きの内容を表示するかどうかを判定
   const displayTitle = canViewDraft ? (issue.draft_title || issue.title) : issue.title;

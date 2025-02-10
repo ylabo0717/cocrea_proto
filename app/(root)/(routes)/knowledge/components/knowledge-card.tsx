@@ -18,9 +18,9 @@ interface KnowledgeCardProps {
 }
 
 export function KnowledgeCard({ knowledge }: KnowledgeCardProps) {
-  const { isDeveloper, userId } = useSession();
+  const { isAdmin, userId } = useSession();
   
-  const canViewDraft = isDeveloper || knowledge.author_id === userId;
+  const canViewDraft = isAdmin || knowledge.author_id === userId;
   
   // 下書きのみで、かつ閲覧権限がない場合は表示しない
   const isDraftOnly = !knowledge.title && knowledge.draft_title;

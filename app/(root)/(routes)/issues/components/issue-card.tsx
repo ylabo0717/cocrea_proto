@@ -21,9 +21,9 @@ interface IssueCardProps {
 }
 
 export function IssueCard({ issue }: IssueCardProps) {
-  const { isDeveloper, userId } = useSession();
+  const { isAdmin, userId } = useSession();
   
-  const canViewDraft = isDeveloper || issue.author_id === userId;
+  const canViewDraft = isAdmin || issue.author_id === userId;
   
   // 下書きのみで、かつ閲覧権限がない場合は表示しない
   const isDraftOnly = !issue.title && issue.draft_title;
