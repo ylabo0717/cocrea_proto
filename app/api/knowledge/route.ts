@@ -99,6 +99,24 @@ export async function PATCH(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    // セッションの取得
+    const cookieStore = req.cookies;
+    const authCookie = cookieStore.get('auth');
+    if (!authCookie) {
+      return NextResponse.json(
+        { error: '認証が必要です' },
+        { status: 401 }
+      );
+    }
+
+    const session = JSON.parse(decodeURIComponent(authCookie.value));
+    if (!session?.userId) {
+      return NextResponse.json(
+        { error: '認証が必要です' },
+        { status: 401 }
+      );
+    }
+
     const { title, body, category, tags, application_id } = await req.json();
 
     // バリデーション
@@ -118,7 +136,10 @@ export async function POST(req: NextRequest) {
         body,
         category,
         tags,
-        application_id
+        application_id,
+        author_id: session.userId,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       })
       .select(`
         *,
