@@ -78,6 +78,54 @@ export async function POST(
   }
 }
 
+// 下書きを保存する
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { requestId: string } }
+) {
+  try {
+    const { draft_title, draft_body, draft_status, draft_priority, draft_category, draft_tags, last_draft_saved_at } = await req.json();
+
+    // 下書きの保存
+    const { data: request, error } = await supabase
+      .from('contents')
+      .update({
+        draft_title,
+        draft_body,
+        draft_status,
+        draft_priority,
+        draft_category,
+        draft_tags,
+        last_draft_saved_at,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', params.requestId)
+      .select(`
+        *,
+        author:author_id(name),
+        assignee:assignee_id(name),
+        application:application_id(id, name)
+      `)
+      .single();
+
+    if (error) {
+      console.error('Draft save error:', error);
+      return NextResponse.json(
+        { error: '下書きの保存に失敗しました' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(request);
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return NextResponse.json(
+      { error: '予期せぬエラーが発生しました' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PUT(
   req: NextRequest,
   { params }: { params: { requestId: string } }

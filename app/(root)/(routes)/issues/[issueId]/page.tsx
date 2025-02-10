@@ -241,10 +241,10 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
         <IssueForm
           initialData={{
             id: issue.id,
-            title: issue.title,
-            body: issue.body,
-            status: issue.status as any,
-            priority: issue.priority as any,
+            title: issue.draft_title || issue.title,
+            body: issue.draft_body || issue.body,
+            status: issue.draft_status || issue.status as any,
+            priority: issue.draft_priority || issue.priority as any,
             application_id: (issue as any).application.id,
             assignee_id: issue.assignee_id || undefined,
             draft_title: issue.draft_title || undefined,
@@ -279,7 +279,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
               </div>
               <div className="flex items-center gap-2">
                 <LikeButton contentId={issue.id} />
-                {(isAdmin || issue.author_id === userId) && (
+                {!isLoadingSession && (isAdmin || issue.author_id === userId) && (
                   <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
                     <Pencil className="h-4 w-4" />
                     編集

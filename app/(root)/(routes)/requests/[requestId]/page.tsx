@@ -241,10 +241,10 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
         <RequestForm
           initialData={{
             id: request.id,
-            title: request.title,
-            body: request.body,
-            status: request.status as any,
-            priority: request.priority as any,
+            title: request.draft_title || request.title,
+            body: request.draft_body || request.body,
+            status: request.draft_status || request.status as any,
+            priority: request.draft_priority || request.priority as any,
             application_id: (request as any).application.id,
             assignee_id: request.assignee_id || undefined,
             draft_title: request.draft_title || undefined,
@@ -279,7 +279,7 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
               </div>
               <div className="flex items-center gap-2">
                 <LikeButton contentId={request.id} />
-                {(isAdmin || request.author_id === userId) && (
+                {!isLoadingSession && (isAdmin || request.author_id === userId) && (
                   <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
                     <Pencil className="h-4 w-4" />
                     編集

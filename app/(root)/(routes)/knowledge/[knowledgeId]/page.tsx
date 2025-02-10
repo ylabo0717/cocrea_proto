@@ -239,10 +239,10 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
         <KnowledgeForm
           initialData={{
             id: knowledge.id,
-            title: knowledge.title,
-            body: knowledge.body,
-            category: knowledge.category || undefined,
-            tags: knowledge.tags || undefined,
+            title: knowledge.draft_title || knowledge.title,
+            body: knowledge.draft_body || knowledge.body,
+            category: knowledge.draft_category || knowledge.category || undefined,
+            tags: knowledge.draft_tags || knowledge.tags || undefined,
             application_id: (knowledge as any).application?.id,
             draft_title: knowledge.draft_title || undefined,
             draft_body: knowledge.draft_body || undefined,
@@ -284,7 +284,7 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
               </div>
               <div className="flex items-center gap-2">
                 <LikeButton contentId={knowledge.id} />
-                {(isAdmin || knowledge.author_id === userId) && (
+                {!isLoadingSession && (isAdmin || knowledge.author_id === userId) && (
                   <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
                     <Pencil className="h-4 w-4" />
                     編集

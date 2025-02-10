@@ -216,7 +216,10 @@ export function RequestForm({
           <Button
             type="button"
             variant="secondary"
-            onClick={() => onSaveDraft(formData)}
+            onClick={async (e) => {
+              e.preventDefault();
+              await onSaveDraft(formData);
+            }}
             disabled={isLoading}
           >
             {isLoading ? "下書き保存中..." : "下書き保存"}
