@@ -22,7 +22,7 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
   const router = useRouter();
   const { toast } = useToast();
   const { knowledge, isLoading: isLoadingKnowledge, refreshKnowledge } = useKnowledge(params.knowledgeId);
-  const { isDeveloper, isAdmin, isLoading: isLoadingSession } = useSession();
+  const { isDeveloper, isAdmin, userId, isLoading: isLoadingSession } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [commentRefreshKey, setCommentRefreshKey] = useState(0);
 
@@ -284,10 +284,12 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
               </div>
               <div className="flex items-center gap-2">
                 <LikeButton contentId={knowledge.id} />
-                <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
-                  <Pencil className="h-4 w-4" />
-                  編集
-                </Button>
+                {(isAdmin || knowledge.author_id === userId) && (
+                  <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
+                    <Pencil className="h-4 w-4" />
+                    編集
+                  </Button>
+                )}
               </div>
             </div>
 

@@ -24,7 +24,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
   const router = useRouter();
   const { toast } = useToast();
   const { issue, isLoading: isLoadingIssue, refreshIssue } = useIssue(params.issueId);
-  const { isDeveloper, isAdmin, isLoading: isLoadingSession } = useSession();
+  const { isDeveloper, isAdmin, userId, isLoading: isLoadingSession } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [commentRefreshKey, setCommentRefreshKey] = useState(0);
 
@@ -279,10 +279,12 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
               </div>
               <div className="flex items-center gap-2">
                 <LikeButton contentId={issue.id} />
-                <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
-                  <Pencil className="h-4 w-4" />
-                  編集
-                </Button>
+                {(isAdmin || issue.author_id === userId) && (
+                  <Button variant="outline" size="sm" className="gap-2" onClick={handleEdit}>
+                    <Pencil className="h-4 w-4" />
+                    編集
+                  </Button>
+                )}
               </div>
             </div>
 
