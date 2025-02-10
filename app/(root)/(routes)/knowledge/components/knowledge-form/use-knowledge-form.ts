@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { KnowledgeFormData } from "./types";
+import { toast } from "sonner";
 
 export function useKnowledgeForm(initialData?: Partial<KnowledgeFormData>) {
   const [formData, setFormData] = useState<KnowledgeFormData>({
@@ -29,8 +30,25 @@ export function useKnowledgeForm(initialData?: Partial<KnowledgeFormData>) {
     }));
   };
 
+  const validateForm = () => {
+    if (!formData.title.trim()) {
+      toast.error("タイトルを入力してください");
+      return false;
+    }
+    if (!formData.body.trim()) {
+      toast.error("内容を入力してください");
+      return false;
+    }
+    if (!formData.application_id) {
+      toast.error("アプリケーションを選択してください");
+      return false;
+    }
+    return true;
+  };
+
   return {
     formData,
     handleChange,
+    validateForm,
   };
 }

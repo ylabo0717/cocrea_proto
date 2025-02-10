@@ -24,7 +24,7 @@ export function KnowledgeForm({
   onPublishDraft,
   isDraft
 }: KnowledgeFormProps) {
-  const { formData, handleChange } = useKnowledgeForm(initialData);
+  const { formData, handleChange, validateForm } = useKnowledgeForm(initialData);
   const { applications, refreshApplications } = useApplications();
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState(0);
   const [tab, setTab] = useState<"write" | "preview">("write");
@@ -171,6 +171,7 @@ export function KnowledgeForm({
             variant="secondary"
             onClick={async (e) => {
               e.preventDefault();
+              if (!validateForm()) return;
               await onSaveDraft(formData);
             }}
             disabled={isLoading}

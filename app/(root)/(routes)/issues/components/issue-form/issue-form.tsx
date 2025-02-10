@@ -31,7 +31,7 @@ export function IssueForm({
   onPublishDraft,
   isDraft
 }: IssueFormProps) {
-  const { formData, handleChange } = useIssueForm(initialData);
+  const { formData, handleChange, validateForm } = useIssueForm(initialData);
   const { applications, refreshApplications } = useApplications();
   const { users, refreshUsers } = useUsers();
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState(0);
@@ -234,6 +234,7 @@ export function IssueForm({
             variant="secondary"
             onClick={async (e) => {
               e.preventDefault();
+              if (!validateForm()) return;
               await onSaveDraft(formData);
             }}
             disabled={isLoading}

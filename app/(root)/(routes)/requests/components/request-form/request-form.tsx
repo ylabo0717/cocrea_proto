@@ -25,7 +25,7 @@ export function RequestForm({
   onPublishDraft,
   isDraft
 }: RequestFormProps) {
-  const { formData, handleChange } = useRequestForm(initialData);
+  const { formData, handleChange, validateForm } = useRequestForm(initialData);
   const { applications, refreshApplications } = useApplications();
   const { users, refreshUsers } = useUsers();
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState(0);
@@ -218,6 +218,7 @@ export function RequestForm({
             variant="secondary"
             onClick={async (e) => {
               e.preventDefault();
+              if (!validateForm()) return;
               await onSaveDraft(formData);
             }}
             disabled={isLoading}
