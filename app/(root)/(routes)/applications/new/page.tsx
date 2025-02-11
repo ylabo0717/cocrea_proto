@@ -16,7 +16,11 @@ export default function NewApplicationPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [name, setName] = useState("");
+  const [summary, setSummary] = useState("");
   const [description, setDescription] = useState("");
+  const [status, setStatus] = useState<"development" | "released" | "discontinued">("development");
+  const [progress, setProgress] = useState(0);
+  const [nextReleaseDate, setNextReleaseDate] = useState("");
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -36,7 +40,11 @@ export default function NewApplicationPage() {
         },
         body: JSON.stringify({
           name,
+          summary,
           description,
+          status,
+          progress,
+          next_release_date: nextReleaseDate ? new Date(nextReleaseDate).toISOString() : null,
         }),
       });
 
@@ -85,6 +93,57 @@ export default function NewApplicationPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="アプリケーション名を入力"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="summary">概要</Label>
+            <Input
+              id="summary"
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              placeholder="アプリケーションの概要を入力"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="status">ステータス</Label>
+              <select
+                id="status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value as "development" | "released" | "discontinued")}
+                className="w-full px-3 py-2 border rounded-md"
+              >
+                <option value="development">開発中</option>
+                <option value="released">リリース済み</option>
+                <option value="discontinued">開発終了</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="progress">進捗状況</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="progress"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={progress}
+                  onChange={(e) => setProgress(Number(e.target.value))}
+                />
+                <span>%</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="nextReleaseDate">次回リリース予定日</Label>
+            <Input
+              id="nextReleaseDate"
+              type="date"
+              value={nextReleaseDate}
+              onChange={(e) => setNextReleaseDate(e.target.value)}
             />
           </div>
 
