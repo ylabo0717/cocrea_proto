@@ -10,7 +10,7 @@ export function useKnowledgeForm(initialData?: Partial<KnowledgeFormData>) {
     title: initialData?.draft_title || initialData?.title || "",
     body: initialData?.draft_body || initialData?.body || "",
     status: initialData?.status || "open",
-    tags: initialData?.tags || [],
+    tags: initialData?.tags || undefined,
     application_id: initialData?.application_id || undefined,
     // 下書きフィールド
     draft_title: initialData?.draft_title || "",
