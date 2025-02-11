@@ -22,7 +22,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (getSession()) {
-      router.push('/dashboard');
+      router.push('/mypage');
     }
   }, [router]);
 
@@ -51,7 +51,7 @@ export default function LoginPage() {
         return;
       }
 
-      router.push('/dashboard');
+      router.push('/mypage');
       router.refresh();
     } catch (error) {
       setError('ログインに失敗しました。もう一度お試しください。');
