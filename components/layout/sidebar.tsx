@@ -24,12 +24,6 @@ const routes = [
     color: "text-[#959AA3]",
   },
   {
-    label: "アプリダッシュボード",
-    icon: LayoutDashboard,
-    href: "/dashboard",
-    color: "text-[#959AA3]",
-  },
-  {
     label: "要望・アイデア",
     icon: Lightbulb,
     href: "/requests",

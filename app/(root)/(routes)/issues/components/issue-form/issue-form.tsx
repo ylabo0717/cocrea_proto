@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/select';
 import { useIssueForm } from './use-issue-form';
 import { IssueFormProps } from './types';
-import { useApplications } from '@/app/(root)/(routes)/dashboard/hooks/use-applications';
+import { useApplications } from '@/app/(root)/(routes)/applications/hooks/use-applications';
 import { useUsers } from '@/app/(root)/(routes)/users/hooks/use-users';
 import { useEffect, useState } from 'react';
 import { AttachmentUpload } from '@/components/attachments/attachment-upload';

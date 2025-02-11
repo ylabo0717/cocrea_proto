@@ -7,6 +7,9 @@ export interface Application {
   description: string;
   settings: any;
   createdAt: string;
+  status: string;
+  progress: number;
+  next_release_date?: string;
 }
 
 export function useApplications() {
