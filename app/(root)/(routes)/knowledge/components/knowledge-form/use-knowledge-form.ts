@@ -9,8 +9,8 @@ export function useKnowledgeForm(initialData?: Partial<KnowledgeFormData>) {
     // メインフィールド
     title: initialData?.draft_title || initialData?.title || "",
     body: initialData?.draft_body || initialData?.body || "",
-    category: initialData?.draft_category || initialData?.category || "",
-    tags: initialData?.draft_tags || initialData?.tags || [],
+    status: initialData?.status || "open",
+    tags: initialData?.tags || undefined,
     application_id: initialData?.application_id || undefined,
     // 下書きフィールド
     draft_title: initialData?.draft_title || "",

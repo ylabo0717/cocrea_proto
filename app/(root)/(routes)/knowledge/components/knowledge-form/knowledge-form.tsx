@@ -88,46 +88,32 @@ export function KnowledgeForm({
           </Tabs>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">アプリケーション</label>
-            <Select
-              value={formData.application_id || undefined}
-              onValueChange={(value) => handleChange("application_id", value)}
-              disabled={isLoading}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">アプリケーション</label>
+          <Select
+            value={formData.application_id || undefined}
+            onValueChange={(value) => handleChange("application_id", value)}
+            disabled={isLoading}
             required
-  
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="アプリケーションを選択" />
-              </SelectTrigger>
-              <SelectContent>
-                {applications.map((app) => (
-                  <SelectItem key={app.id} value={app.id}>
-                    {app.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">カテゴリ</label>
-            <Input
-              value={formData.category || ""}
-              onChange={(e) => handleChange("category", e.target.value)}
-              placeholder="例: guidelines"
-              disabled={isLoading}
-            required
-            />
-          </div>
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="アプリケーションを選択" />
+            </SelectTrigger>
+            <SelectContent>
+              {applications.map((app) => (
+                <SelectItem key={app.id} value={app.id}>
+                  {app.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
           <label className="text-sm font-medium">タグ</label>
           <TagInput
-            value={formData.draft_tags || []}
-            onChange={(tags) => handleChange('draft_tags', tags)}
+            value={formData.tags || []}
+            onChange={(tags) => handleChange('tags', tags)}
             disabled={isLoading}
             placeholder="タグを入力して Enter を押してください"
           />

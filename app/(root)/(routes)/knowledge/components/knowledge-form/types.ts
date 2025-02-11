@@ -2,7 +2,7 @@ export interface KnowledgeFormData {
   id?: string;
   title: string;
   body: string;
-  category?: string;
+  status: string;
   tags?: string[];
   application_id: string;
   // 下書き関連のフィールド
