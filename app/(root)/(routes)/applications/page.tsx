@@ -31,6 +31,7 @@ export default function ApplicationsPage() {
       <ApplicationList
         applications={applications}
         isLoading={isLoading}
+        onUpdate={refreshApplications}
       />
     </div>
   );

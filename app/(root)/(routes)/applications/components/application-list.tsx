@@ -2,13 +2,15 @@
 
 import { ApplicationCard } from "./application-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Application } from "@/lib/types";
 
 interface ApplicationListProps {
-  applications: any[];
+  applications: Application[];
   isLoading: boolean;
+  onUpdate?: () => void;
 }
 
-export function ApplicationList({ applications, isLoading }: ApplicationListProps) {
+export function ApplicationList({ applications, isLoading, onUpdate }: ApplicationListProps) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -34,6 +36,7 @@ export function ApplicationList({ applications, isLoading }: ApplicationListProp
         <ApplicationCard
           key={application.id}
           application={application}
+          onUpdate={onUpdate}
         />
       ))}
     </div>
