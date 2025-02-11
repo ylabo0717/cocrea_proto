@@ -112,8 +112,8 @@ export function KnowledgeForm({
         <div className="space-y-2">
           <label className="text-sm font-medium">タグ</label>
           <TagInput
-            value={formData.draft_tags || []}
-            onChange={(tags) => handleChange('draft_tags', tags)}
+            value={formData.tags || []}
+            onChange={(tags) => handleChange('tags', tags)}
             disabled={isLoading}
             placeholder="タグを入力して Enter を押してください"
           />
