@@ -26,6 +26,7 @@ CREATE TABLE users (
 CREATE TABLE applications (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
+  summary text,
   description text,
   status text NOT NULL DEFAULT 'development',
   next_release_date timestamptz,

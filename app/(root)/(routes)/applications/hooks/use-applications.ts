@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 export interface Application {
   id: string;
   name: string;
+  summary: string;
   description: string;
   settings: any;
   created_at: string;
