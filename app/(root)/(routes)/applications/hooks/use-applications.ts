@@ -6,7 +6,7 @@ export interface Application {
   name: string;
   description: string;
   settings: any;
-  createdAt: string;
+  created_at: string;
   status: string;
   progress: number;
   next_release_date?: string;

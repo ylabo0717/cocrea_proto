@@ -36,7 +36,7 @@ export default function ApplicationPage() {
       <div className="flex justify-between items-start">
         <div>
           <h2 className="text-3xl font-bold text-foreground">{application.name}</h2>
-          <p className="text-muted-foreground">作成日: {new Date(application.createdAt).toLocaleDateString()}</p>
+          <p className="text-muted-foreground">作成日: {new Date(application.created_at).toLocaleDateString('ja-JP')}</p>
         </div>
         <Button onClick={() => router.push(`/applications/${application.id}/edit`)}>
           <Pencil className="w-4 h-4 mr-2" />
