@@ -1,7 +1,7 @@
 "use client";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useApplications } from "@/app/(root)/(routes)/dashboard/hooks/use-applications";
+import { useApplications } from "@/app/(root)/(routes)/applications/hooks/use-applications";
 import { useEffect } from "react";
 
 interface KnowledgeFilterProps {

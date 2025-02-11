@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useKnowledgeForm } from "./use-knowledge-form";
 import { KnowledgeFormProps } from "./types";
-import { useApplications } from "@/app/(root)/(routes)/dashboard/hooks/use-applications";
+import { useApplications } from "@/app/(root)/(routes)/applications/hooks/use-applications";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactMarkdown from "react-markdown";

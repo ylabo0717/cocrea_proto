@@ -1,6 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { applicationId: string } }
+) {
+  try {
+    const { data: application, error } = await supabase
+      .from('applications')
+      .select('*')
+      .eq('id', params.applicationId)
+      .single();
+
+    if (error) {
+      console.error('Application fetch error:', error);
+      return NextResponse.json(
+        { error: 'アプリケーションの取得に失敗しました' },
+        { status: 500 }
+      );
+    }
+
+    if (!application) {
+      return NextResponse.json(
+        { error: '指定されたアプリケーションが見つかりません' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(application);
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return NextResponse.json(
+      { error: '予期せぬエラーが発生しました' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PUT(
   req: NextRequest,
   { params }: { params: { applicationId: string } }
