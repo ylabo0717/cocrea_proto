@@ -38,7 +38,7 @@ export function KnowledgeCard({ knowledge }: KnowledgeCardProps) {
         <div className="space-y-4">
           <div className="flex justify-between items-start">
             <div className="space-y-1">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Badge variant="secondary" className="font-normal">
                   {knowledge.application?.name ?? "未設定"}
                 </Badge>
@@ -50,6 +50,11 @@ export function KnowledgeCard({ knowledge }: KnowledgeCardProps) {
                 {canViewDraft && knowledge.draft_title && (
                   <Badge variant="secondary">下書き</Badge>
                 )}
+                {displayTags && displayTags.length > 0 && displayTags.map((tag, index) => (
+                  <Badge key={index} variant="outline" className="font-normal bg-muted">
+                    {tag}
+                  </Badge>
+                ))}
               </div>
               <h3 className="text-xl font-bold">{displayTitle}</h3>
             </div>
