@@ -35,13 +35,14 @@ export function IssueCard({ issue }: IssueCardProps) {
   const displayTitle = canViewDraft ? (issue.draft_title || issue.title) : issue.title;
   const displayStatus = canViewDraft ? (issue.draft_status || issue.status!) : issue.status!;
   const displayPriority = canViewDraft ? (issue.draft_priority || issue.priority!) : issue.priority!;
+  const displayTags = canViewDraft ? (issue.draft_tags || issue.tags) : issue.tags;
   return (
     <Link href={`/issues/${issue.id}`}>
       <Card className="p-6 hover:shadow-lg transition-shadow">
         <div className="space-y-4">
           <div className="flex justify-between items-start">
             <div className="space-y-1">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <IssuePriorityBadge priority={displayPriority} />
                 <Badge variant="secondary" className="font-normal">
                   {issue.application?.name}
@@ -49,6 +50,11 @@ export function IssueCard({ issue }: IssueCardProps) {
                 {canViewDraft && issue.draft_title && (
                   <Badge variant="secondary">下書き</Badge>
                 )}
+                {displayTags && displayTags.length > 0 && displayTags.map((tag, index) => (
+                  <Badge key={index} variant="outline" className="font-normal bg-muted">
+                    {tag}
+                  </Badge>
+                ))}
               </div>
               <h3 className="text-xl font-bold">{displayTitle}</h3>
             </div>

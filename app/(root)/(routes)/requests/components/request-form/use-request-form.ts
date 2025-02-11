@@ -25,7 +25,7 @@ export function useRequestForm(initialData?: Partial<RequestFormData>) {
 
   const handleChange = (
     field: keyof RequestFormData,
-    value: string | undefined
+    value: string | string[] | undefined
   ) => {
     setFormData((prev) => ({
       ...prev,

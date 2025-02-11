@@ -35,13 +35,14 @@ export function RequestCard({ request }: RequestCardProps) {
   const displayTitle = canViewDraft ? (request.draft_title || request.title) : request.title;
   const displayStatus = canViewDraft ? (request.draft_status || request.status!) : request.status!;
   const displayPriority = canViewDraft ? (request.draft_priority || request.priority!) : request.priority!;
+  const displayTags = canViewDraft ? (request.draft_tags || request.tags) : request.tags;
   return (
     <Link href={`/requests/${request.id}`}>
       <Card className="p-6 hover:shadow-lg transition-shadow">
         <div className="space-y-4">
           <div className="flex justify-between items-start">
             <div className="space-y-1">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <RequestPriorityBadge priority={displayPriority} />
                 <Badge variant="secondary" className="font-normal">
                   {request.application?.name ?? "未設定"}
@@ -49,6 +50,11 @@ export function RequestCard({ request }: RequestCardProps) {
                 {canViewDraft && request.draft_title && (
                   <Badge variant="secondary">下書き</Badge>
                 )}
+                {displayTags && displayTags.length > 0 && displayTags.map((tag, index) => (
+                  <Badge key={index} variant="outline" className="font-normal bg-muted">
+                    {tag}
+                  </Badge>
+                ))}
               </div>
               <h3 className="text-xl font-bold">{displayTitle}</h3>
             </div>
