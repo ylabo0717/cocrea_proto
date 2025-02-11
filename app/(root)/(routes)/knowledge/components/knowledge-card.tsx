@@ -30,7 +30,6 @@ export function KnowledgeCard({ knowledge }: KnowledgeCardProps) {
   
   // 下書きの内容を表示するかどうかを判定
   const displayTitle = canViewDraft ? (knowledge.draft_title || knowledge.title) : knowledge.title;
-  const displayCategory = canViewDraft ? (knowledge.draft_category || knowledge.category) : knowledge.category;
   const displayTags = canViewDraft ? (knowledge.draft_tags || knowledge.tags) : knowledge.tags;
   return (
     <Link href={`/knowledge/${knowledge.id}`}>
@@ -42,11 +41,6 @@ export function KnowledgeCard({ knowledge }: KnowledgeCardProps) {
                 <Badge variant="secondary" className="font-normal">
                   {knowledge.application?.name ?? "未設定"}
                 </Badge>
-                {displayCategory && (
-                  <Badge variant="outline" className="font-normal">
-                    {displayCategory}
-                  </Badge>
-                )}
                 {canViewDraft && knowledge.draft_title && (
                   <Badge variant="secondary">下書き</Badge>
                 )}
