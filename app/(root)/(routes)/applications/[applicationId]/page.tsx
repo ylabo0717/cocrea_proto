@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Pencil, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useApplication } from "../hooks/use-application";
+import ReactMarkdown from "react-markdown";
+import { cn } from "@/lib/utils";
 
 export default function ApplicationPage() {
   const params = useParams();
@@ -51,7 +53,16 @@ export default function ApplicationPage() {
         <CardContent className="space-y-4">
           <div>
             <h3 className="font-semibold mb-2">説明</h3>
-            <p className="text-muted-foreground">{application.description}</p>
+            <div className={cn(
+              "prose prose-sm max-w-none",
+              "prose-headings:font-bold prose-headings:text-foreground",
+              "prose-p:text-muted-foreground",
+              "prose-strong:text-foreground prose-strong:font-bold",
+              "prose-code:text-foreground prose-code:bg-muted prose-code:rounded prose-code:px-1",
+              "prose-ul:text-muted-foreground prose-li:text-muted-foreground",
+            )}>
+              <ReactMarkdown>{application.description}</ReactMarkdown>
+            </div>
           </div>
           <div>
             <h3 className="font-semibold mb-2">設定情報</h3>
