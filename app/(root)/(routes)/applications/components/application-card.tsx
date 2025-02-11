@@ -48,7 +48,7 @@ export function ApplicationCard({ application, onUpdate }: ApplicationCardProps)
         <div className="flex justify-between items-start mb-4">
           <div>
             <h3 className="text-xl font-bold text-card-foreground mb-2">{application.name}</h3>
-            <p className="text-sm text-muted-foreground mb-4">{application.description}</p>
+            <p className="text-sm text-muted-foreground mb-4">{application.summary}</p>
           </div>
         </div>
         

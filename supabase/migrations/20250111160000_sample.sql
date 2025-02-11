@@ -58,18 +58,36 @@ BEGIN
     ('斎藤花子', 'saito@example.com', 'データサイエンス部', 'user', admin_salt, test_hash);
 
   -- Insert sample applications
-  INSERT INTO applications (name, description, status, developer_id, progress) VALUES
-    ('データ解析ダッシュボード', 'リアルタイムにデータを解析してダッシュボードとして表示するWebサービスです', 'released', 
+  INSERT INTO applications (name, summary, description, status, developer_id, progress) VALUES
+    ('データ解析ダッシュボード', 
+     'リアルタイムにデータを解析してダッシュボードとして表示するWebサービス', 
+     E'# データ解析ダッシュボード\n\n## 概要\nリアルタイムにデータを解析し、直感的なダッシュボードとして表示するWebサービスです。\n\n## 主な機能\n- リアルタイムデータ解析\n- カスタマイズ可能なダッシュボード\n- レポート出力機能\n- アラート通知\n\n## 技術スタック\n- フロントエンド: React, D3.js\n- バックエンド: Node.js\n- データベース: PostgreSQL', 
+     'released', 
      (SELECT id FROM users WHERE email = 'yamada@example.com'), 80),
-    ('画像分類アプリ', '画像を分類するアプリです', 'development',
+    ('画像分類アプリ', 
+     '機械学習を用いて画像を自動分類するアプリケーション', 
+     E'# 画像分類アプリ\n\n## 概要\n機械学習モデルを使用して、アップロードされた画像を自動的に分類するアプリケーションです。\n\n## 主な機能\n- 画像のドラッグ&ドロップアップロード\n- 複数カテゴリーの同時分類\n- バッチ処理対応\n- 分類結果のエクスポート\n\n## 技術スタック\n- Python (TensorFlow)\n- FastAPI\n- React', 
+     'development',
      (SELECT id FROM users WHERE email = 'sato@example.com'), 60),
-    ('信号解析アプリ', '信号を解析するアプリです', 'development',
+    ('信号解析アプリ', 
+     'センサーデータなどの信号を解析し可視化するアプリケーション', 
+     E'# 信号解析アプリ\n\n## 概要\n各種センサーから取得した信号データを解析し、異常検知や傾向分析を行うアプリケーションです。\n\n## 主な機能\n- リアルタイム信号処理\n- FFTスペクトル解析\n- 異常検知アラート\n- データエクスポート\n\n## 技術スタック\n- Python (NumPy, SciPy)\n- Django\n- Vue.js', 
+     'development',
      (SELECT id FROM users WHERE email = 'sato@example.com'), 60),
-    ('データ取得アプリ', 'データを取得するアプリです', 'development',
+    ('データ取得アプリ', 
+     '各種データソースからデータを収集・統合するアプリケーション', 
+     E'# データ取得アプリ\n\n## 概要\n様々なデータソースからデータを収集し、統合・整形して提供するアプリケーションです。\n\n## 主な機能\n- 複数データソース対応\n- スケジュール実行\n- データクレンジング\n- API提供\n\n## 技術スタック\n- Python\n- Apache Airflow\n- PostgreSQL', 
+     'development',
      (SELECT id FROM users WHERE email = 'sato@example.com'), 80),
-    ('進捗確認アプリ', '進捗確認のためのアプリです', 'development',
+    ('進捗確認アプリ', 
+     'プロジェクトの進捗を可視化・管理するアプリケーション', 
+     E'# 進捗確認アプリ\n\n## 概要\nプロジェクトの進捗状況をリアルタイムに可視化し、効率的な進捗管理を支援するアプリケーションです。\n\n## 主な機能\n- ガントチャート表示\n- タスク管理\n- 進捗レポート\n- チーム連携機能\n\n## 技術スタック\n- React\n- Node.js\n- MongoDB', 
+     'development',
      (SELECT id FROM users WHERE email = 'yamada@example.com'), 80),
-    ('テキスト解析サービス', 'テキスト解析するアプリです', 'released',
+    ('テキスト解析サービス', 
+     '自然言語処理を用いてテキストデータを解析するサービス', 
+     E'# テキスト解析サービス\n\n## 概要\n自然言語処理技術を活用して、テキストデータから有用な情報を抽出・分析するサービスです。\n\n## 主な機能\n- 感情分析\n- キーワード抽出\n- 文書分類\n- トピックモデリング\n\n## 技術スタック\n- Python (spaCy, BERT)\n- FastAPI\n- Redis', 
+     'released',
      (SELECT id FROM users WHERE email = 'yamada@example.com'), 95);
 
   -- Insert sample issues
