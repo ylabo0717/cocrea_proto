@@ -44,7 +44,7 @@ export function RequestCard({ request }: RequestCardProps) {
               <div className="flex items-center gap-2">
                 <RequestPriorityBadge priority={displayPriority} />
                 <Badge variant="secondary" className="font-normal">
-                  {request.application.name}
+                  {request.application?.name ?? "未設定"}
                 </Badge>
                 {canViewDraft && request.draft_title && (
                   <Badge variant="secondary">下書き</Badge>

@@ -40,7 +40,7 @@ export function KnowledgeCard({ knowledge }: KnowledgeCardProps) {
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="font-normal">
-                  {knowledge.application.name}
+                  {knowledge.application?.name ?? "未設定"}
                 </Badge>
                 {displayCategory && (
                   <Badge variant="outline" className="font-normal">
