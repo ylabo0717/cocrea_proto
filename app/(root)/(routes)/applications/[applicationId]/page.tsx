@@ -79,11 +79,10 @@ export default function ApplicationPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>詳細情報</CardTitle>
+            <CardTitle>詳細説明</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <h3 className="font-semibold mb-2">説明</h3>
               <div className={cn(
                 "prose prose-sm max-w-none",
                 "prose-headings:font-bold prose-headings:text-foreground",
