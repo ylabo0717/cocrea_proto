@@ -57,13 +57,13 @@ export function Sidebar() {
   return (
     <div className={cn(
       "space-y-4 py-4 flex flex-col h-full transition-all duration-300 relative",
-      theme === 'dark' 
-        ? 'bg-[#1A1E26] text-[#F5F6F8] shadow-[1px_0_3px_rgba(0,0,0,0.1)]' 
+      theme === 'dark'
+        ? 'bg-[#1A1E26] text-[#F5F6F8] shadow-[1px_0_3px_rgba(0,0,0,0.1)]'
         : 'bg-gradient-to-br from-[#696F7C] from-5% via-[#666B78] via-40% to-[#5F646E] to-90% text-white shadow-[1px_0_5px_rgba(0,0,0,0.05)]'
     )}>
       <div className="px-3 py-2 flex-1">
         <div className="flex items-center justify-between pl-3 mb-14">
-          <Link href="/dashboard">
+          <Link href="/mypage">
             <h1 className="text-2xl font-bold text-white/95 drop-shadow-sm transition-all duration-300 hover:text-white hover:scale-[1.03]">Cocrea</h1>
           </Link>
           <div className="flex items-center gap-2">
@@ -72,8 +72,8 @@ export function Sidebar() {
               size="icon"
               className={cn(
                 "w-8 h-8 transition-all duration-300",
-                theme === 'dark' 
-                  ? 'text-[#F5F6F8]/90 hover:text-[#F5F6F8] hover:bg-[#13161D]/90 hover:scale-110' 
+                theme === 'dark'
+                  ? 'text-[#F5F6F8]/90 hover:text-[#F5F6F8] hover:bg-[#13161D]/90 hover:scale-110'
                   : 'text-white/90 hover:text-white hover:bg-white/5 backdrop-blur-sm hover:scale-110'
               )}
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -93,8 +93,8 @@ export function Sidebar() {
                     "w-full justify-start backdrop-blur-sm transition-all duration-300 group",
                     theme === 'dark' ? 'text-[#F5F6F8]/90' : 'text-white/90',
                     {
-                      [theme === 'dark' 
-                        ? 'bg-[#13161D]/90 hover:bg-[#13161D] hover:scale-[1.02] hover:text-[#F5F6F8]' 
+                      [theme === 'dark'
+                        ? 'bg-[#13161D]/90 hover:bg-[#13161D] hover:scale-[1.02] hover:text-[#F5F6F8]'
                         : 'bg-black/5 hover:bg-black/10 shadow-sm hover:scale-[1.02] hover:text-white'
                       ]: pathname === route.href,
                       [theme === 'dark'
@@ -105,7 +105,7 @@ export function Sidebar() {
                   )}
                 >
                   <route.icon className={cn(
-                    "h-5 w-5 mr-3 transition-all duration-300", 
+                    "h-5 w-5 mr-3 transition-all duration-300",
                     theme === 'dark' ? route.color : 'text-white/90 group-hover:text-white',
                     pathname === route.href ? 'scale-110' : 'group-hover:scale-110'
                   )} />
@@ -119,8 +119,8 @@ export function Sidebar() {
       {email && (
         <div className={cn(
           "px-6 py-3 border-t backdrop-blur-sm transition-all duration-300",
-          theme === 'dark' 
-            ? 'border-[#13161D] text-[#F5F6F8]/85 hover:text-[#F5F6F8]' 
+          theme === 'dark'
+            ? 'border-[#13161D] text-[#F5F6F8]/85 hover:text-[#F5F6F8]'
             : 'border-black/5 text-white/85 hover:text-white shadow-sm'
         )}>
           <div className="flex items-center gap-2 text-sm">
