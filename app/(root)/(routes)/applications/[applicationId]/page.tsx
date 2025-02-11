@@ -95,12 +95,7 @@ export default function ApplicationPage() {
                 <ReactMarkdown>{application.description}</ReactMarkdown>
               </div>
             </div>
-            <div>
-              <h3 className="font-semibold mb-2">設定情報</h3>
-              <pre className="bg-muted p-4 rounded-lg">
-                {JSON.stringify(application.settings, null, 2)}
-              </pre>
-            </div>
+
           </CardContent>
         </Card>
       </div>
