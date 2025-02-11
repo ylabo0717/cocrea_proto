@@ -25,7 +25,7 @@ export function useIssueForm(initialData?: Partial<IssueFormData>) {
 
   const handleChange = (
     field: keyof IssueFormData,
-    value: string | undefined
+    value: string | string[] | undefined
   ) => {
     setFormData((prev) => ({
       ...prev,

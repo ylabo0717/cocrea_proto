@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react';
 import { AttachmentUpload } from '@/components/attachments/attachment-upload';
 import { AttachmentList } from '@/components/attachments/attachment-list';
 import { Paperclip } from 'lucide-react';
+import { TagInput } from '@/components/tags/tag-input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ReactMarkdown from 'react-markdown';
 
@@ -195,6 +196,16 @@ export function IssueForm({
               </SelectContent>
             </Select>
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">タグ</label>
+          <TagInput
+            value={formData.draft_tags || []}
+            onChange={(tags) => handleChange('draft_tags', tags)}
+            disabled={isLoading}
+            placeholder="タグを入力して Enter を押してください"
+          />
         </div>
       </div>
 
