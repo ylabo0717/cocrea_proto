@@ -18,6 +18,12 @@ const routes = [
     color: "text-[#ACB0B9]",
   },
   {
+    label: "アプリケーション",
+    icon: LayoutDashboard,
+    href: "/applications",
+    color: "text-[#959AA3]",
+  },
+  {
     label: "アプリダッシュボード",
     icon: LayoutDashboard,
     href: "/dashboard",
