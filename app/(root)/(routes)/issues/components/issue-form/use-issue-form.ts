@@ -18,7 +18,6 @@ export function useIssueForm(initialData?: Partial<IssueFormData>) {
     draft_body: initialData?.draft_body || "",
     draft_status: initialData?.draft_status || "open",
     draft_priority: initialData?.draft_priority || "medium",
-    draft_category: initialData?.draft_category || "",
     draft_tags: initialData?.draft_tags || [],
     last_draft_saved_at: initialData?.last_draft_saved_at,
   });

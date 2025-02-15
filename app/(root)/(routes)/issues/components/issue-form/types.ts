@@ -11,7 +11,6 @@ export interface IssueFormData {
   draft_body?: string;
   draft_status?: 'open' | 'in_progress' | 'resolved';
   draft_priority?: 'low' | 'medium' | 'high';
-  draft_category?: string;
   draft_tags?: string[];
   last_draft_saved_at?: string;
 }
