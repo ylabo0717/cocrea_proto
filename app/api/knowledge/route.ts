@@ -26,7 +26,6 @@ export async function PATCH(req: NextRequest) {
       id,
       draft_title,
       draft_body,
-      draft_category,
       draft_tags,
       application_id
     } = await req.json();
@@ -35,7 +34,6 @@ export async function PATCH(req: NextRequest) {
     const draftData = {
       draft_title,
       draft_body,
-      draft_category,
       draft_tags,
       application_id,
       last_draft_saved_at: now
@@ -120,12 +118,10 @@ export async function POST(req: NextRequest) {
     const {
       title,
       body,
-      category,
       tags,
       application_id,
       draft_title,
       draft_body,
-      draft_category,
       draft_tags
     } = await req.json();
 
@@ -138,7 +134,6 @@ export async function POST(req: NextRequest) {
         type: 'knowledge',
         title: title || '',
         body: body || '',
-        category: category || '',
         tags: tags || [],
         application_id: application_id || null,
         author_id: session.userId,
@@ -147,8 +142,7 @@ export async function POST(req: NextRequest) {
         // 下書きフィールド
         draft_title: draft_title || title || '',
         draft_body: draft_body || body || '',
-        draft_category: draft_category || category || '',
-        draft_tags: draft_tags || tags || [],
+          draft_tags: draft_tags || tags || [],
         is_draft: true,
         last_draft_saved_at: now
       })

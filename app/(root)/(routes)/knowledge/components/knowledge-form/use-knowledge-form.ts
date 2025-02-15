@@ -15,7 +15,6 @@ export function useKnowledgeForm(initialData?: Partial<KnowledgeFormData>) {
     // 下書きフィールド
     draft_title: initialData?.draft_title || "",
     draft_body: initialData?.draft_body || "",
-    draft_category: initialData?.draft_category || "",
     draft_tags: initialData?.draft_tags || [],
     last_draft_saved_at: initialData?.last_draft_saved_at,
   });
