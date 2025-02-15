@@ -92,7 +92,6 @@ export async function fetchKnowledgeById(id: string): Promise<Content> {
 export async function createKnowledge(data: {
   title: string;
   body: string;
-  category?: string;
   tags?: string[];
   application_id: string;
 }): Promise<Content> {
@@ -120,7 +119,6 @@ export async function createKnowledge(data: {
         type: "knowledge",
         title: data.title,
         body: data.body,
-        category: data.category,
         tags: data.tags,
         application_id: data.application_id,
         author_id: session.userId
@@ -150,7 +148,6 @@ export async function createKnowledge(data: {
 export async function updateKnowledge(id: string, data: {
   title: string;
   body: string;
-  category?: string;
   tags?: string[];
   application_id: string;
 }): Promise<Content> {
@@ -177,7 +174,6 @@ export async function updateKnowledge(id: string, data: {
       .update({
         title: data.title,
         body: data.body,
-        category: data.category,
         tags: data.tags,
         application_id: data.application_id,
         updated_at: new Date().toISOString()

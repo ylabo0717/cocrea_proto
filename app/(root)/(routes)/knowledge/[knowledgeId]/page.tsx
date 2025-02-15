@@ -116,7 +116,6 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
           ...data,
           draft_title: data.title,
           draft_body: data.body,
-          draft_category: data.category,
           draft_tags: data.tags,
           last_draft_saved_at: new Date().toISOString(),
         }),
@@ -221,7 +220,6 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
   // 下書きの内容を含めて表示
   const displayTitle = knowledge.draft_title || knowledge.title;
   const displayBody = knowledge.draft_body || knowledge.body;
-  const displayCategory = knowledge.draft_category || knowledge.category;
   const displayTags = knowledge.draft_tags || knowledge.tags;
 
   return (
@@ -241,12 +239,10 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
             id: knowledge.id,
             title: knowledge.draft_title || knowledge.title,
             body: knowledge.draft_body || knowledge.body,
-            category: knowledge.draft_category || knowledge.category || undefined,
             tags: knowledge.draft_tags || knowledge.tags || undefined,
             application_id: (knowledge as any).application?.id,
             draft_title: knowledge.draft_title || undefined,
             draft_body: knowledge.draft_body || undefined,
-            draft_category: knowledge.draft_category || undefined,
             draft_tags: knowledge.draft_tags || undefined,
             last_draft_saved_at: knowledge.last_draft_saved_at || undefined,
           }}
@@ -265,9 +261,6 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
                 <h1 className="text-3xl font-bold">{displayTitle}</h1>
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary">{(knowledge as any).application?.name}</Badge>
-                  {displayCategory && (
-                    <Badge variant="outline">{displayCategory}</Badge>
-                  )}
                   {knowledge.draft_title && (
                     <Badge variant="secondary">下書き</Badge>
                   )}

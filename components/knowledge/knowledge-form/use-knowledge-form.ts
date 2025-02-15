@@ -7,7 +7,6 @@ export function useKnowledgeForm(initialData?: Partial<KnowledgeFormData>) {
   const [formData, setFormData] = useState<KnowledgeFormData>({
     title: initialData?.title || "",
     body: initialData?.body || "",
-    category: initialData?.category || "",
     tags: initialData?.tags || [],
     application_id: initialData?.application_id || "",
   });

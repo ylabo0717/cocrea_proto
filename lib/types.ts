@@ -29,7 +29,6 @@ export type Content = {
   body: string;
   status: 'open' | 'in_progress' | 'resolved' | null;
   priority: 'low' | 'medium' | 'high' | null;
-  category: string | null;
   tags: string[] | null;
   author_id: string | null;
   assignee_id: string | null;

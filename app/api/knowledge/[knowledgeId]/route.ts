@@ -19,7 +19,7 @@ export async function POST(
     // 現在の下書きデータを取得
     const { data: currentDraft, error: fetchError } = await supabase
       .from('contents')
-      .select('draft_title, draft_body, draft_category, draft_tags')
+      .select('draft_title, draft_body, draft_tags')
       .eq('id', params.knowledgeId)
       .single();
 
@@ -37,12 +37,10 @@ export async function POST(
       .update({
         title: currentDraft.draft_title,
         body: currentDraft.draft_body,
-        category: currentDraft.draft_category,
         tags: currentDraft.draft_tags,
         // 下書きフィールドをクリア
         draft_title: null,
         draft_body: null,
-        draft_category: null,
         draft_tags: null,
         last_draft_saved_at: null,
         updated_at: new Date().toISOString()
@@ -79,7 +77,7 @@ export async function PATCH(
   { params }: { params: { knowledgeId: string } }
 ) {
   try {
-    const { draft_title, draft_body, draft_category, draft_tags, last_draft_saved_at } = await req.json();
+    const { draft_title, draft_body, draft_tags, last_draft_saved_at } = await req.json();
 
     // 下書きの保存
     const { data: knowledge, error } = await supabase
@@ -87,7 +85,6 @@ export async function PATCH(
       .update({
         draft_title,
         draft_body,
-        draft_category,
         draft_tags,
         last_draft_saved_at,
         updated_at: new Date().toISOString()
@@ -123,7 +120,7 @@ export async function PUT(
   { params }: { params: { knowledgeId: string } }
 ) {
   try {
-    const { title, body, category, tags, application_id } = await req.json();
+    const { title, body, tags, application_id } = await req.json();
 
     // バリデーション
     if (!title || !body || !application_id) {
@@ -139,14 +136,12 @@ export async function PUT(
       .update({
         title,
         body,
-        category,
         tags,
         application_id,
         updated_at: new Date().toISOString(),
         // 下書きフィールドをクリア
         draft_title: null,
         draft_body: null,
-        draft_category: null,
         draft_tags: null,
         last_draft_saved_at: null,
         is_draft: false

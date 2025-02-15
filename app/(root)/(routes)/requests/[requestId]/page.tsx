@@ -251,7 +251,6 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
             draft_body: request.draft_body || undefined,
             draft_status: request.draft_status as any,
             draft_priority: request.draft_priority as any,
-            draft_category: request.draft_category || undefined,
             draft_tags: request.draft_tags || undefined,
             last_draft_saved_at: request.last_draft_saved_at || undefined,
           }}

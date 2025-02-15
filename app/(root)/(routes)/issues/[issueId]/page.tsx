@@ -251,7 +251,6 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
             draft_body: issue.draft_body || undefined,
             draft_status: issue.draft_status as any,
             draft_priority: issue.draft_priority as any,
-            draft_category: issue.draft_category || undefined,
             draft_tags: issue.draft_tags || undefined,
             last_draft_saved_at: issue.last_draft_saved_at || undefined,
           }}

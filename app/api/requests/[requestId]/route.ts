@@ -19,7 +19,7 @@ export async function POST(
     // 現在の下書きデータを取得
     const { data: currentDraft, error: fetchError } = await supabase
       .from('contents')
-      .select('draft_title, draft_body, draft_status, draft_priority, draft_category, draft_tags')
+      .select('draft_title, draft_body, draft_status, draft_priority, draft_tags')
       .eq('id', params.requestId)
       .single();
 
@@ -39,14 +39,12 @@ export async function POST(
         body: currentDraft.draft_body,
         status: currentDraft.draft_status,
         priority: currentDraft.draft_priority,
-        category: currentDraft.draft_category,
         tags: currentDraft.draft_tags,
         // 下書きフィールドをクリア
         draft_title: null,
         draft_body: null,
         draft_status: null,
         draft_priority: null,
-        draft_category: null,
         draft_tags: null,
         last_draft_saved_at: null,
         updated_at: new Date().toISOString()
@@ -84,7 +82,7 @@ export async function PATCH(
   { params }: { params: { requestId: string } }
 ) {
   try {
-    const { draft_title, draft_body, draft_status, draft_priority, draft_category, draft_tags, last_draft_saved_at } = await req.json();
+    const { draft_title, draft_body, draft_status, draft_priority, draft_tags, last_draft_saved_at } = await req.json();
 
     // 下書きの保存
     const { data: request, error } = await supabase
@@ -94,7 +92,6 @@ export async function PATCH(
         draft_body,
         draft_status,
         draft_priority,
-        draft_category,
         draft_tags,
         last_draft_saved_at,
         updated_at: new Date().toISOString()
@@ -131,7 +128,7 @@ export async function PUT(
   { params }: { params: { requestId: string } }
 ) {
   try {
-    const { title, body, status, priority, category, tags, application_id, assignee_id } = await req.json();
+    const { title, body, status, priority, tags, application_id, assignee_id } = await req.json();
 
     // バリデーション
     if (!title || !body || !application_id) {
@@ -149,7 +146,6 @@ export async function PUT(
         body,
         status,
         priority,
-        category,
         tags,
         application_id,
         assignee_id,
@@ -159,7 +155,6 @@ export async function PUT(
         draft_body: null,
         draft_status: null,
         draft_priority: null,
-        draft_category: null,
         draft_tags: null,
         last_draft_saved_at: null,
         is_draft: false

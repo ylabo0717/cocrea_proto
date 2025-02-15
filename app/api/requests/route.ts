@@ -28,7 +28,6 @@ export async function PATCH(req: NextRequest) {
       draft_body,
       draft_status,
       draft_priority,
-      draft_category,
       draft_tags,
       application_id,
       assignee_id
@@ -40,7 +39,6 @@ export async function PATCH(req: NextRequest) {
       draft_body,
       draft_status,
       draft_priority,
-      draft_category,
       draft_tags,
       application_id,
       assignee_id,
