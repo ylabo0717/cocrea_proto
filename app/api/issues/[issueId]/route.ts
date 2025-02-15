@@ -82,7 +82,16 @@ export async function PATCH(
   { params }: { params: { issueId: string } }
 ) {
   try {
-    const { draft_title, draft_body, draft_status, draft_priorityst_draft_saved_at } = await req.json();
+    const { 
+      draft_title, 
+      draft_body, 
+      draft_status, 
+      draft_priority, 
+      draft_tags,
+      application_id,
+      assignee_id,
+      last_draft_saved_at 
+    } = await req.json();
 
     // 下書きの保存
     const { data: issue, error } = await supabase
@@ -93,6 +102,8 @@ export async function PATCH(
         draft_status,
         draft_priority,
         draft_tags,
+        application_id,
+        assignee_id,
         last_draft_saved_at,
         updated_at: new Date().toISOString()
       })
