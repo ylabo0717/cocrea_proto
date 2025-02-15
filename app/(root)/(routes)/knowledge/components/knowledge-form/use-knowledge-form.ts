@@ -19,14 +19,38 @@ export function useKnowledgeForm(initialData?: Partial<KnowledgeFormData>) {
     last_draft_saved_at: initialData?.last_draft_saved_at,
   });
 
-  const handleChange = (
+  const handleChange = async (
     field: keyof KnowledgeFormData,
     value: string | string[] | undefined
   ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    // フォームの状態を更新
+    setFormData((prev) => {
+      const newData = {
+        ...prev,
+        [field]: value,
+      };
+
+      // データベースの更新
+      if (initialData?.id && initialData.is_draft) {
+        fetch(`/api/knowledge/${initialData.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            draft_title: newData.title,
+            draft_body: newData.body,
+            draft_tags: newData.draft_tags,
+            last_draft_saved_at: new Date().toISOString(),
+          }),
+        }).catch((error) => {
+          console.error('Failed to auto-save draft:', error);
+        });
+      }
+
+      return newData;
+    });
   };
 
   const validateForm = () => {

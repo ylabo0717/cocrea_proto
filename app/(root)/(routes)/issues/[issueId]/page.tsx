@@ -245,7 +245,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
             body: issue.draft_body || issue.body,
             status: issue.draft_status || issue.status as any,
             priority: issue.draft_priority || issue.priority as any,
-            application_id: (issue as any).application.id,
+            application_id: (issue as any).application?.id || '',
             assignee_id: issue.assignee_id || undefined,
             draft_title: issue.draft_title || undefined,
             draft_body: issue.draft_body || undefined,

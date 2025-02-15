@@ -245,7 +245,7 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
             body: request.draft_body || request.body,
             status: request.draft_status || request.status as any,
             priority: request.draft_priority || request.priority as any,
-            application_id: (request as any).application.id,
+            application_id: (request as any).application?.id || '',
             assignee_id: request.assignee_id || undefined,
             draft_title: request.draft_title || undefined,
             draft_body: request.draft_body || undefined,
