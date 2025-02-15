@@ -32,18 +32,30 @@ export function useKnowledgeForm(initialData?: Partial<KnowledgeFormData>) {
 
       // データベースの更新
       if (initialData?.id && initialData.is_draft) {
+        const draftData: any = {
+          draft_title: newData.title,
+          draft_body: newData.body,
+          draft_tags: newData.draft_tags,
+          last_draft_saved_at: new Date().toISOString(),
+        };
+
+        // フィールドに応じて下書きデータを更新
+        switch (field) {
+          case 'application_id':
+            draftData.application_id = value;
+            break;
+          case 'draft_tags':
+            draftData.draft_tags = value;
+            break;
+        }
+
         fetch(`/api/knowledge/${initialData.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },
           credentials: 'include',
-          body: JSON.stringify({
-            draft_title: newData.title,
-            draft_body: newData.body,
-            draft_tags: newData.draft_tags,
-            last_draft_saved_at: new Date().toISOString(),
-          }),
+          body: JSON.stringify(draftData),
         }).catch((error) => {
           console.error('Failed to auto-save draft:', error);
         });

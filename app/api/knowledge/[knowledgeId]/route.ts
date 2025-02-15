@@ -77,7 +77,13 @@ export async function PATCH(
   { params }: { params: { knowledgeId: string } }
 ) {
   try {
-    const { draft_title, draft_body, draft_tags, last_draft_saved_at } = await req.json();
+    const { 
+      draft_title, 
+      draft_body, 
+      draft_tags,
+      application_id,
+      last_draft_saved_at 
+    } = await req.json();
 
     // 下書きの保存
     const { data: knowledge, error } = await supabase
@@ -86,6 +92,7 @@ export async function PATCH(
         draft_title,
         draft_body,
         draft_tags,
+        application_id,
         last_draft_saved_at,
         updated_at: new Date().toISOString()
       })
