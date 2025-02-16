@@ -3,11 +3,27 @@ import type { NextRequest } from 'next/server';
 import { isAuthenticated } from '@/lib/auth/middleware-utils';
 
 const publicPaths = ['/login'];
-const staticPaths = ['/_next', '/api', '/favicon.ico'];
+const staticPaths = ['/_next', '/favicon.ico'];
+const publicApiPaths = ['/api/auth/login'];
 
 export function middleware(request: NextRequest) {
-  // 静的ファイルとAPIルートはスキップ
+  // 静的ファイルはスキップ
   if (staticPaths.some(path => request.nextUrl.pathname.startsWith(path))) {
+    return NextResponse.next();
+  }
+
+  // APIルートの認証チェック
+  if (request.nextUrl.pathname.startsWith('/api')) {
+    // 公開APIはスキップ
+    if (publicApiPaths.some(path => request.nextUrl.pathname.startsWith(path))) {
+      return NextResponse.next();
+    }
+
+    // 認証チェック
+    if (!isAuthenticated(request)) {
+      return new NextResponse('Unauthorized', { status: 401 });
+    }
+
     return NextResponse.next();
   }
 

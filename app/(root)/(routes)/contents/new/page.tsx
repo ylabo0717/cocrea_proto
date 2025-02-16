@@ -32,7 +32,8 @@ export default function NewContentPage() {
       });
 
       if (!response.ok) {
-        throw new Error('保存に失敗しました');
+        const errorData = await response.json();
+        throw new Error(errorData.error || '保存に失敗しました');
       }
 
       const result = await response.json();
@@ -47,7 +48,8 @@ export default function NewContentPage() {
       router.push(`${path}/${result.id}`);
     } catch (error) {
       console.error(error);
-      toast.error('エラーが発生しました');
+      const message = error instanceof Error ? error.message : 'エラーが発生しました';
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
