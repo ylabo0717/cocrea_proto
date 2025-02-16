@@ -247,6 +247,16 @@ export function ContentForm({
       </div>
 
       <div className="flex items-center gap-x-2">
+        {onCancel && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isLoading}
+          >
+            キャンセル
+          </Button>
+        )}
         {isDraft ? (
           <>
             <Button
@@ -264,36 +274,14 @@ export function ContentForm({
             >
               公開
             </Button>
-            {onCancel && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={isLoading}
-              >
-                キャンセル
-              </Button>
-            )}
           </>
         ) : (
-          <>
-            <Button
-              type="submit"
-              disabled={isLoading || !validateForm()}
-            >
-              {isLoading ? '保存中...' : '保存'}
-            </Button>
-            {onCancel && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={isLoading}
-              >
-                キャンセル
-              </Button>
-            )}
-          </>
+          <Button
+            type="submit"
+            disabled={isLoading || !validateForm()}
+          >
+            {isLoading ? '保存中...' : '保存'}
+          </Button>
         )}
       </div>
     </form>
