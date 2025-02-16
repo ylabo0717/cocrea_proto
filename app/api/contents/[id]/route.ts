@@ -125,3 +125,32 @@ export async function PATCH(
     );
   }
 }
+
+// コンテンツを削除する
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { error } = await supabase
+      .from('contents')
+      .delete()
+      .eq('id', params.id);
+
+    if (error) {
+      console.error('Delete error:', error);
+      return NextResponse.json(
+        { error: 'コンテンツの削除に失敗しました' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Delete error:', error);
+    return NextResponse.json(
+      { error: 'コンテンツの削除に失敗しました' },
+      { status: 500 }
+    );
+  }
+}

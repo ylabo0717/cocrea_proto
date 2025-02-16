@@ -264,6 +264,16 @@ export function ContentForm({
             >
               公開
             </Button>
+            {onCancel && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                disabled={isLoading}
+              >
+                キャンセル
+              </Button>
+            )}
           </>
         ) : (
           <>

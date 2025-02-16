@@ -125,8 +125,20 @@ export default function NewContentPage() {
     }
   };
 
-  const handleCancel = () => {
-    router.back();
+  const handleCancel = async () => {
+    try {
+      if (contentId) {
+        // 空の下書きを削除
+        await fetch(`/api/contents/${contentId}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+      }
+    } catch (error) {
+      console.error('Failed to delete draft:', error);
+    } finally {
+      router.back();
+    }
   };
 
   const contentTypeLabels: Record<ContentType, string> = {
