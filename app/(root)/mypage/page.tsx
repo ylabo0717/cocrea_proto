@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ContentList } from "./components/content-list"
 import { ContributionGraph } from "./components/contribution-graph"
 import { contentTypeInfo } from "./constants"
+import { CreateContentButton } from "./components/create-content-button"
 
 export const metadata: Metadata = {
   title: "マイページ",
@@ -25,6 +26,7 @@ export default async function MyPage({searchParams}: {searchParams: { [key: stri
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">マイページ</h2>
+        <CreateContentButton />
       </div>
 
       <Card>
