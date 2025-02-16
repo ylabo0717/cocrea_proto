@@ -58,7 +58,7 @@ export function IssueForm({
   );
 
   return (
-    <form id="issue-form" onSubmit={handleSubmit} className="space-y-6">
+    <form id="issue-form" onSubmit={handleSubmit} className="space-y-6 px-6">
       <div className="space-y-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">タイトル</label>
