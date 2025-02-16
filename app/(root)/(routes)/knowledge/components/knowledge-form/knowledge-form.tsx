@@ -9,7 +9,11 @@ import { KnowledgeFormProps } from "./types";
 import { useApplications } from "@/app/(root)/(routes)/applications/hooks/use-applications";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ReactMarkdown from "react-markdown";
+import dynamic from 'next/dynamic';
+
+const ReactMarkdown = dynamic(() => import('react-markdown'), {
+  ssr: false
+});
 import { AttachmentUpload } from "@/components/attachments/attachment-upload";
 import { AttachmentList } from "@/components/attachments/attachment-list";
 import { Paperclip } from "lucide-react";
@@ -29,6 +33,11 @@ export function KnowledgeForm({
   const { applications, refreshApplications } = useApplications();
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState(0);
   const [tab, setTab] = useState<"write" | "preview">("write");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     refreshApplications();
@@ -42,6 +51,10 @@ export function KnowledgeForm({
   const handleAttachmentUpload = () => {
     setAttachmentRefreshKey(prev => prev + 1);
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <form id="knowledge-form" onSubmit={handleSubmit} className="space-y-6 px-6">
