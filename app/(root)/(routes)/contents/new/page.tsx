@@ -190,6 +190,8 @@ export default function NewContentPage() {
               isLoading={isLoading}
               contentId={contentId}
               onAutoSave={handleAutoSave}
+              onSaveDraft={handleAutoSave}
+              onPublishDraft={handleSubmit}
               isDraft={true}
             />
           )}

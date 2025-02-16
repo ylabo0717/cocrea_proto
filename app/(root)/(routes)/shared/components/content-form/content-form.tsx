@@ -69,7 +69,32 @@ export function ContentForm({
     e.preventDefault();
     setSubmitting(true);
     try {
+      // フォームデータが有効か確認
+      if (!validateForm()) {
+        toast.error('必要な項目を入力してください');
+        return;
+      }
       await onSubmit(formData);
+    } catch (error) {
+      console.error('Submit error:', error);
+      toast.error(error instanceof Error ? error.message : 'エラーが発生しました');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handlePublishDraft = async () => {
+    setSubmitting(true);
+    try {
+      // フォームデータが有効か確認
+      if (!validateForm()) {
+        toast.error('必要な項目を入力してください');
+        return;
+      }
+      await onPublishDraft?.(formData);
+    } catch (error) {
+      console.error('Publish error:', error);
+      toast.error(error instanceof Error ? error.message : 'エラーが発生しました');
     } finally {
       setSubmitting(false);
     }
@@ -269,8 +294,8 @@ export function ContentForm({
             </Button>
             <Button
               type="button"
-              onClick={onPublishDraft}
-              disabled={isLoading}
+              onClick={handlePublishDraft}
+              disabled={isLoading || !validateForm()}
             >
               公開
             </Button>
