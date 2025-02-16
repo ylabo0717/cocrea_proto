@@ -26,7 +26,7 @@ export function RequestForm({
   onPublishDraft,
   isDraft
 }: RequestFormProps) {
-  const { formData, handleChange, validateForm } = useRequestForm(initialData);
+  const { formData, handleChange, validateForm, handleCancel } = useRequestForm(initialData);
   const { applications, refreshApplications } = useApplications();
   const { users, refreshUsers } = useUsers();
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState(0);
@@ -196,7 +196,15 @@ export function RequestForm({
       {/* 下書きの最終保存日時 */}
       {formData.last_draft_saved_at && (
         <div className="text-sm text-muted-foreground">
-          下書きの最終保存日時: {new Date(formData.last_draft_saved_at).toLocaleString()}
+          下書きの最終保存日時: {new Date(formData.last_draft_saved_at).toLocaleString('ja-JP', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          })}
         </div>
       )}
 
@@ -222,7 +230,10 @@ export function RequestForm({
         <Button
           type="button"
           variant="outline"
-          onClick={onCancel}
+          onClick={async () => {
+            await handleCancel();
+            onCancel();
+          }}
           disabled={isLoading}
         >
           キャンセル

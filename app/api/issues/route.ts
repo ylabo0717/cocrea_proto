@@ -28,7 +28,6 @@ export async function PATCH(req: NextRequest) {
       draft_body,
       draft_status,
       draft_priority,
-      draft_category,
       draft_tags,
       application_id,
       assignee_id
@@ -40,7 +39,6 @@ export async function PATCH(req: NextRequest) {
       draft_body,
       draft_status,
       draft_priority,
-      draft_category,
       draft_tags,
       application_id,
       assignee_id,
@@ -125,30 +123,42 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { title, body, status, priority, application_id, assignee_id } = await req.json();
+    const {
+      title,
+      body,
+      status,
+      priority,
+      application_id,
+      assignee_id,
+      draft_title,
+      draft_body,
+      draft_status,
+      draft_priority
+    } = await req.json();
 
-    // バリデーション
-    if (!title || !body || !application_id) {
-      return NextResponse.json(
-        { error: '必須項目が入力されていません' },
-        { status: 400 }
-      );
-    }
+    const now = new Date().toISOString();
 
     // 課題の作成
     const { data: issue, error } = await supabase
       .from('contents')
       .insert({
         type: 'issue',
-        title,
-        body,
+        title: title || '',
+        body: body || '',
         status: status || 'open',
         priority: priority || 'medium',
-        application_id,
-        assignee_id,
+        application_id: application_id || null,
+        assignee_id: assignee_id || null,
         author_id: session.userId,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        created_at: now,
+        updated_at: now,
+        // 下書きフィールド
+        draft_title: draft_title || title || '',
+        draft_body: draft_body || body || '',
+        draft_status: draft_status || status || 'open',
+        draft_priority: draft_priority || priority || 'medium',
+        is_draft: true,
+        last_draft_saved_at: now
       })
       .select(`
         *,

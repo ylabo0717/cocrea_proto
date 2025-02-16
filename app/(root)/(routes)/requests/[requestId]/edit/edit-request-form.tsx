@@ -1,28 +1,28 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
-import { RequestForm } from '../components/request-form/request-form';
-import { useState } from 'react';
-import { RequestFormData } from '../components/request-form/types';
 import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
+import { RequestForm } from '../../components/request-form/request-form';
+import { RequestFormData } from '../../components/request-form/types';
 import { updateAttachments } from '@/lib/api/attachments';
 
-export default function NewRequestPage() {
+interface EditRequestFormProps {
+  requestId: string;
+  initialData: RequestFormData;
+}
+
+export function EditRequestForm({ requestId, initialData }: EditRequestFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const { v4: uuidv4 } = require('uuid');
-  const [tempId] = useState(() => uuidv4());
 
   const handleSubmit = async (data: RequestFormData) => {
-    console.log('Creating request with data:', data);
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/requests', {
-        method: 'POST',
+      const response = await fetch(`/api/requests/${requestId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -32,11 +32,11 @@ export default function NewRequestPage() {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || '要望の作成に失敗しました');
+        throw new Error(error.error || 'リクエストの更新に失敗しました');
       }
 
       const request = await response.json();
-      console.log('Request created:', request);
+      console.log('Request updated:', request);
 
       if (request.id) {
         console.log('Updating attachments...');
@@ -45,15 +45,17 @@ export default function NewRequestPage() {
 
       toast({
         title: '成功',
-        description: '要望を作成しました',
+        description: 'リクエストを更新しました',
       });
       router.push('/requests');
     } catch (error) {
-      console.error('Failed to create request:', error);
+      console.error('Failed to update request:', error);
       toast({
         title: 'エラー',
         description:
-          error instanceof Error ? error.message : '要望の作成に失敗しました',
+          error instanceof Error
+            ? error.message
+            : 'リクエストの更新に失敗しました',
         variant: 'destructive',
       });
     } finally {
@@ -62,11 +64,10 @@ export default function NewRequestPage() {
   };
 
   const handleSaveDraft = async (data: RequestFormData) => {
-    console.log('Saving draft with data:', data);
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/requests', {
+      const response = await fetch(`/api/requests/${requestId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -74,6 +75,7 @@ export default function NewRequestPage() {
         credentials: 'include',
         body: JSON.stringify({
           ...data,
+          id: requestId,
           draft_title: data.title,
           draft_body: data.body,
           draft_status: data.status,
@@ -104,7 +106,46 @@ export default function NewRequestPage() {
       toast({
         title: 'エラー',
         description:
-          error instanceof Error ? error.message : '下書きの保存に失敗しました',
+          error instanceof Error
+            ? error.message
+            : '下書きの保存に失敗しました',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePublishDraft = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`/api/requests/${requestId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '下書きの公開に失敗しました');
+      }
+
+      toast({
+        title: '成功',
+        description: '下書きを公開しました',
+      });
+      router.push('/requests');
+    } catch (error) {
+      console.error('Failed to publish draft:', error);
+      toast({
+        title: 'エラー',
+        description:
+          error instanceof Error
+            ? error.message
+            : '下書きの公開に失敗しました',
         variant: 'destructive',
       });
     } finally {
@@ -117,33 +158,15 @@ export default function NewRequestPage() {
   };
 
   return (
-    <div className="h-full p-4 space-y-4">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <Link
-          href="/requests"
-          className="hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Link>
-        <span>要望一覧</span>
-        <span>/</span>
-        <span>新規作成</span>
-      </div>
-
-      <div>
-        <h2 className="text-3xl font-bold text-foreground">新規要望作成</h2>
-        <p className="text-muted-foreground">新しい要望を作成します</p>
-      </div>
-
-      <div className="max-w-3xl">
-        <RequestForm
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-          isLoading={isLoading}
-          tempId={tempId}
-          onSaveDraft={handleSaveDraft}
-        />
-      </div>
-    </div>
+    <RequestForm
+      initialData={initialData}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+      isLoading={isLoading}
+      tempId={requestId}
+      onSaveDraft={handleSaveDraft}
+      onPublishDraft={handlePublishDraft}
+      isDraft={initialData.is_draft}
+    />
   );
 }

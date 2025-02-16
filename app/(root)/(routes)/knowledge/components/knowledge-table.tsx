@@ -26,7 +26,6 @@ export function KnowledgeTable({ knowledgeList }: KnowledgeTableProps) {
         <TableHeader>
           <TableRow>
             <TableHead>タイトル</TableHead>
-            <TableHead>カテゴリ</TableHead>
             <TableHead>アプリケーション</TableHead>
             <TableHead>作成者</TableHead>
             <TableHead>作成日時</TableHead>
@@ -50,11 +49,6 @@ export function KnowledgeTable({ knowledgeList }: KnowledgeTableProps) {
                       </Badge>
                     ))}
                   </div>
-                )}
-              </TableCell>
-              <TableCell>
-                {knowledge.category && (
-                  <Badge variant="outline">{knowledge.category}</Badge>
                 )}
               </TableCell>
               <TableCell>{(knowledge as any).application.name}</TableCell>

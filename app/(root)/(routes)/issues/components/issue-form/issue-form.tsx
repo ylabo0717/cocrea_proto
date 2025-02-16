@@ -32,7 +32,7 @@ export function IssueForm({
   onPublishDraft,
   isDraft
 }: IssueFormProps) {
-  const { formData, handleChange, validateForm } = useIssueForm(initialData);
+  const { formData, handleChange, validateForm, handleCancel } = useIssueForm(initialData);
   const { applications, refreshApplications } = useApplications();
   const { users, refreshUsers } = useUsers();
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState(0);
@@ -238,7 +238,10 @@ export function IssueForm({
         <Button
           type="button"
           variant="outline"
-          onClick={onCancel}
+          onClick={async () => {
+            await handleCancel();
+            onCancel();
+          }}
           disabled={isLoading}
         >
           キャンセル

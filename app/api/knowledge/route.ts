@@ -26,7 +26,6 @@ export async function PATCH(req: NextRequest) {
       id,
       draft_title,
       draft_body,
-      draft_category,
       draft_tags,
       application_id
     } = await req.json();
@@ -35,7 +34,6 @@ export async function PATCH(req: NextRequest) {
     const draftData = {
       draft_title,
       draft_body,
-      draft_category,
       draft_tags,
       application_id,
       last_draft_saved_at: now
@@ -117,29 +115,36 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { title, body, category, tags, application_id } = await req.json();
+    const {
+      title,
+      body,
+      tags,
+      application_id,
+      draft_title,
+      draft_body,
+      draft_tags
+    } = await req.json();
 
-    // バリデーション
-    if (!title || !body || !application_id) {
-      return NextResponse.json(
-        { error: '必須項目が入力されていません' },
-        { status: 400 }
-      );
-    }
+    const now = new Date().toISOString();
 
     // ナレッジの作成
     const { data: knowledge, error } = await supabase
       .from('contents')
       .insert({
         type: 'knowledge',
-        title,
-        body,
-        category,
-        tags,
-        application_id,
+        title: title || '',
+        body: body || '',
+        tags: tags || [],
+        application_id: application_id || null,
         author_id: session.userId,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        created_at: now,
+        updated_at: now,
+        // 下書きフィールド
+        draft_title: draft_title || title || '',
+        draft_body: draft_body || body || '',
+          draft_tags: draft_tags || tags || [],
+        is_draft: true,
+        last_draft_saved_at: now
       })
       .select(`
         *,

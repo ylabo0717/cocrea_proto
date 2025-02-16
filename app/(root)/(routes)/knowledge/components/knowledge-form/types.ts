@@ -8,7 +8,6 @@ export interface KnowledgeFormData {
   // 下書き関連のフィールド
   draft_title?: string;
   draft_body?: string;
-  draft_category?: string;
   draft_tags?: string[];
   last_draft_saved_at?: string;
 }

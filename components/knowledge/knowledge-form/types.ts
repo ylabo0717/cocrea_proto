@@ -2,7 +2,6 @@ export interface KnowledgeFormData {
   id?: string;
   title: string;
   body: string;
-  category?: string;
   tags?: string[];
   application_id: string;
 }

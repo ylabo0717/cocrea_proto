@@ -100,15 +100,6 @@ export function KnowledgeForm({ initialData, onSubmit, onCancel, isLoading, temp
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">カテゴリ</label>
-            <Input
-              value={formData.category || ""}
-              onChange={(e) => handleChange("category", e.target.value)}
-              placeholder="例: guidelines"
-              disabled={isLoading}
-            />
-          </div>
         </div>
 
         <div className="space-y-2">
