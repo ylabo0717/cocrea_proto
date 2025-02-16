@@ -1,6 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+// コンテンツを取得する
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { requestId: string } }
+) {
+  try {
+    const { data: request, error } = await supabase
+      .from('contents')
+      .select('*')
+      .eq('id', params.requestId)
+      .eq('type', 'request')
+      .single();
+
+    if (error) {
+      console.error('Request fetch error:', error);
+      return NextResponse.json(
+        { error: 'リクエストの取得に失敗しました' },
+        { status: 500 }
+      );
+    }
+
+    if (!request) {
+      return NextResponse.json(
+        { error: 'リクエストが見つかりません' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(request);
+  } catch (error) {
+    console.error('Request fetch error:', error);
+    return NextResponse.json(
+      { error: 'リクエストの取得に失敗しました' },
+      { status: 500 }
+    );
+  }
+}
+
 // 下書きを公開する
 export async function POST(
   req: NextRequest,

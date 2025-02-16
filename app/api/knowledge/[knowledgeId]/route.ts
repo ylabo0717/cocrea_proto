@@ -1,6 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+// コンテンツを取得する
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { knowledgeId: string } }
+) {
+  try {
+    const { data: knowledge, error } = await supabase
+      .from('contents')
+      .select('*')
+      .eq('id', params.knowledgeId)
+      .eq('type', 'knowledge')
+      .single();
+
+    if (error) {
+      console.error('Knowledge fetch error:', error);
+      return NextResponse.json(
+        { error: 'ナレッジの取得に失敗しました' },
+        { status: 500 }
+      );
+    }
+
+    if (!knowledge) {
+      return NextResponse.json(
+        { error: 'ナレッジが見つかりません' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(knowledge);
+  } catch (error) {
+    console.error('Knowledge fetch error:', error);
+    return NextResponse.json(
+      { error: 'ナレッジの取得に失敗しました' },
+      { status: 500 }
+    );
+  }
+}
+
 // 下書きを公開する
 export async function POST(
   req: NextRequest,

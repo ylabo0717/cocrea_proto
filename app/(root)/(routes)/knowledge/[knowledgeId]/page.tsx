@@ -66,7 +66,7 @@ export default function KnowledgeDetailPage({ params }: { params: { knowledgeId:
   }
 
   const handleEdit = () => {
-    setIsEditing(true);
+    router.push(`/contents/${params.knowledgeId}/edit?type=knowledge`);
   };
 
   const handleCancel = () => {

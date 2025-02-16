@@ -68,7 +68,7 @@ export default function RequestDetailPage({ params }: { params: { requestId: str
   }
 
   const handleEdit = () => {
-    setIsEditing(true);
+    router.push(`/contents/${params.requestId}/edit?type=request`);
   };
 
   const handleCancel = () => {

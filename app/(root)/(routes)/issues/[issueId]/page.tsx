@@ -68,7 +68,7 @@ export default function IssueDetailPage({ params }: { params: { issueId: string 
   }
 
   const handleEdit = () => {
-    setIsEditing(true);
+    router.push(`/contents/${params.issueId}/edit?type=issue`);
   };
 
   const handleCancel = () => {
