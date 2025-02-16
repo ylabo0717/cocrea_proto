@@ -203,3 +203,32 @@ export async function PUT(
     );
   }
 }
+
+// コンテンツを削除する
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { issueId: string } }
+) {
+  try {
+    const { error } = await supabase
+      .from('contents')
+      .delete()
+      .eq('id', params.issueId);
+
+    if (error) {
+      console.error('Content delete error:', error);
+      return NextResponse.json(
+        { error: 'コンテンツの削除に失敗しました' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return NextResponse.json(
+      { error: '予期せぬエラーが発生しました' },
+      { status: 500 }
+    );
+  }
+}

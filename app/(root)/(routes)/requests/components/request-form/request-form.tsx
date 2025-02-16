@@ -26,7 +26,7 @@ export function RequestForm({
   onPublishDraft,
   isDraft
 }: RequestFormProps) {
-  const { formData, handleChange, validateForm } = useRequestForm(initialData);
+  const { formData, handleChange, validateForm, handleCancel } = useRequestForm(initialData);
   const { applications, refreshApplications } = useApplications();
   const { users, refreshUsers } = useUsers();
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState(0);
@@ -230,7 +230,10 @@ export function RequestForm({
         <Button
           type="button"
           variant="outline"
-          onClick={onCancel}
+          onClick={async () => {
+            await handleCancel();
+            onCancel();
+          }}
           disabled={isLoading}
         >
           キャンセル

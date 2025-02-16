@@ -81,9 +81,34 @@ export function useKnowledgeForm(initialData?: Partial<KnowledgeFormData>) {
     return true;
   };
 
+  // 下書きが空かどうかをチェックする
+  const isDraftEmpty = () => {
+    return (
+      !formData.draft_title?.trim() &&
+      !formData.draft_body?.trim() &&
+      (!formData.draft_tags || formData.draft_tags.length === 0)
+    );
+  };
+
+  // キャンセル時に空の下書きを削除する
+  const handleCancel = async () => {
+    if (initialData?.id && initialData.is_draft && isDraftEmpty()) {
+      try {
+        await fetch(`/api/knowledge/${initialData.id}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+      } catch (error) {
+        console.error('Failed to delete empty draft:', error);
+      }
+    }
+  };
+
   return {
     formData,
     handleChange,
     validateForm,
+    handleCancel,
+    isDraftEmpty,
   };
 }

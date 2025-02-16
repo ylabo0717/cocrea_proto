@@ -25,7 +25,7 @@ export function KnowledgeForm({
   onPublishDraft,
   isDraft
 }: KnowledgeFormProps) {
-  const { formData, handleChange, validateForm } = useKnowledgeForm(initialData);
+  const { formData, handleChange, validateForm, handleCancel } = useKnowledgeForm(initialData);
   const { applications, refreshApplications } = useApplications();
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState(0);
   const [tab, setTab] = useState<"write" | "preview">("write");
@@ -149,7 +149,10 @@ export function KnowledgeForm({
         <Button
           type="button"
           variant="outline"
-          onClick={onCancel}
+          onClick={async () => {
+            await handleCancel();
+            onCancel();
+          }}
           disabled={isLoading}
         >
           キャンセル
