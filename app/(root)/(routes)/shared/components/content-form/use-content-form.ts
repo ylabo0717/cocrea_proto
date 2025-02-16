@@ -11,7 +11,13 @@ const defaultFormData: ContentFormData = {
   tags: [],
   attachments: [],
   type: 'request',
-  isDraft: true,
+  draft_title: '',
+  draft_body: '',
+  draft_status: 'open',
+  draft_priority: 'medium',
+  draft_assignee_id: '',
+  draft_tags: [],
+  is_draft: true,
 };
 
 interface UseContentFormProps {
@@ -40,6 +46,32 @@ export const useContentForm = ({
           ...prev,
           [field]: value,
         };
+
+        // 下書きフィールドも更新
+        if (prev.is_draft) {
+          switch (field) {
+            case 'title':
+              newData.draft_title = value;
+              break;
+            case 'body':
+              newData.draft_body = value;
+              break;
+            case 'status':
+              newData.draft_status = value;
+              break;
+            case 'priority':
+              newData.draft_priority = value;
+              break;
+            case 'assigneeId':
+              newData.draft_assignee_id = value;
+              break;
+            case 'tags':
+              newData.draft_tags = value;
+              break;
+          }
+          newData.last_draft_saved_at = new Date().toISOString();
+        }
+
         return newData;
       });
     },

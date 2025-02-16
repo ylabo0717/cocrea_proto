@@ -32,21 +32,27 @@ export async function POST(req: NextRequest) {
       tags,
       attachments,
       type,
-      isDraft
+      is_draft
     } = json;
 
     const now = new Date().toISOString();
 
     const data = {
       type,
-      title: title || '',
-      body: body || '',
+      title: '',
+      body: '',
       application_id: applicationId || null,
       author_id: session.userId,
       created_at: now,
       updated_at: now,
-      tags: tags || [],
-      is_draft: isDraft || false,
+      tags: [],
+      is_draft: true,
+      draft_title: title || '',
+      draft_body: body || '',
+      draft_status: status || 'open',
+      draft_priority: priority || 'medium',
+      draft_tags: tags || [],
+      last_draft_saved_at: now,
     };
 
     // type別の违加データ
@@ -71,7 +77,7 @@ export async function POST(req: NextRequest) {
     if (contentError) {
       console.error('コンテンツ作成エラー:', contentError);
       return NextResponse.json(
-        { error: 'コンテンツの作成に失敗しました' },
+        { error: `コンテンツの作成に失敗しました: ${contentError.message}` },
         { status: 500 }
       );
     }

@@ -38,12 +38,15 @@ export default function NewContentPage() {
             type: contentType,
             tags: [],
             attachments: [],
-            isDraft: true,
+            status: 'open',
+            priority: 'medium',
+            is_draft: true,
           }),
         });
 
         if (!response.ok) {
-          throw new Error('下書きの作成に失敗しました');
+          const errorData = await response.json();
+          throw new Error(errorData.error || '下書きの作成に失敗しました');
         }
 
         const result = await response.json();
@@ -69,7 +72,7 @@ export default function NewContentPage() {
         },
         body: JSON.stringify({
           ...data,
-          isDraft: true,
+          is_draft: true,
         }),
       });
 
@@ -94,7 +97,7 @@ export default function NewContentPage() {
         },
         body: JSON.stringify({
           ...data,
-          isDraft: false,
+          is_draft: false,
         }),
       });
 

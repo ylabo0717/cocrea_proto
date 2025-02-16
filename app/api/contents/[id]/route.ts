@@ -41,12 +41,13 @@ export async function PATCH(
     const now = new Date().toISOString();
 
     const data = {
-      title: title || '',
-      body: body || '',
-      application_id: applicationId || null,
       updated_at: now,
-      tags: tags || [],
-      is_draft: isDraft || false,
+      draft_title: title || '',
+      draft_body: body || '',
+      draft_status: status || 'open',
+      draft_priority: priority || 'medium',
+      draft_tags: tags || [],
+      last_draft_saved_at: now,
     };
 
     // type別の违加データ
