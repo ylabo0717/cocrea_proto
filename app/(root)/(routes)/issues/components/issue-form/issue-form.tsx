@@ -20,7 +20,11 @@ import { AttachmentList } from '@/components/attachments/attachment-list';
 import { Paperclip } from 'lucide-react';
 import { TagInput } from '@/components/tags/tag-input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import ReactMarkdown from 'react-markdown';
+import dynamic from 'next/dynamic';
+
+const ReactMarkdown = dynamic(() => import('react-markdown'), {
+  ssr: false
+});
 
 export function IssueForm({
   initialData,
@@ -37,11 +41,18 @@ export function IssueForm({
   const { users, refreshUsers } = useUsers();
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState(0);
   const [tab, setTab] = useState<'write' | 'preview'>('write');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    refreshApplications();
-    refreshUsers();
-  }, [refreshApplications, refreshUsers]);
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    Promise.all([
+      refreshApplications(),
+      refreshUsers()
+    ]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +67,10 @@ export function IssueForm({
   const developers = users.filter(
     (user) => user.role === 'developer' || user.role === 'admin'
   );
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <form id="issue-form" onSubmit={handleSubmit} className="space-y-6 px-6">
