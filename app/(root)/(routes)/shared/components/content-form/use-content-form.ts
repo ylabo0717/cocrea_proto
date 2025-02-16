@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ContentFormData } from './types';
 
 const defaultFormData: ContentFormData = {
@@ -10,21 +10,72 @@ const defaultFormData: ContentFormData = {
   assigneeId: '',
   tags: [],
   attachments: [],
-  type: 'request'
+  type: 'request',
+  isDraft: true,
 };
 
-export const useContentForm = (initialData?: Partial<ContentFormData>) => {
+interface UseContentFormProps {
+  initialData?: Partial<ContentFormData>;
+  contentId?: string;
+  onAutoSave?: (data: ContentFormData) => Promise<void>;
+}
+
+export const useContentForm = ({
+  initialData,
+  contentId,
+  onAutoSave,
+}: UseContentFormProps) => {
   const [formData, setFormData] = useState<ContentFormData>({
     ...defaultFormData,
     ...initialData,
   });
 
-  const handleChange = (field: keyof ContentFormData, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout>();
+  const isSubmittingRef = useRef(false);
+
+  const handleChange = useCallback(
+    (field: keyof ContentFormData, value: any) => {
+      setFormData((prev) => {
+        const newData = {
+          ...prev,
+          [field]: value,
+        };
+        return newData;
+      });
+    },
+    []
+  );
+
+  const handleAutoSave = useCallback(
+    async (data: ContentFormData) => {
+      if (!contentId || !onAutoSave || isSubmittingRef.current) return;
+
+      try {
+        await onAutoSave(data);
+      } catch (error) {
+        console.error('下書き保存エラー:', error);
+      }
+    },
+    [contentId, onAutoSave]
+  );
+
+  useEffect(() => {
+    if (!contentId || !onAutoSave) return;
+
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      handleAutoSave(formData);
+    }, 2000); // 2秒後に保存
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [formData, contentId, onAutoSave, handleAutoSave]);
 
   const validateForm = () => {
     if (!formData.title.trim()) return false;
@@ -42,5 +93,8 @@ export const useContentForm = (initialData?: Partial<ContentFormData>) => {
     handleChange,
     validateForm,
     handleCancel,
+    setSubmitting: (submitting: boolean) => {
+      isSubmittingRef.current = submitting;
+    },
   };
 };

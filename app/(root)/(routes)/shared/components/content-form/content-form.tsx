@@ -35,11 +35,18 @@ export function ContentForm({
   onSaveDraft,
   onPublishDraft,
   isDraft,
-  contentType
+  contentType,
+  contentId,
+  onAutoSave,
 }: ContentFormProps) {
-  const { formData, handleChange, validateForm, handleCancel } = useContentForm({
-    ...initialData,
-    type: contentType
+  const { formData, handleChange, validateForm, handleCancel, setSubmitting } = useContentForm({
+    initialData: {
+      ...initialData,
+      type: contentType,
+      isDraft: isDraft,
+    },
+    contentId,
+    onAutoSave,
   });
   const { applications, refreshApplications } = useApplications();
   const { users, refreshUsers } = useUsers();
@@ -60,7 +67,12 @@ export function ContentForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit(formData);
+    setSubmitting(true);
+    try {
+      await onSubmit(formData);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleAttachmentUpload = () => {

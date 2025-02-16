@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ContentForm } from '../../shared/components/content-form/content-form';
-import { ContentType } from '../../shared/components/content-form/types';
+import { ContentFormData, ContentType } from '../../shared/components/content-form/types';
 import {
   Select,
   SelectContent,
@@ -12,23 +12,90 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function NewContentPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
+  const [contentId, setContentId] = useState<string>();
   const contentType = searchParams.get('type') as ContentType | null;
 
-  const handleSubmit = async (data: any) => {
+  // 新規作成時に空の下書きを作成
+  useEffect(() => {
+    if (!contentType) return;
+
+    const createDraft = async () => {
+      try {
+        const response = await fetch('/api/contents', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: '',
+            body: '',
+            type: contentType,
+            tags: [],
+            attachments: [],
+            isDraft: true,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('下書きの作成に失敗しました');
+        }
+
+        const result = await response.json();
+        setContentId(result.id);
+      } catch (error) {
+        console.error(error);
+        const message = error instanceof Error ? error.message : 'エラーが発生しました';
+        toast.error(message);
+      }
+    };
+
+    createDraft();
+  }, [contentType]);
+
+  const handleAutoSave = async (data: ContentFormData) => {
+    if (!contentId) return;
+
     try {
-      setIsLoading(true);
-      const response = await fetch('/api/contents', {
-        method: 'POST',
+      const response = await fetch(`/api/contents/${contentId}`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          isDraft: true,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('下書きの保存に失敗しました');
+      }
+    } catch (error) {
+      console.error(error);
+      const message = error instanceof Error ? error.message : 'エラーが発生しました';
+      toast.error(message);
+    }
+  };
+
+  const handleSubmit = async (data: ContentFormData) => {
+    try {
+      setIsLoading(true);
+      // 下書きを公開に変更
+      const response = await fetch(`/api/contents/${contentId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          isDraft: false,
+        }),
       });
 
       if (!response.ok) {
@@ -106,6 +173,9 @@ export default function NewContentPage() {
               onSubmit={handleSubmit}
               onCancel={handleCancel}
               isLoading={isLoading}
+              contentId={contentId}
+              onAutoSave={handleAutoSave}
+              isDraft={true}
             />
           )}
         </CardContent>
